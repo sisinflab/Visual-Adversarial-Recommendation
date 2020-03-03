@@ -1,0 +1,20 @@
+
+# Created by https://www.gitignore.io/api/venv
+# Edit at https://www.gitignore.io/?templates=venv
+
+### venv ###
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+.Python
+pyvenv.cfg
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pip-selfcheck.json
+
+data/amazon_men/original_images
+data/amazon_men/ratings.csv
