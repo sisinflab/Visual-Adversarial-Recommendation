@@ -16,5 +16,4 @@ env.bak/
 venv.bak/
 pip-selfcheck.json
 
-data/amazon_men/original_images
-data/amazon_men/ratings.csv
+data/*
