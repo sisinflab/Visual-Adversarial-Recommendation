@@ -36,6 +36,7 @@ class CustomDataset(Dataset):
 
         return sample, self.filenames[idx]
 
+
 class CustomDataLoader:
     """
     This class represents a data loader. You can specify the batch size, shuffling mode and other
