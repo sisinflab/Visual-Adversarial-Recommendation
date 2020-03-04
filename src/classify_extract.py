@@ -8,13 +8,15 @@ import pandas as pd
 import numpy as np
 import sys
 
+
 def classify_and_extract():
-    path_images, path_output_classes, path_output_features, path_classes = read_config(sections_fields=[('PATHS', 'InputAmazonMenImages'),
-                                                                                                        ('PATHS', 'OutputAmazonMenClasses'),
-                                                                                                        ('PATHS', 'OutputAmazonMenFeatures'),
-                                                                                                        ('PATHS', 'ImagenetClasses')])
+    path_images, path_output_classes, path_output_features, path_classes = read_config(
+        sections_fields=[('PATHS', 'InputAmazonMenImages'),
+                         ('PATHS', 'OutputAmazonMenClasses'),
+                         ('PATHS', 'OutputAmazonMenFeatures'),
+                         ('PATHS', 'ImagenetClasses')])
     data = CustomDataset(root_dir=path_images,
-                         transform=transform.Compose([
+                         transform=transforms.Compose([
                              transforms.ToTensor()
                          ]))
     model = Model(model=models.resnet50(pretrained=True))
@@ -34,6 +36,7 @@ def classify_and_extract():
 
     write_csv(df=df, filename=path_output_classes)
     save_np(npy=features, filename=path_output_features)
+
 
 if __name__ == '__main__':
     classify_and_extract()
