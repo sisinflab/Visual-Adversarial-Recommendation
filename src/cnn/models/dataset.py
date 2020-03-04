@@ -2,6 +2,7 @@ from torch.utils.data import Dataset, DataLoader
 from skimage import io
 import os
 
+
 class CustomDataset(Dataset):
     """
     This class represents a dataset. You can load it from the memory (by specifying its path)
