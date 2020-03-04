@@ -47,5 +47,5 @@ if __name__ == '__main__':
 
     start_time = time()
     print('START Test at {0}.'.format(start_time))
-    solver.store_predictions('Store Predictions')
+    solver.store_predictions()
     print('END Test in {0} secs.'.format(time() - start_time))
