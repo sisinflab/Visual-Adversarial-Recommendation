@@ -58,9 +58,9 @@ class Model:
             A dictionary with ImageID, class (as string) and class (as number).
         """
         image, filename = sample
-        output = torch.nn.functional.softmax(input=self.model(image[0].to(self.device)), dim=1)
+        output = torch.nn.functional.softmax(input=self.model(image[None, ...].to(self.device)), dim=1)
         return {'ImageID': os.path.splitext(filename)[0],
-                'ClassStr': list_classes[np.argmax(output.data.cpu().numpy())],
+                'ClassStr': list_classes[int(np.argmax(output.data.cpu().numpy()))],
                 'ClassNum': np.argmax(output.data.cpu().numpy())}
 
     def feature_extraction(self, sample):
@@ -73,5 +73,5 @@ class Model:
         """
         image, filename = sample
         if self.feature_model:
-            feature = self.feature_model(image[0].to(self.model.device)).data.cpu().numpy()
+            feature = self.feature_model(image[None, ...].to(self.model.device)).data.cpu().numpy()
             return feature
