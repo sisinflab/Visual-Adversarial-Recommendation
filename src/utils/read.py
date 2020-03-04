@@ -26,17 +26,16 @@ def read_imagenet_classes_txt(filename):
 
     return idx2label
 
-def read_config(config_file, sections_fields):
+def read_config(sections_fields):
     """
     Args:
-        config_file (str): configuration file
         sections_fields (list): list of fields to retrieve from configuration file
 
     Return:
          A list of configuration values.
     """
     config = configparser.ConfigParser()
-    config.read('./config/' + config_file)
+    config.read('./config/configs.ini')
     configs = []
     for s, f in sections_fields:
         configs.append(config[s][f])
