@@ -28,7 +28,7 @@ class CustomDataset(Dataset):
         return self.num_samples
 
     def __getitem__(self, idx):
-        sample = io.imread(self.filenames[idx])
+        sample = io.imread(self.root_dir + self.filenames[idx])
 
         if self.transform:
             sample = self.transform(sample)
