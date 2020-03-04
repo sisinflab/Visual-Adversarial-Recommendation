@@ -1,11 +1,13 @@
-import tensorflow as tf
-import numpy as np
-from recommendation.recommender_dataset import Dataset
-from VBPR import VBPR
 import math
-from utils import save_obj
-
 import time
+import read
+import write
+
+import numpy as np
+import tensorflow as tf
+
+from VBPR import VBPR
+from recommendation.recommender_dataset import Dataset
 
 
 class Solver:
@@ -96,7 +98,7 @@ class Solver:
 
         score5 = np.mean(map(self._score, zip(d, [5] * len(d))), 0)
 
-        save_obj(results, self.result_dir + self.experiment_name)
+        write.save_obj(results, self.result_dir + self.experiment_name)
         print('Test Results stored')
 
     def store_predictions(self, message):
@@ -104,7 +106,7 @@ class Solver:
         predictions = self.sess.run(self.model.predictions)
         predictions = predictions.argsort(axis=1)
         predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
-        save_obj(predictions, 'first-{0}-predictions-{1}'.format(self.tp_k_predictions, message.replace(' ', '_')))
+        write.save_obj(predictions, self.result_dir + self.experiment_name + '_top{0}_predictions'.format(self.tp_k_predictions))
 
     def load(self):
         params = np.load(self.weight_dir + 'best-vbpr.npy', allow_pickle=True)
