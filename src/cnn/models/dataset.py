@@ -32,6 +32,9 @@ class CustomDataset(Dataset):
     def __getitem__(self, idx):
         sample = Image.open(self.root_dir + self.filenames[idx])
 
+        if sample.mode != 'RGB':
+            sample = sample.convert(mode='RGB')
+
         if self.transform:
             to_tensor = transforms.ToTensor()
             sample = to_tensor(sample)
