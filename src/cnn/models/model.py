@@ -1,5 +1,7 @@
 import torch
 import numpy as np
+import os
+
 
 class Model:
     """
@@ -11,6 +13,7 @@ class Model:
         gpu (int): index of gpu to use (-1 for cpu)
         model_path (str): model path (when it is loaded from memory, e.g. your custom trained model
     """
+
     def __init__(self, model=None, eval=True, gpu=0, model_path=None):
         """
         Args:
@@ -70,5 +73,5 @@ class Model:
         """
         image, filename = sample
         if self.feature_model:
-            feature = self.feature_model(image[0].to(model.device)).data.cpu().numpy()
+            feature = self.feature_model(image[0].to(self.model.device)).data.cpu().numpy()
             return feature
