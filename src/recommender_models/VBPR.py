@@ -97,10 +97,8 @@ class VBPR:
 
         if self.adv:
             if self.adv_type == 'rand':
-                print('Add Random Noise')
                 self.delta = tf.truncated_normal(shape=self.image_feature.shape, mean=0.0, stddev=0.01)
             else:
-                print('Add FGSM Noise')
                 self.delta = tf.gradients(self.loss, [self.image_feature])[0]
             self.delta = tf.stop_gradient(self.delta)
 
