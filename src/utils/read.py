@@ -1,5 +1,6 @@
 import pandas as pd
 import configparser
+import pickle
 
 def read_csv(filename):
     """
@@ -40,3 +41,12 @@ def read_config(config_file, sections_fields):
     for s, f in sections_fields:
         configs.append(config[s][f])
     return configs
+
+def load_obj(name):
+    """
+    Load the pkl object by name
+    :param name: name of file
+    :return:
+    """
+    with open(name + '.pkl', 'rb') as f:
+        return pickle.load(f)
