@@ -74,9 +74,6 @@ class VBPR:
 
             return tf.reduce_sum(self.emb_p * self.emb_q, 1), self.emb_p, self.emb_q, image_input
 
-    def _l2(self, m):
-        return tf.reduce_sum(tf.square(m))
-
     def _prediction(self):
         with tf.name_scope("prediction"):
             self.emb2_Q = tf.matmul(self.image_feature, self.phi)
@@ -87,7 +84,7 @@ class VBPR:
 
             self.temp_emb_Q = self.emb_Q + self.emb2_Q
 
-            self.predictions = tf.matmul(self.emb_P*-1, self.temp_emb_Q, transpose_b = True)
+            self.predictions = tf.matmul(self.emb_P * -1, self.temp_emb_Q, transpose_b=True)
 
     def _create_loss(self):
         self.pos_pred, emb_p, emb_pos_q, self.emb_pos_feature = self._create_inference(self.user_input, self.pos_input)
@@ -114,9 +111,9 @@ class VBPR:
             self.adv_loss = tf.reduce_sum(tf.nn.softplus(-result_adv))
 
         self.opt_loss = self.loss + self.lmd * self.adv_loss \
-                        + self.l1 * (self._l2(self.emb_p)) \
-                        + self.l2 * (self._l2(emb_pos_q) + self._l2(emb_neg_q)) \
-                        + self.l3 * (self._l2(self.phi))
+                        + self.l1 * (tf.reduce_sum(self.emb_p)) \
+                        + self.l2 * (tf.reduce_sum(emb_pos_q) + tf.reduce_sum(emb_neg_q)) \
+                        + self.l3 * (tf.reduce_sum(self.phi))
 
     def _create_optimizer(self):
         with tf.name_scope("optimizer"):
@@ -149,9 +146,6 @@ class VBPR:
         self._create_loss()
         self._create_optimizer()
         self._prediction()
-
-    def get_trainable_params(self):
-        return tf.trainable_variables()
 
     def get_saver_name(self):
         return "stored_vbpr_k_%d_lr_%s_regs_%s_eps_%f_lmd_%f" % \

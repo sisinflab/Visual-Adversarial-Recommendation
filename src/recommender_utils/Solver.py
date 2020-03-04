@@ -20,8 +20,18 @@ class Solver:
         self.sess.run(tf.global_variables_initializer())
         self.saver = tf.train.Saver(tf.trainable_variables(), max_to_keep=0)
         self.sess.run(self.model.assign_image, feed_dict={self.model.init_image: self.dataset.emb_image})
-        self.tp_k_predictions = 300
+        self.tp_k_predictions = args.tp_k_predictions
         self.weight_dir = args.weight_dir + '/'
+
+        self.result_dir = args.result_dir + '/'
+        self.attack_type = args.attack_type
+        self.iteration_attack_type = args.iteration_attack_type
+        self.attacked_categories = args.attacked_categories
+        self.experiment_dir = args.experiment_dir
+        self.eps_cnn = args.eps_cnn
+
+        self.experiment_name = '{0}/{1}_{2}_eps{3}_it{4}}'.format(self.dataset, self.attack_type, self.attacked_categories, self.eps_cnn, self.iteration_attack_type)
+
         self.load()
 
     def one_epoch(self):
@@ -45,7 +55,7 @@ class Solver:
                 self.save(i)
             self.one_epoch()
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
-        self.save(i)
+        # self.save(i)
 
     @staticmethod
     def _score(para):
@@ -87,10 +97,10 @@ class Solver:
 
         score5 = np.mean(map(self._score, zip(d, [5] * len(d))), 0)
 
-        save_obj(results, 'results-{0}'.format(message.replace(' ', '_')))
+        save_obj(results, self.result_dir + self.experiment_name)
         print('Test Results stored')
 
-    def full_test(self, message):
+    def store_predictions(self, message):
         # We multiply the users embeddings by -1 to have the np sorting operation in the correct order
         predictions = self.sess.run(self.model.predictions)
         predictions = predictions.argsort(axis=1)
@@ -105,6 +115,5 @@ class Solver:
 
     def save(self, step):
         params = self.sess.run(tf.trainable_variables())
-        path = '%s%s_STEP_%d.npy' % (self.weight_dir, self.model.get_saver_name(), step)
-        # path = 'model_{0}_{1}.npy'.format(step, 'amazon_men')
-        np.save(path, params)
+        store_model_path = self.weight_dir + self.experiment_name + '/{0}_step{1}.npy'.format(self.model.get_saver_name(), step)
+        np.save(store_model_path, params)
