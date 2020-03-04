@@ -3,6 +3,7 @@ from PIL import Image
 import os
 from torchvision import transforms
 
+
 class CustomDataset(Dataset):
     """
     This class represents a dataset. You can load it from the memory (by specifying its path)
