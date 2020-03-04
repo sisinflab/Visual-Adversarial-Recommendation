@@ -36,6 +36,8 @@ class Model:
             self.device = torch.device("cpu")
             self.model.to(self.device)
 
+        print( self.device )
+
         if self.eval:
             self.model.eval()
 
