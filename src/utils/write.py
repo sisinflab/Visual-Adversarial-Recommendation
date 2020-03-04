@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import pickle
 
 def write_csv(df, filename):
@@ -18,3 +19,12 @@ def save_obj(obj, name):
     """
     with open(name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+def save_np(npy, filename):
+    """
+    Store numpy to memory.
+    Args:
+        npy: numpy to save
+        filename (str): filename
+    """
+    np.save(filename, npy)

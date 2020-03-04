@@ -19,17 +19,10 @@ class CustomDataset(Dataset):
             root_dir (str): dataset path
         """
         self.root_dir = root_dir
-        self.num_samples = 0
-        self.filenames = []
         self.transform = transform
-
-        try:
-            self.filenames = os.listdir(self.root_dir)
-            self.filenames.sort()
-            self.num_samples = len(self.filenames)
-
-        except OSError:
-            print("Path: %s does not exist. Provide a valid path." %self.root_dir)
+        self.filenames = os.listdir(self.root_dir)
+        self.filenames.sort(key=lambda x: int(x.split(".")[0]))
+        self.num_samples = len(self.filenames)
 
     def __len__(self):
         return self.num_samples

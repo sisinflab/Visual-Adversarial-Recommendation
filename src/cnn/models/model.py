@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 class Model:
     """
@@ -22,6 +23,7 @@ class Model:
         self.eval = eval
         self.gpu = gpu
         self.model_path = model_path
+        self.feature_model = None
 
         if self.gpu != -1:
             use_cuda = torch.cuda.is_available()
@@ -34,11 +36,12 @@ class Model:
         if self.eval:
             self.model.eval()
 
-    def set_out_layer(self):
+    def set_out_layer(self, drop_layers):
         """
-        Customize this function when you want to set a new, custom output layer for the model.
+        Args:
+            drop_layers (int): index of layers to drop from model (inverse order)
         """
-        pass
+        self.feature_model = torch.nn.Sequential(*list(self.model.children())[:-drop_layers])
 
     def classification(self, list_classes, sample):
         """
@@ -66,5 +69,6 @@ class Model:
            The extracted feature.
         """
         image, filename = sample
-        feature = self.model(image[0].to(model.device))
-        return feature
+        if self.feature_model:
+            feature = self.feature_model(image[0].to(model.device)).data.cpu().numpy()
+            return feature
