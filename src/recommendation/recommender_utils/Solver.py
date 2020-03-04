@@ -1,10 +1,9 @@
 import tensorflow as tf
 import numpy as np
-import time
-from recommender_dataset import Dataset
-from recommender_models.VBPR import VBPR
+from recommendation.recommender_dataset import Dataset
+from VBPR import VBPR
 import math
-from utils import load_obj, save_obj
+from utils import save_obj
 
 import time
 
