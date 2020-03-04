@@ -16,4 +16,4 @@ env.bak/
 venv.bak/
 pip-selfcheck.json
 
-data/*
+data/amazon_men/*
