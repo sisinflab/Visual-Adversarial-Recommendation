@@ -2,6 +2,7 @@ import pandas as pd
 import configparser
 import pickle
 
+
 def read_csv(filename):
     """
     Args:
@@ -12,6 +13,7 @@ def read_csv(filename):
     """
     df = pd.read_csv(filename)
     return df
+
 
 def read_imagenet_classes_txt(filename):
     """
@@ -25,6 +27,7 @@ def read_imagenet_classes_txt(filename):
         idx2label = eval(f.read())
 
     return idx2label
+
 
 def read_config(sections_fields):
     """
@@ -40,6 +43,7 @@ def read_config(sections_fields):
     for s, f in sections_fields:
         configs.append(config[s][f])
     return configs
+
 
 def load_obj(name):
     """

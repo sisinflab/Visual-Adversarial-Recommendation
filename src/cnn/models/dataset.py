@@ -2,6 +2,10 @@ from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 import os
 from torchvision import transforms
+from PIL import ImageFile
+
+
+# ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class CustomDataset(Dataset):
@@ -15,6 +19,7 @@ class CustomDataset(Dataset):
         num_samples (int): number of samples inside the dataset
         transform: pre processing operations to perform on dataset
     """
+
     def __init__(self, root_dir, transform=None):
         """
         Args:
@@ -31,6 +36,11 @@ class CustomDataset(Dataset):
 
     def __getitem__(self, idx):
         sample = Image.open(self.root_dir + self.filenames[idx])
+
+        try:
+            sample.load()
+        except:
+            print(self.filenames[idx])
 
         if sample.mode != 'RGB':
             sample = sample.convert(mode='RGB')
@@ -52,6 +62,7 @@ class CustomDataLoader:
         batch_size (int): batch size
         shuffle (bool): True for dataset shuffling, otherwise False.
     """
+
     def __init__(self, dataset, batch_size, shuffle=True):
         self.dataset = dataset
         self.batch_size = batch_size
