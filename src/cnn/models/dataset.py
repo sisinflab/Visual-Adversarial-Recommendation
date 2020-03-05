@@ -5,7 +5,7 @@ from torchvision import transforms
 from PIL import ImageFile
 
 
-# ImageFile.LOAD_TRUNCATED_IMAGES = True
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class CustomDataset(Dataset):
