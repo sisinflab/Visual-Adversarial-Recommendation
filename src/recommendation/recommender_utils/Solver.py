@@ -51,7 +51,8 @@ class Solver:
 
         for i in range(1, self.epoch + 1):
             start = time.time()
-            if i % self.verbose == 0:
+            # if i % self.verbose == 0:
+            if True:
                 # self.test('epoch %d' % i)
                 self.original_test('Provo')
                 self.store_predictions('epoch %d' % i)
@@ -60,48 +61,14 @@ class Solver:
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
         # self.save(i)
 
-    @staticmethod
-    def _score(para):
+    def _score(self, para):
         r, K = para
-        hr = r < K
+        hr = 1 if r < K else 0
         if hr:
             ndcg = math.log(2) / math.log(r + 2)
         else:
             ndcg = 0
         return hr, ndcg
-
-    def test(self, message):
-        results = {}
-        generator = self.dataset.test_generator()
-        api = [self.model.user_input, self.model.pos_input]
-        d = []
-        i = 0
-
-        print('Start Test')
-        start = time.time()
-        while True:
-            # For each user
-            try:
-                feeds, positive_items, user_id = next(generator)
-                feed_dict = dict(zip(api, feeds))
-                # In pred we have also the 'already rated items'.
-                preds = self.sess.run(self.model.pos_pred, feed_dict=feed_dict)
-                rank = np.sum(preds[1:] >= preds[0])
-                d.append(rank)
-
-                i += 1
-                if i % 100 == 0:
-                    print("Tested {0}/{1} in {2}".format(i, self.dataset.usz, time.time() - start))
-                    start = time.time()
-
-            except Exception as e:
-                print(type(e), e.message)
-                break
-
-        score5 = np.mean(map(self._score, zip(d, [5] * len(d))), 0)
-
-        write.save_obj(results, self.result_dir + self.experiment_name)
-        print('Test Results stored')
 
     def original_test(self, message):
         st = time.time()
@@ -109,6 +76,7 @@ class Solver:
         api = [self.model.user_input, self.model.pos_input]
         d = []
         i = 0
+        start = time.time()
         while True:
             try:
                 feed_dict = dict(zip(api, next(generator)))
@@ -125,9 +93,9 @@ class Solver:
             except Exception as e:
                 # print type(e), e.message
                 break
-        score5 = np.mean(map(self._score, zip(d, [5] * len(d))), 0)
-        score10 = np.mean(map(self._score, zip(d, [10] * len(d))), 0)
-        score20 = np.mean(map(self._score, zip(d, [20] * len(d))), 0)
+        score5 = np.mean([ele for ele in map(self._score, zip(d, [5] * len(d)))], 0)
+        score10 = np.mean([ele for ele in map(self._score, zip(d, [10] * len(d)))], 0)
+        score20 = np.mean([ele for ele in map(self._score, zip(d, [20] * len(d)))], 0)
 
         print(message, score5, score10, score20)
         print('evaluation cost', time.time() - st)
