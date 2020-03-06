@@ -40,10 +40,10 @@ class Dataset:
 
     def batch_generator(self):
         self.shuffle()
-        sz = len(self.pos)
+        sz = len(self.pos)//self.bsz*self.bsz
 
         for st in range(0, sz, self.bsz):
-            samples = zip(*map(self.run, range(st, st + self.bsz)))
+            samples = zip(*map(self.sample, range(st, st + self.bsz)))
             yield map(np.array, samples)
 
     def test_generator(self):
@@ -54,5 +54,3 @@ class Dataset:
             samples = zip(*[(u, i) for i in neg_samples])
             yield map(np.array, samples)
 
-    def run(self, p):
-        return self.sample(p)

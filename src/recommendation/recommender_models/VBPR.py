@@ -1,3 +1,6 @@
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
 
@@ -25,37 +28,39 @@ class VBPR:
 
     def _create_placeholders(self):
         with tf.name_scope("input_data"):
-            self.user_input = tf.placeholder(tf.int32, shape=[None], name="user_input")
-            self.pos_input = tf.placeholder(tf.int32, shape=[None], name="pos_input")
-            self.neg_input = tf.placeholder(tf.int32, shape=[None], name="neg_input")
+            self.user_input = tf.compat.v1.placeholder(tf.int32, shape=[None], name="user_input")
+            self.pos_input = tf.compat.v1.placeholder(tf.int32, shape=[None], name="pos_input")
+            self.neg_input = tf.compat.v1.placeholder(tf.int32, shape=[None], name="neg_input")
 
-            self.init_image = tf.placeholder(tf.float32, shape=[self.num_items, self.num_image_feature],
-                                             name="pos_image")
-            self.init_emb_P = tf.placeholder(tf.float32, shape=[self.num_users, self.emb_K], name="init_emb_P")
-            self.init_emb_Q = tf.placeholder(tf.float32, shape=[self.num_items, self.emb_K], name="init_emb_Q")
+            self.init_image = tf.compat.v1.placeholder(tf.float32, shape=[self.num_items, self.num_image_feature],
+                                                       name="pos_image")
+            self.init_emb_P = tf.compat.v1.placeholder(tf.float32, shape=[self.num_users, self.emb_K],
+                                                       name="init_emb_P")
+            self.init_emb_Q = tf.compat.v1.placeholder(tf.float32, shape=[self.num_items, self.emb_K],
+                                                       name="init_emb_Q")
 
     def _create_variables(self):
         with tf.name_scope("embedding"):
             self.emb_P = tf.Variable(
-                tf.truncated_normal(shape=[self.num_users, self.emb_K], mean=0.0, stddev=0.01),
+                tf.random.truncated_normal(shape=[self.num_users, self.emb_K], mean=0.0, stddev=0.01),
                 name='emb_P', dtype=tf.float32)  # (users, embedding_size)
             self.emb_Q = tf.Variable(
-                tf.truncated_normal(shape=[self.num_items, self.emb_K], mean=0.0, stddev=0.01),
+                tf.random.truncated_normal(shape=[self.num_items, self.emb_K], mean=0.0, stddev=0.01),
                 name='emb_Q', dtype=tf.float32)  # (items, embedding_size)
 
         with tf.name_scope("feature"):
             self.image_feature = tf.Variable(
-                tf.truncated_normal(shape=[self.num_items, self.num_image_feature], mean=0.0, stddev=0.01),
+                tf.random.truncated_normal(shape=[self.num_items, self.num_image_feature], mean=0.0, stddev=0.01),
                 name='image_feature', dtype=tf.float32, trainable=False)  # (items, embedding_size)
 
         with tf.name_scope("init_op"):
-            self.assign_image = tf.assign(self.image_feature, self.init_image)
-            self.assign_P = tf.assign(self.emb_P, self.init_emb_P)
-            self.assign_Q = tf.assign(self.emb_Q, self.init_emb_Q)
+            self.assign_image = tf.compat.v1.assign(self.image_feature, self.init_image)
+            self.assign_P = tf.compat.v1.assign(self.emb_P, self.init_emb_P)
+            self.assign_Q = tf.compat.v1.assign(self.emb_Q, self.init_emb_Q)
 
         with tf.name_scope("image_transfer"):
             self.phi = tf.Variable(
-                tf.truncated_normal(shape=[self.num_image_feature, self.emb_K], mean=0.0, stddev=0.01),
+                tf.random.truncated_normal(shape=[self.num_image_feature, self.emb_K], mean=0.0, stddev=0.01),
                 name='phi', dtype=tf.float32)
 
     def _create_inference(self, user_input, item_input, adv=False):
@@ -97,7 +102,7 @@ class VBPR:
 
         if self.adv:
             if self.adv_type == 'rand':
-                self.delta = tf.truncated_normal(shape=self.image_feature.shape, mean=0.0, stddev=0.01)
+                self.delta = tf.random.truncated_normal(shape=self.image_feature.shape, mean=0.0, stddev=0.01)
             else:
                 self.delta = tf.gradients(self.loss, [self.image_feature])[0]
             self.delta = tf.stop_gradient(self.delta)
@@ -125,9 +130,9 @@ class VBPR:
             else:
                 lr = [self.lr, self.lr, self.lr]
 
-            opt = tf.train.AdagradOptimizer(lr[0])
-            opt2 = tf.train.AdagradOptimizer(lr[1])
-            opt3 = tf.train.AdagradOptimizer(lr[2])
+            opt = tf.compat.v1.train.AdagradOptimizer(lr[0])
+            opt2 = tf.compat.v1.train.AdagradOptimizer(lr[1])
+            opt3 = tf.compat.v1.train.AdagradOptimizer(lr[2])
             grads_all = tf.gradients(self.opt_loss, vlist + vlist2 + vlist3)
             grads = grads_all[0:1]
             grads2 = grads_all[1:2]

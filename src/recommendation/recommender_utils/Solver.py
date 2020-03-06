@@ -18,9 +18,9 @@ class Solver:
         self.epoch = args.epoch
         self.verbose = args.verbose
         self.adv = args.adv
-        self.sess = tf.Session()
-        self.sess.run(tf.global_variables_initializer())
-        self.saver = tf.train.Saver(tf.trainable_variables(), max_to_keep=0)
+        self.sess = tf.compat.v1.Session()
+        self.sess.run(tf.compat.v1.global_variables_initializer())
+        self.saver = tf.compat.v1.train.Saver(tf.compat.v1.trainable_variables(), max_to_keep=0)
         self.sess.run(self.model.assign_image, feed_dict={self.model.init_image: self.dataset.emb_image})
         self.tp_k_predictions = args.tp_k_predictions
         self.weight_dir = '../' + args.weight_dir + '/'
@@ -39,12 +39,15 @@ class Solver:
         generator = self.dataset.batch_generator()
         api = [self.model.user_input, self.model.pos_input, self.model.neg_input]
         while True:
-            feed_dict = dict(zip(api, next(generator)))
-            self.sess.run([self.model.optimizer], feed_dict=feed_dict)
+            try:
+                feed_dict = dict(zip(api, next(generator)))
+                self.sess.run([self.model.optimizer], feed_dict=feed_dict)
+            except StopIteration:
+                break
 
     def train(self):
 
-        for i in range(0, self.epoch ):
+        for i in range(1, self.epoch + 1):
             start = time.time()
             if i % self.verbose == 0:
                 # self.test('epoch %d' % i)
@@ -103,9 +106,9 @@ class Solver:
         start = time.time()
         predictions = self.sess.run(self.model.predictions)
         predictions = predictions.argsort(axis=1)
-        print('End Store Predictions {0}'.format(time.time() - start))
         predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
         write.save_obj(predictions, self.result_dir + self.experiment_name + '_top{0}_predictions'.format(self.tp_k_predictions))
+        print('End Store Predictions {0}'.format(time.time() - start))
 
     def load(self):
         try:
@@ -117,6 +120,6 @@ class Solver:
             print('Start new model from scratch')
 
     def save(self, step):
-        params = self.sess.run(tf.trainable_variables())
+        params = self.sess.run(tf.compat.v1.trainable_variables())
         store_model_path = self.weight_dir + self.experiment_name + '_step{0}.npy'.format(step)
         np.save(store_model_path, params)

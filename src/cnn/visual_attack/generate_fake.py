@@ -66,7 +66,7 @@ images_paths = os.listdir('./data/amazon_men/images_MEN_category_under_attack/im
 images_paths.sort()
 classes_txt = './data/amazon_men/imagenet1000_clsidx_to_labels.txt'
 
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
 
 # Convert pytorch model to a tf_model and wrap it in cleverhans
