@@ -100,9 +100,10 @@ class Solver:
     def store_predictions(self, message):
         # We multiply the users embeddings by -1 to have the np sorting operation in the correct order
         print('Start Store Predictions')
+        start = time.time()
         predictions = self.sess.run(self.model.predictions)
-        print('End Store Predictions')
         predictions = predictions.argsort(axis=1)
+        print('End Store Predictions {0}'.format(time.time() - start))
         predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
         write.save_obj(predictions, self.result_dir + self.experiment_name + '_top{0}_predictions'.format(self.tp_k_predictions))
 
