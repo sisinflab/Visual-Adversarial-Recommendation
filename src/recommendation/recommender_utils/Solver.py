@@ -32,7 +32,7 @@ class Solver:
         self.eps_cnn = args.eps_cnn
 
         self.experiment_name = '{0}/{1}_{2}_eps{3}_it{4}_'.format(self.dataset_name, self.attack_type,
-                                                                  self.attacked_categories, self.eps_cnn,
+                                                                  self.attacked_categories, self.eps_cnn*255,
                                                                   self.iteration_attack_type)
 
         self.load()
@@ -122,5 +122,5 @@ class Solver:
 
     def save(self, step):
         params = self.sess.run(tf.compat.v1.trainable_variables())
-        store_model_path = self.weight_dir + self.experiment_name + '_step{0}.npy'.format(step)
+        store_model_path = self.weight_dir + self.experiment_name + 'step{0}.npy'.format(step)
         np.save(store_model_path, params)
