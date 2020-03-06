@@ -13,6 +13,7 @@ from recommendation.recommender_dataset.Dataset import Dataset
 class Solver:
     def __init__(self, args):
         self.dataset = Dataset(args)
+        self.dataset_name = args.dataset
         self.model = VBPR(args, self.dataset.usz, self.dataset.isz, self.dataset.fsz)
         self.epoch = args.epoch
         self.verbose = args.verbose
@@ -30,7 +31,7 @@ class Solver:
         self.attacked_categories = args.attacked_categories
         self.eps_cnn = args.eps_cnn
 
-        self.experiment_name = '{0}/{1}_{2}_eps{3}_it{4}'.format(self.dataset, self.attack_type, self.attacked_categories, self.eps_cnn, self.iteration_attack_type)
+        self.experiment_name = '{0}/{1}_{2}_eps{3}_it{4}'.format(self.dataset_name, self.attack_type, self.attacked_categories, self.eps_cnn, self.iteration_attack_type)
 
         self.load()
 
@@ -117,5 +118,5 @@ class Solver:
 
     def save(self, step):
         params = self.sess.run(tf.trainable_variables())
-        store_model_path = self.weight_dir + self.experiment_name + '/{0}_step{1}.npy'.format(self.model.get_saver_name(), step)
+        store_model_path = self.weight_dir + self.experiment_name + '{0}_step{1}.npy'.format(self.model.get_saver_name(), step)
         np.save(store_model_path, params)
