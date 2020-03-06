@@ -44,6 +44,8 @@ class Solver:
             try:
                 feed_dict = dict(zip(api, next(generator)))
                 self.sess.run([self.model.optimizer], feed_dict=feed_dict)
+                loss = self.sess.run([self.model.loss], feed_dict=feed_dict)
+                print('\t Loss: {0}'.format(loss))
             except StopIteration:
                 break
 
@@ -54,8 +56,7 @@ class Solver:
             self.one_epoch()
 
             if i % self.verbose == 0:
-            # if True:
-                self.original_test('Provo')
+                self.original_test('Metrics')
                 self.store_predictions('epoch %d' % i)
                 self.save(i)
 
@@ -90,7 +91,7 @@ class Solver:
                 if i % 1000 == 0:
                     print("Tested {0}/{1} in {2}".format(i, self.dataset.usz, time.time() - start))
                     start = time.time()
-                    break
+
             except Exception as e:
                 # print type(e), e.message
                 break
