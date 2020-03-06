@@ -108,6 +108,7 @@ class Solver:
         generator = self.dataset.test_generator()
         api = [self.model.user_input, self.model.pos_input]
         d = []
+        i = 0
         while True:
             try:
                 feed_dict = dict(zip(api, next(generator)))
@@ -115,6 +116,12 @@ class Solver:
 
                 rank = np.sum(preds[1:] >= preds[0])
                 d.append(rank)
+
+                i += 1
+                if i % 100 == 0:
+                    print("Tested {0}/{1} in {2}".format(i, self.dataset.usz, time.time() - start))
+                    start = time.time()
+
             except Exception as e:
                 # print type(e), e.message
                 break
