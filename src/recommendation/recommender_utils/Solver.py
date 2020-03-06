@@ -28,7 +28,6 @@ class Solver:
         self.attack_type = args.attack_type
         self.iteration_attack_type = args.iteration_attack_type
         self.attacked_categories = args.attacked_categories
-        self.experiment_dir = args.experiment_dir
         self.eps_cnn = args.eps_cnn
 
         self.experiment_name = '{0}/{1}_{2}_eps{3}_it{4}'.format(self.dataset, self.attack_type, self.attacked_categories, self.eps_cnn, self.iteration_attack_type)
