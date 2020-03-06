@@ -44,10 +44,10 @@ class Solver:
             try:
                 feed_dict = dict(zip(api, next(generator)))
                 self.sess.run([self.model.optimizer], feed_dict=feed_dict)
-                loss = self.sess.run([self.model.loss], feed_dict=feed_dict)
-                print('\t Loss: {0}'.format(loss))
             except StopIteration:
                 break
+        loss = self.sess.run(self.model.loss, feed_dict=feed_dict)
+        print('\t Loss: {0}'.format(loss))
 
     def train(self):
 
