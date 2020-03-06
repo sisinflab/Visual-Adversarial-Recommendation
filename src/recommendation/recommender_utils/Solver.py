@@ -51,8 +51,8 @@ class Solver:
 
         for i in range(1, self.epoch + 1):
             start = time.time()
-            # if i % self.verbose == 0:
-            if True:
+            if i % self.verbose == 0:
+            # if True:
                 # self.test('epoch %d' % i)
                 self.original_test('Provo')
                 self.store_predictions('epoch %d' % i)
