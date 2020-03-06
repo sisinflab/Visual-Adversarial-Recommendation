@@ -30,8 +30,8 @@ def parse_args():
                         help='number of attack iteration: fgsm: 1, bim: k, pgd: k, cw: 1, deepfool: 1')
     parser.add_argument('--attacked_categories', nargs='?', default='10_1',
                         help='attacked category: targeted misclassification from category 10 to category 1')
-    parser.add_argument('--experiment_dir', nargs='?', default='rec_results',
-                        help='directory to store the predictions')
+    # parser.add_argument('--experiment_dir', nargs='?', default='rec_results',
+    #                     help='directory to store the predictions')
     parser.add_argument('--eps_cnn', nargs='?', default='0.015686275',
                         help='pixel modified on the picture: 4 pixel is the default')
     parser.add_argument('--tp_k_predictions', type=int, default=300,

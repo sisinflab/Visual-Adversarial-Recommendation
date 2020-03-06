@@ -22,9 +22,9 @@ class Solver:
         self.saver = tf.train.Saver(tf.trainable_variables(), max_to_keep=0)
         self.sess.run(self.model.assign_image, feed_dict={self.model.init_image: self.dataset.emb_image})
         self.tp_k_predictions = args.tp_k_predictions
-        self.weight_dir = args.weight_dir + '/'
+        self.weight_dir = '../' + args.weight_dir + '/'
 
-        self.result_dir = args.result_dir + '/'
+        self.result_dir = '../' + args.result_dir + '/'
         self.attack_type = args.attack_type
         self.iteration_attack_type = args.iteration_attack_type
         self.attacked_categories = args.attacked_categories
