@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 
 from recommendation.recommender_models import VBPR
-from recommendation.recommender_dataset import Dataset
+from recommendation.recommender_dataset.Dataset import Dataset
 
 
 class Solver:
