@@ -51,13 +51,14 @@ class Solver:
 
         for i in range(1, self.epoch + 1):
             start = time.time()
+            self.one_epoch()
+
             if i % self.verbose == 0:
             # if True:
-                # self.test('epoch %d' % i)
                 self.original_test('Provo')
                 self.store_predictions('epoch %d' % i)
                 self.save(i)
-            self.one_epoch()
+
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
         # self.save(i)
 
@@ -86,10 +87,10 @@ class Solver:
                 d.append(rank)
 
                 i += 1
-                if i % 100 == 0:
+                if i % 1000 == 0:
                     print("Tested {0}/{1} in {2}".format(i, self.dataset.usz, time.time() - start))
                     start = time.time()
-
+                    break
             except Exception as e:
                 # print type(e), e.message
                 break
