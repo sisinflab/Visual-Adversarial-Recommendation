@@ -108,7 +108,7 @@ class Solver:
         predictions = predictions.argsort(axis=1)
         predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
         write.save_obj(predictions,
-                       self.result_dir + self.experiment_name + '_top{0}_predictions'.format(self.tp_k_predictions))
+                       self.result_dir + self.experiment_name + 'top{0}_predictions'.format(self.tp_k_predictions))
         print('End Store Predictions {0}'.format(time.time() - start))
 
     def load(self):
