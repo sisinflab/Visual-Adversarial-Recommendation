@@ -1,7 +1,7 @@
 import math
 import time
-import read
-import write
+import utils.read
+import utils.write
 
 import numpy as np
 import tensorflow as tf
