@@ -1,7 +1,7 @@
 import math
 import time
-import utils.read
-import utils.write
+import utils.read as read
+import utils.write as write
 
 import numpy as np
 import tensorflow as tf
@@ -99,7 +99,9 @@ class Solver:
 
     def store_predictions(self, message):
         # We multiply the users embeddings by -1 to have the np sorting operation in the correct order
+        print('Start Store Predictions')
         predictions = self.sess.run(self.model.predictions)
+        print('End Store Predictions')
         predictions = predictions.argsort(axis=1)
         predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
         write.save_obj(predictions, self.result_dir + self.experiment_name + '_top{0}_predictions'.format(self.tp_k_predictions))
