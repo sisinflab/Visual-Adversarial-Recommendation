@@ -32,7 +32,7 @@ class Solver:
         self.eps_cnn = args.eps_cnn
 
         self.experiment_name = '{0}/{1}_{2}_eps{3}_it{4}_'.format(self.dataset_name, self.attack_type,
-                                                                  self.attacked_categories, self.eps_cnn*255,
+                                                                  self.attacked_categories, self.eps_cnn,
                                                                   self.iteration_attack_type)
 
         self.load()
@@ -54,14 +54,17 @@ class Solver:
             self.one_epoch()
 
             if i % self.verbose == 0:
-                self.original_test('Metrics')
-                self.store_predictions('epoch %d' % i)
+                # self.original_test('Metrics')
+                # self.store_predictions('epoch %d' % i)
                 self.save(i)
 
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
+            
+        self.store_predictions('epoch %d' % i)
         self.save(i)
+        self.original_test('Metrics')
 
-    def _score(self, para):
+    def evaluate_rec_metrics(self, para):
         r, K = para
         hr = 1 if r < K else 0
         if hr:
@@ -93,9 +96,9 @@ class Solver:
             except Exception as e:
                 # print type(e), e.message
                 break
-        score5 = np.mean([ele for ele in map(self._score, zip(d, [5] * len(d)))], 0)
-        score10 = np.mean([ele for ele in map(self._score, zip(d, [10] * len(d)))], 0)
-        score20 = np.mean([ele for ele in map(self._score, zip(d, [20] * len(d)))], 0)
+        score5 = np.mean([ele for ele in map(self.evaluate_rec_metrics, zip(d, [5] * len(d)))], 0)
+        score10 = np.mean([ele for ele in map(self.evaluate_rec_metrics, zip(d, [10] * len(d)))], 0)
+        score20 = np.mean([ele for ele in map(self.evaluate_rec_metrics, zip(d, [20] * len(d)))], 0)
 
         print(message, score5, score10, score20)
         print('evaluation cost', time.time() - st)
