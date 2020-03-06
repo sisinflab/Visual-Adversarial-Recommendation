@@ -6,7 +6,7 @@ import utils.write
 import numpy as np
 import tensorflow as tf
 
-from VBPR import VBPR
+from recommendation.recommender_models import VBPR
 from recommendation.recommender_dataset import Dataset
 
 
