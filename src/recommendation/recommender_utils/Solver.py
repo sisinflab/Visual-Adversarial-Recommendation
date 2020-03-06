@@ -31,7 +31,9 @@ class Solver:
         self.attacked_categories = args.attacked_categories
         self.eps_cnn = args.eps_cnn
 
-        self.experiment_name = '{0}/{1}_{2}_eps{3}_it{4}_'.format(self.dataset_name, self.attack_type, self.attacked_categories, self.eps_cnn, self.iteration_attack_type)
+        self.experiment_name = '{0}/{1}_{2}_eps{3}_it{4}_'.format(self.dataset_name, self.attack_type,
+                                                                  self.attacked_categories, self.eps_cnn,
+                                                                  self.iteration_attack_type)
 
         self.load()
 
@@ -51,6 +53,7 @@ class Solver:
             start = time.time()
             if i % self.verbose == 0:
                 # self.test('epoch %d' % i)
+                self.original_test('Provo')
                 self.store_predictions('epoch %d' % i)
                 self.save(i)
             self.one_epoch()
@@ -79,7 +82,7 @@ class Solver:
         while True:
             # For each user
             try:
-                feeds, positive_items, user_id = generator.next()
+                feeds, positive_items, user_id = next(generator)
                 feed_dict = dict(zip(api, feeds))
                 # In pred we have also the 'already rated items'.
                 preds = self.sess.run(self.model.pos_pred, feed_dict=feed_dict)
@@ -100,6 +103,28 @@ class Solver:
         write.save_obj(results, self.result_dir + self.experiment_name)
         print('Test Results stored')
 
+    def original_test(self, message):
+        st = time.time()
+        generator = self.dataset.test_generator()
+        api = [self.model.user_input, self.model.pos_input]
+        d = []
+        while True:
+            try:
+                feed_dict = dict(zip(api, next(generator)))
+                preds = self.sess.run(self.model.pos_pred, feed_dict=feed_dict)
+
+                rank = np.sum(preds[1:] >= preds[0])
+                d.append(rank)
+            except Exception as e:
+                # print type(e), e.message
+                break
+        score5 = np.mean(map(self._score, zip(d, [5] * len(d))), 0)
+        score10 = np.mean(map(self._score, zip(d, [10] * len(d))), 0)
+        score20 = np.mean(map(self._score, zip(d, [20] * len(d))), 0)
+
+        print(message, score5, score10, score20)
+        print('evaluation cost', time.time() - st)
+
     def store_predictions(self, message):
         # We multiply the users embeddings by -1 to have the np sorting operation in the correct order
         print('Start Store Predictions')
@@ -107,7 +132,8 @@ class Solver:
         predictions = self.sess.run(self.model.predictions)
         predictions = predictions.argsort(axis=1)
         predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
-        write.save_obj(predictions, self.result_dir + self.experiment_name + '_top{0}_predictions'.format(self.tp_k_predictions))
+        write.save_obj(predictions,
+                       self.result_dir + self.experiment_name + '_top{0}_predictions'.format(self.tp_k_predictions))
         print('End Store Predictions {0}'.format(time.time() - start))
 
     def load(self):
@@ -116,7 +142,7 @@ class Solver:
             self.sess.run([self.model.assign_P, self.model.assign_Q, self.model.phi.assign(params[2])],
                           {self.model.init_emb_P: params[0], self.model.init_emb_Q: params[1]})
             print('Load parameters from best-vbpr.npy')
-        except:
+        except Exception as ex:
             print('Start new model from scratch')
 
     def save(self, step):
