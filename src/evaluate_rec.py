@@ -15,7 +15,7 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=512, help='batch size')
     parser.add_argument('--lr', nargs='?', default='[0.01,1e-4,1e-3]', help='learning rate')
     parser.add_argument('--verbose', type=int, default=1000, help='verbose')
-    parser.add_argument('--epoch', type=int, default=4000, help='epochs')
+    parser.add_argument('--epoch', type=int, default=40, help='epochs')
     parser.add_argument('--regs', nargs='?', default='[1e-1,1e-3,0]', help='lambdas for regularization')
     parser.add_argument('--lmd', type=float, default=1, help='lambda for balance the common loss and adversarial loss')
     parser.add_argument('--keep_prob', type=float, default=0.6, help='keep probability of dropout layers')

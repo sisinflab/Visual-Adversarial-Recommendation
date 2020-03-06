@@ -46,8 +46,6 @@ class Solver:
                 self.sess.run([self.model.optimizer], feed_dict=feed_dict)
             except StopIteration:
                 break
-        loss = self.sess.run(self.model.loss, feed_dict=feed_dict)
-        print('\t Loss: {0}'.format(loss))
 
     def train(self):
 
@@ -61,7 +59,7 @@ class Solver:
                 self.save(i)
 
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
-        # self.save(i)
+        self.save(i)
 
     def _score(self, para):
         r, K = para
