@@ -34,7 +34,7 @@ def parse_args():
     #                     help='directory to store the predictions')
     parser.add_argument('--eps_cnn', nargs='?', default='0.015686275',
                         help='pixel modified on the picture: 4 pixel is the default')
-    parser.add_argument('--tp_k_predictions', type=int, default=300,
+    parser.add_argument('--tp_k_predictions', type=int, default=1000,
                         help='top k predictions to store before the evaluation')
 
     return parser.parse_args()
@@ -49,8 +49,3 @@ if __name__ == '__main__':
     print('START Training of the Recommender Model at {0}.'.format(start_time))
     solver.train()
     print('END Training of the Recommender Model in {0} secs.'.format(time() - start_time))
-
-    start_time = time()
-    print('START Test at {0}.'.format(start_time))
-    solver.store_predictions('Final!')
-    print('END Test in {0} secs.'.format(time() - start_time))

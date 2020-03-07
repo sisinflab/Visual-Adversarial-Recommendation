@@ -100,7 +100,7 @@ class Solver:
 
     def store_predictions(self, epoch):
         # We multiply the users embeddings by -1 to have the np sorting operation in the correct order
-        print('Start Store Predictions')
+        print('Start Store Predictions at epoch {0}'.format(epoch))
         start = time.time()
         predictions = self.sess.run(self.model.predictions)
         predictions = predictions.argsort(axis=1)
