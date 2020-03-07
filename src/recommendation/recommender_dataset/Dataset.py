@@ -7,7 +7,7 @@ class Dataset:
     def __init__(self, args):
         path = '../data/' + args.dataset + '/'
         self.f_feature = path + args.experiment_name + '/features.npy'
-        self.f_pos = path + 'train.txt'
+        self.f_pos = path + 'pos.txt'
         self.bsz = args.batch_size
         self.emb_image = np.load(self.f_feature)
         self.fsz = self.emb_image.shape[1]

@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import pickle
 
+
 def write_csv(df, filename):
     """
     Args:
@@ -9,6 +10,7 @@ def write_csv(df, filename):
         filename (str): path to store the dataframe
     """
     df.to_csv(filename, index=False)
+
 
 def save_obj(obj, name):
     """
@@ -18,7 +20,8 @@ def save_obj(obj, name):
     :return:
     """
     with open(name + '.pkl', 'wb') as f:
-        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(obj, f)
+
 
 def save_np(npy, filename):
     """
