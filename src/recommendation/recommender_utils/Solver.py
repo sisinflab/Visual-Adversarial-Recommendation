@@ -52,17 +52,12 @@ class Solver:
         for i in range(1, self.epoch + 1):
             start = time.time()
             self.one_epoch()
-
-            if i % self.verbose == 0:
-                # self.original_test('Metrics')
-                # self.store_predictions('epoch %d' % i)
-                self.save(i)
-
+            # if i % self.verbose == 0:
+            #    self.save(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
-            
-        self.store_predictions('epoch %d' % i)
+
+        self.store_predictions(i)
         self.save(i)
-        self.original_test('Metrics')
 
     def evaluate_rec_metrics(self, para):
         r, K = para
@@ -103,7 +98,7 @@ class Solver:
         print(message, score5, score10, score20)
         print('evaluation cost', time.time() - st)
 
-    def store_predictions(self, message):
+    def store_predictions(self, epoch):
         # We multiply the users embeddings by -1 to have the np sorting operation in the correct order
         print('Start Store Predictions')
         start = time.time()
@@ -111,7 +106,7 @@ class Solver:
         predictions = predictions.argsort(axis=1)
         predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
         write.save_obj(predictions,
-                       self.result_dir + self.experiment_name + 'top{0}_predictions'.format(self.tp_k_predictions))
+                       self.result_dir + self.experiment_name + 'top{0}_predictions_epoch{1}'.format(self.tp_k_predictions, epoch))
         print('End Store Predictions {0}'.format(time.time() - start))
 
     def load(self):
