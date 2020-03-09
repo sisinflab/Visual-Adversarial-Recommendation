@@ -1,6 +1,7 @@
 import torchvision
 import numpy as np
 import pickle
+import os
 
 
 def write_csv(df, filename):
@@ -39,4 +40,7 @@ def save_image(image, filename):
         image (pytorch tensor): image to save
         filename (str): filename
     """
+    if not os.path.exists(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))
+
     torchvision.utils.save_image(image, filename)
