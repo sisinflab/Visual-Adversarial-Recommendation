@@ -34,7 +34,7 @@ def save_np(npy, filename):
 
 def save_image(image, filename):
     """
-    Store an image to har disk
+    Store an image to hard disk
     Args:
         image (pytorch tensor): image to save
         filename (str): filename

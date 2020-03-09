@@ -6,7 +6,6 @@ from utils.write import *
 from torchvision import transforms
 import torchvision.models as models
 import pandas as pd
-import numpy as np
 import argparse
 import sys
 
@@ -14,8 +13,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
     parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
-    parser.add_argument('--origin_class', type=int, default=10)
-    parser.add_argument('--target_class', type=int, default=1)
+    parser.add_argument('--origin_class', type=int, default=531)
+    parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--eps', type=float, default=4)
     parser.add_argument('--clip_min', type=float, default=0)
     parser.add_argument('--clip_max', type=float, default=1)
