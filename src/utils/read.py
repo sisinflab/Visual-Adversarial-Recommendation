@@ -1,6 +1,7 @@
 import pandas as pd
 import configparser
 import pickle
+import numpy as np
 
 
 def read_csv(filename):
