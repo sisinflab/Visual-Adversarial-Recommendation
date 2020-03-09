@@ -55,6 +55,7 @@ def classify_and_extract_attack():
     imgnet_classes = read_imagenet_classes_txt(path_classes)
 
     df = pd.DataFrame([], columns={'ImageID', 'ClassNumStart', 'ClassStrStart', 'ClassNum', 'ClassStr'})
+    #ClassNum and ClassStr should be the target class if everything works fine
 
     features = read_np(filename=path_input_features)
 
