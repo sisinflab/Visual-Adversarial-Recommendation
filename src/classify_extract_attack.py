@@ -10,16 +10,41 @@ import argparse
 import sys
 import os
 
+attacks_params = {
+    "fgsm":{
+            "iter": 1,
+            "eps_denorm": 4,
+            "params":{
+                "eps": 4 / 255,
+                "clip_min": 0.0,
+                "clip_max": 1.0,
+                "y_target": None
+            }
+    },
+    "c_w":{
+            "params":{
+
+            }
+    },
+    "pgd":{
+            "params":{
+
+            }
+    },
+    "deep_fool":{
+            "params":{
+
+            }
+    }
+
+}
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
     parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
     parser.add_argument('--origin_class', type=int, default=531)
     parser.add_argument('--target_class', type=int, default=770)
-    parser.add_argument('--eps', type=float, default=4)
-    parser.add_argument('--clip_min', type=float, default=0)
-    parser.add_argument('--clip_max', type=float, default=1)
-    parser.add_argument('--it', type=int, default=1)
     return parser.parse_args()
 
 def classify_and_extract_attack():
@@ -35,10 +60,6 @@ def classify_and_extract_attack():
 
     args = parse_args()
     df_origin_classification = read_csv(path_input_classes)
-    params = {'eps': args.eps / 255,
-              'clip_min': args.clip_min,
-              'clip_max': args.clip_max
-             }
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
                              transforms.ToTensor()
@@ -49,7 +70,7 @@ def classify_and_extract_attack():
                           origin_class=args.origin_class,
                           target_class=args.target_class,
                           model=model.model,
-                          params=params,
+                          params=attacks_params[args.attack_type]["params"],
                           attack_type=args.attack_type,
                           num_classes=args.num_classes)
     imgnet_classes = read_imagenet_classes_txt(path_classes)
@@ -63,38 +84,12 @@ def classify_and_extract_attack():
         im, name = d
 
         if attack.must_attack(filename=name):
-            if args.attack_type == 'fgsm':
-                attacked = attack.run_fgsm(image=im)
-                save_image(image=attacked, filename=path_output_images_attack.format(args.attack_type,
-                                                                                     args.origin_class,
-                                                                                     args.target_class,
-                                                                                     args.eps,
-                                                                                     args.it) + name)
-            elif args.attack_type == 'pgd':
-                attacked = attack.run_pgd(image=im)
-                save_image(image=attacked, filename=path_output_images_attack.format(args.attack_type,
-                                                                                     args.origin_class,
-                                                                                     args.target_class,
-                                                                                     args.eps,
-                                                                                     args.it) + name)
-            elif args.attack_type == 'c_w':
-                attacked = attack.run_c_w(image=im)
-                save_image(image=attacked, filename=path_output_images_attack.format(args.attack_type,
-                                                                                     args.origin_class,
-                                                                                     args.target_class,
-                                                                                     args.eps,
-                                                                                     args.it) + name)
-            elif args.attack_type == 'deep_fool':
-                attacked = attack.run_deep_fool(image=im)
-                save_image(image=attacked, filename=path_output_images_attack.format(args.attack_type,
-                                                                                     args.origin_class,
-                                                                                     args.target_class,
-                                                                                     args.eps,
-                                                                                     args.it) + name)
-            else:
-                attacked = None
-                print('Attack type not known. Available attack types: [fgsm, pgd, c_w, deep_fool]')
-                exit(0)
+            attacked = attack.run_attack(image=im)
+            save_image(image=attacked, filename=path_output_images_attack.format(args.attack_type,
+                                                                                 args.origin_class,
+                                                                                 args.target_class,
+                                                                                 attacks_params[args.attack_type]["eps_denorm"],
+                                                                                 attacks_params[args.attack_type]["iter"]) + name)
 
             out_class = model.classification(list_classes=imgnet_classes, sample=(attacked, name))
             features[i, :] = model.feature_extraction(sample=(attacked, name))
@@ -108,13 +103,13 @@ def classify_and_extract_attack():
     write_csv(df=df, filename=path_output_classes_attack.format(args.attack_type,
                                                                 args.origin_class,
                                                                 args.target_class,
-                                                                args.eps,
-                                                                args.it))
+                                                                attacks_params[args.attack_type]["eps_denorm"],
+                                                                attacks_params[args.attack_type]["iter"]))
     save_np(npy=features, filename=path_output_features_attack.format(args.attack_type,
                                                                       args.origin_class,
                                                                       args.target_class,
-                                                                      args.eps,
-                                                                      args.it))
+                                                                      attacks_params[args.attack_type]["eps_denorm"],
+                                                                      attacks_params[args.attack_type]["iter"]))
 
 if __name__ == '__main__':
     classify_and_extract_attack()

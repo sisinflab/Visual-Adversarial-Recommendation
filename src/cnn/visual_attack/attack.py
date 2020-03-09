@@ -1,4 +1,4 @@
-from cleverhans.attacks import FastGradientMethod, ProjectedGradientDescent
+from cleverhans.attacks import FastGradientMethod, MadryEtAl, CarliniWagnerL2, DeepFool
 from cleverhans.model import CallableModelWrapper
 from cleverhans.utils_pytorch import convert_pytorch_model_to_tf
 from torchvision import transforms
@@ -28,7 +28,14 @@ class VisualAttack:
 
         if self.attack_type == 'fgsm':
             self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
-            self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
+        elif self.attack_type == 'c_w':
+            self.attack_op = CarliniWagnerL2(self.cleverhans_model, sess=self.sess)
+        elif self.attack_type == 'pgd':
+            self.attack_op = MadryEtAl(self.cleverhans_model, sess=self.sess)
+        elif self.attack_type == 'deep_fool':
+            self.attack_op = DeepFool(self.cleverhans_model, sess=self.sess)
+
+        self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
 
     def must_attack(self, filename):
@@ -40,17 +47,8 @@ class VisualAttack:
     def one_hot_encoded(self):
         self.y_target[0, self.target_class] = 1
 
-    def run_fgsm(self, image):
+    def run_attack(self, image):
         adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
         adv_img_out = transforms.ToTensor()(adv_img[0])
         adv_img_out = adv_img_out.permute(1, 2, 0)
         return adv_img_out
-
-    def run_pgd(self, image):
-        pass
-
-    def run_c_w(self, image):
-        pass
-
-    def run_deep_fool(self, image):
-        pass
