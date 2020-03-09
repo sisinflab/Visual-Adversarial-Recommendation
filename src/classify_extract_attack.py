@@ -99,12 +99,9 @@ def classify_and_extract_attack():
             out_class["ClassStrStart"] = df_origin_classification.loc[df_origin_classification["ImageID"] == name]["ClassStr"]
             out_class["ClassNumStart"] = df_origin_classification.loc[df_origin_classification["ImageID"] == name]["ClassNum"]
             df = df.append(out_class, ignore_index=True)
-            sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
-            sys.stdout.flush()
 
-        else:
-            sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
-            sys.stdout.flush()
+        sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
+        sys.stdout.flush()
 
     write_csv(df=df, filename=path_output_classes_attack.format(args.attack_type,
                                                                 args.origin_class,
