@@ -99,7 +99,7 @@ def classify_and_extract_attack():
             out_class = model.classification(list_classes=imgnet_classes, sample=(attacked, name))
             features[i, :] = model.feature_extraction(sample=(attacked, name))
             out_class["ClassStrStart"] = df_origin_classification.loc[df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
-            out_class["ClassNumStart"] = df_origin_classification.loc[df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
+            out_class["ClassNumStart"] = df_origin_classification.loc[df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassNum"].item()
             df = df.append(out_class, ignore_index=True)
 
         sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
