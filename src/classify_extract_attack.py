@@ -34,7 +34,7 @@ def classify_and_extract_attack():
 
     args = parse_args()
     df_origin_classification = read_csv(path_input_classes)
-    params = {'eps': args.eps,
+    params = {'eps': args.eps / 255,
               'clip_min': args.clip_min,
               'clip_max': args.clip_max
              }
