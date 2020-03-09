@@ -56,6 +56,7 @@ def classify_and_extract_attack():
     df = pd.DataFrame([], columns={'ImageID', 'ClassNumStart', 'ClassStrStart', 'ClassNum', 'ClassStr'})
 
     features = read_np(filename=path_input_features)
+    print(features.shape)
 
     for i, d in enumerate(data):
         im, name = d
