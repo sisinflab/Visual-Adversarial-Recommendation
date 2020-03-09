@@ -22,7 +22,7 @@ def read_np(filename):
     Return:
         The loaded numpy.
     """
-    np.load(filename)
+    return np.load(filename)
 
 
 def read_imagenet_classes_txt(filename):
