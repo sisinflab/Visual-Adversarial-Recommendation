@@ -1,4 +1,4 @@
-import pandas as pd
+import torchvision
 import numpy as np
 import pickle
 
@@ -31,3 +31,12 @@ def save_np(npy, filename):
         filename (str): filename
     """
     np.save(filename, npy)
+
+def save_image(image, filename):
+    """
+    Store an image to har disk
+    Args:
+        image (pytorch tensor): image to save
+        filename (str): filename
+    """
+    torchvision.utils.save_image(image, filename)

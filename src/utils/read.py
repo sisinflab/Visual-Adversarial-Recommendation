@@ -14,6 +14,15 @@ def read_csv(filename):
     df = pd.read_csv(filename)
     return df
 
+def read_np(filename):
+    """
+    Args:
+        filename (str): filename of numpy to load
+    Return:
+        The loaded numpy.
+    """
+    np.load(filename)
+
 
 def read_imagenet_classes_txt(filename):
     """
