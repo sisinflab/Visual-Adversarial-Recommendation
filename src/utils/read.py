@@ -12,7 +12,7 @@ def read_csv(filename):
     Return:
          A pandas dataframe.
     """
-    df = pd.read_csv(filename)
+    df = pd.read_csv(filename, index_col=False)
     return df
 
 def read_np(filename):
