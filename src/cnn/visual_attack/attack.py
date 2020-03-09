@@ -22,13 +22,14 @@ class VisualAttack:
         self.sess = tf.compat.v1.Session()
         self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
 
+        self.y_target = np.zeros((1, 1000))
+        self.one_hot_encoded()
+        self.params["y_target"] = self.y_target
+
         if self.attack_type == 'fgsm':
             self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
             self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
-        self.y_target = np.zeros((1, 1000))
-        self.one_hot_encoded()
-        self.params["y_target"] = self.y_target
 
     def must_attack(self, filename):
         if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
