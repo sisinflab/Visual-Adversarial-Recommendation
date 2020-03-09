@@ -8,6 +8,7 @@ import torchvision.models as models
 import pandas as pd
 import argparse
 import sys
+import os
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
@@ -90,13 +91,14 @@ def classify_and_extract_attack():
                                                                                      args.eps,
                                                                                      args.it) + name)
             else:
+                attacked = None
                 print('Attack type not known. Available attack types: [fgsm, pgd, c_w, deep_fool]')
                 exit(0)
 
-            out_class = model.classification(list_classes=imgnet_classes, sample=d)
-            features[i, :] = model.feature_extraction(sample=d)
-            out_class["ClassStrStart"] = df_origin_classification.loc[df_origin_classification["ImageID"] == name]["ClassStr"]
-            out_class["ClassNumStart"] = df_origin_classification.loc[df_origin_classification["ImageID"] == name]["ClassNum"]
+            out_class = model.classification(list_classes=imgnet_classes, sample=(attacked, name))
+            features[i, :] = model.feature_extraction(sample=(attacked, name))
+            out_class["ClassStrStart"] = df_origin_classification.loc[df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
+            out_class["ClassNumStart"] = df_origin_classification.loc[df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
             df = df.append(out_class, ignore_index=True)
 
         sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
