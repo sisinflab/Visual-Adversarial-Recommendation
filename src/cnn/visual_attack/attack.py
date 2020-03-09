@@ -31,7 +31,8 @@ class VisualAttack:
         self.params["y_target"] = self.y_target
 
     def must_attack(self, filename):
-        if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0])]["ClassNum"].values() == self.origin_class:
+        print(self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0])]["ClassNum"])
+        if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0])]["ClassNum"] == self.origin_class:
             return True
         else:
             return False
