@@ -15,6 +15,7 @@ import os
 
 attacks_params = {
     "fgsm":{
+            "name": "Fast Gradient Sign Method (FGSM)",
             "iter": 1, #
             "eps_denorm": 4, #
             "ord_str": 'inf',
@@ -27,6 +28,7 @@ attacks_params = {
             }
     },
     "cw":{
+            "name": "Carlini & Wagner (C & W)",
             "params":{
                 "y_target": None,
                 "batch_size": 1,
@@ -41,6 +43,7 @@ attacks_params = {
             }
     },
     "pgd":{
+            "name": "Projected Gradient Descent (PGD)",
             "ord_str": 'inf',
             "params":{
                 "eps": 0.3, #
@@ -57,6 +60,7 @@ attacks_params = {
             }
     },
     "jsma":{
+        "name": "Jacobian-based Saliency Map Attack (JSMA)",
         "params":{
                 "theta": 1.0, #
                 "gamma": 1.0, #
@@ -186,7 +190,7 @@ def classify_and_extract_attack():
         exit(0)
 
     print("\n\n***************************************************************")
-    print("Running {0} attack".format(args.attack_type))
+    print("RUNNING {0} ATTACK".format(attacks_params[args.attack_type]["name"]))
     print("***************************************************************\n\n")
 
     df_origin_classification = read_csv(path_input_classes)
