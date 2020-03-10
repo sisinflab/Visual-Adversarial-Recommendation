@@ -269,8 +269,8 @@ def classify_and_extract_attack():
     imgnet_classes = read_imagenet_classes_txt(path_classes)
 
     print("RUNNING {0} ATTACK".format(attacks_params[args.attack_type]["name"]))
-    print("- ORIGINAL CLASS: %d/%d (%s)" % (args.origin_class, args.num_classes, imgnet_classes[args.origin_class]))
-    print("- TARGET CLASS: %d/%d (%s)" % (args.target_class, args.num_classes, imgnet_classes[args.target_class]))
+    print("- ORIGINAL CLASS: %d/%d (%s)" % (args.origin_class, args.num_classes - 1, imgnet_classes[args.origin_class]))
+    print("- TARGET CLASS: %d/%d (%s)" % (args.target_class, args.num_classes - 1, imgnet_classes[args.target_class]))
     print("- PARAMETERS:")
     for key in attacks_params[args.attack_type]["params"]:
         print("\t- " + key + " = " + str(attacks_params[args.attack_type]["params"][key]))
