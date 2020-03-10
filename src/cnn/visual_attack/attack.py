@@ -27,9 +27,6 @@ class VisualAttack:
         self.one_hot_encoded()
         self.params["y_target"] = self.y_target
 
-        self.height = tf.placeholder(tf.uint64, shape=(1, ))
-        self.width = tf.placeholder(tf.uint64, shape=(1, ))
-
         if self.attack_type == 'fgsm':
             self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'cw':
@@ -39,7 +36,7 @@ class VisualAttack:
         elif self.attack_type == 'jsma':
             self.attack_op = SaliencyMapMethod(self.cleverhans_model, sess=self.sess)
 
-        self.x_op = tf.placeholder(tf.float32, shape=(1, 3, self.height, self.width))
+        self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
         self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
     def must_attack(self, filename):
@@ -52,15 +49,7 @@ class VisualAttack:
         self.y_target[0, self.target_class] = 1
 
     def run_attack(self, image):
-        if self.attack_type == 'cw':
-            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...],
-                                                              self.height: image.shape[1],
-                                                              self.width: image.shape[2]})
-        else:
-            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...],
-                                                              self.height: None,
-                                                              self.width: None})
-
+        adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
         adv_img_out = transforms.ToTensor()(adv_img[0])
         adv_img_out = adv_img_out.permute(1, 2, 0)
         return adv_img_out
