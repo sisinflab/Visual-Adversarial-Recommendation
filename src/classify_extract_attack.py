@@ -191,11 +191,11 @@ def classify_and_extract_attack():
 
     print("\n***************************************************************")
     print("RUNNING {0} ATTACK".format(attacks_params[args.attack_type]["name"]))
-    print("- ORIGINAL CLASS: %d", args.origin_class)
-    print("- TARGET CLASS: %d", args.target_class)
+    print("- ORIGINAL CLASS: %d" %args.origin_class)
+    print("- TARGET CLASS: %d" %args.target_class)
     print("- PARAMETERS:")
     for key in attacks_params[args.attack_type]["params"]:
-        print("\t-" + key + " = " + str(attacks_params["params"][key]))
+        print("\t-" + key + " = " + str(attacks_params[args.attack_type]["params"][key]))
     print("***************************************************************\n\n")
 
     df_origin_classification = read_csv(path_input_classes)
