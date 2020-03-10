@@ -1,4 +1,4 @@
-from cleverhans.attacks import FastGradientMethod, MadryEtAl, CarliniWagnerL2, DeepFool
+from cleverhans.attacks import FastGradientMethod, MadryEtAl, CarliniWagnerL2, SaliencyMapMethod
 from cleverhans.model import CallableModelWrapper
 from cleverhans.utils_pytorch import convert_pytorch_model_to_tf
 from torchvision import transforms
@@ -28,12 +28,12 @@ class VisualAttack:
 
         if self.attack_type == 'fgsm':
             self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
-        elif self.attack_type == 'c_w':
+        elif self.attack_type == 'cw':
             self.attack_op = CarliniWagnerL2(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'pgd':
             self.attack_op = MadryEtAl(self.cleverhans_model, sess=self.sess)
-        elif self.attack_type == 'deep_fool':
-            self.attack_op = DeepFool(self.cleverhans_model, sess=self.sess)
+        elif self.attack_type == 'jsma':
+            self.attack_op = SaliencyMapMethod(self.cleverhans_model, sess=self.sess)
 
         self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
