@@ -49,7 +49,7 @@ class VisualAttack:
         self.y_target[0, self.target_class] = 1
 
     def run_attack(self, image):
-        if self.attack_type in ['cw', 'jsma']:
+        if self.attack_type == 'cw':
             self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
 
         self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
