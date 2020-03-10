@@ -24,7 +24,7 @@ class VisualAttack:
         self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
         self.adv_x_op = None
 
-        self.y_target = np.zeros((1, 1000))
+        self.y_target = np.zeros((1, 1000), dtype=np.uint8)
         self.one_hot_encoded()
         self.params["y_target"] = self.y_target
 
