@@ -8,6 +8,7 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '4'
 
+
 class VisualAttack:
     def __init__(self, df_classes, num_classes, origin_class, target_class, model, params, attack_type):
         self.origin_class = origin_class
@@ -35,8 +36,7 @@ class VisualAttack:
         elif self.attack_type == 'jsma':
             self.attack_op = SaliencyMapMethod(self.cleverhans_model, sess=self.sess)
 
-        self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
-
+        # self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
     def must_attack(self, filename):
         if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
@@ -48,6 +48,8 @@ class VisualAttack:
         self.y_target[0, self.target_class] = 1
 
     def run_attack(self, image):
+        self.x_op = tf.placeholder(tf.float32, shape=(1, 3, image.shape[1], image.shape[2]))
+        self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
         adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
         adv_img_out = transforms.ToTensor()(adv_img[0])
         adv_img_out = adv_img_out.permute(1, 2, 0)
