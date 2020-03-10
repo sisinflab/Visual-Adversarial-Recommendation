@@ -6,6 +6,7 @@ from utils.write import *
 from torchvision import transforms
 import torchvision.models as models
 import pandas as pd
+import numpy as np
 import argparse
 import sys
 import os
@@ -18,6 +19,7 @@ attacks_params = {
                 "eps": 4 / 255,
                 "clip_min": 0.0,
                 "clip_max": 1.0,
+                "ord": np.inf,
                 "y_target": None
             }
     },
@@ -89,7 +91,8 @@ def classify_and_extract_attack():
                                                                                  args.origin_class,
                                                                                  args.target_class,
                                                                                  attacks_params[args.attack_type]["eps_denorm"],
-                                                                                 attacks_params[args.attack_type]["iter"]) + name)
+                                                                                 attacks_params[args.attack_type]["iter"],
+                                                                                 attacks_params[args.attack_type]["params"]["ord"]) + name)
 
             out_class = model.classification(list_classes=imgnet_classes, sample=(attacked, name))
             features[i, :] = model.feature_extraction(sample=(attacked, name))
@@ -104,12 +107,14 @@ def classify_and_extract_attack():
                                                                 args.origin_class,
                                                                 args.target_class,
                                                                 attacks_params[args.attack_type]["eps_denorm"],
-                                                                attacks_params[args.attack_type]["iter"]))
+                                                                attacks_params[args.attack_type]["iter"],
+                                                                attacks_params[args.attack_type]["params"]["ord"]))
     save_np(npy=features, filename=path_output_features_attack.format(args.attack_type,
                                                                       args.origin_class,
                                                                       args.target_class,
                                                                       attacks_params[args.attack_type]["eps_denorm"],
-                                                                      attacks_params[args.attack_type]["iter"]))
+                                                                      attacks_params[args.attack_type]["iter"],
+                                                                      attacks_params[args.attack_type]["params"]["ord"]))
 
 if __name__ == '__main__':
     classify_and_extract_attack()
