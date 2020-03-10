@@ -185,6 +185,10 @@ def classify_and_extract_attack():
         print('Uknown attack type.')
         exit(0)
 
+    print("\n\n***************************************************************")
+    print("Running {0} attack".format(args.attack_type))
+    print("***************************************************************\n\n")
+
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
