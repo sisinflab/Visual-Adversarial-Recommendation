@@ -97,7 +97,7 @@ def classify_and_extract_attack():
 
     args = parse_args()
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
     if args.attack_type == 'fgsm':
         path_output_images_attack = path_output_images_attack.format(args.attack_type,
