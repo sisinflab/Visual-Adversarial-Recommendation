@@ -189,6 +189,17 @@ def classify_and_extract_attack():
         print('Uknown attack type.')
         exit(0)
 
+    imgnet_classes = read_imagenet_classes_txt(path_classes)
+
+    print("***************************************************************************************")
+    print("RUNNING {0} ATTACK".format(attacks_params[args.attack_type]["name"]))
+    print("- ORIGINAL CLASS: %d/%d (%s)" % (args.origin_class, args.num_classes, imgnet_classes[args.origin_class]))
+    print("- TARGET CLASS: %d/%d (%s)" % (args.target_class, args.num_classes, imgnet_classes[args.target_class]))
+    print("- PARAMETERS:")
+    for key in attacks_params[args.attack_type]["params"]:
+        print("\t- " + key + " = " + str(attacks_params[args.attack_type]["params"][key]))
+    print("**************************************************************************************\n")
+
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
@@ -203,16 +214,6 @@ def classify_and_extract_attack():
                           params=attacks_params[args.attack_type]["params"],
                           attack_type=args.attack_type,
                           num_classes=args.num_classes)
-    imgnet_classes = read_imagenet_classes_txt(path_classes)
-
-    print("***************************************************************************************")
-    print("RUNNING {0} ATTACK".format(attacks_params[args.attack_type]["name"]))
-    print("- ORIGINAL CLASS: %d/%d (%s)" % (args.origin_class, args.num_classes, imgnet_classes[args.origin_class]))
-    print("- TARGET CLASS: %d/%d (%s)" % (args.target_class, args.num_classes, imgnet_classes[args.target_class]))
-    print("- PARAMETERS:")
-    for key in attacks_params[args.attack_type]["params"]:
-        print("\t- " + key + " = " + str(attacks_params[args.attack_type]["params"][key]))
-    print("**************************************************************************************\n")
 
     df = pd.DataFrame([], columns={'ImageID', 'ClassNumStart', 'ClassStrStart', 'ClassNum', 'ClassStr'})
     #ClassNum and ClassStr should be the target class if everything works fine
