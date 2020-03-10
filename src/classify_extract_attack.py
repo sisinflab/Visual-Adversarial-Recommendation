@@ -281,7 +281,7 @@ def classify_and_extract_attack():
                          transform=transforms.Compose([
                              transforms.ToTensor()
                          ]))
-    model = Model(model=models.resnet50(pretrained=True), gpu=args.gpu)
+    model = Model(model=models.resnet50(pretrained=True))
     model.set_out_layer(drop_layers=1)
     attack = VisualAttack(df_classes=df_origin_classification,
                           origin_class=args.origin_class,
