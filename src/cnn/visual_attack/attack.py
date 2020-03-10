@@ -53,7 +53,7 @@ class VisualAttack:
             self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
 
         if self.attack_type == 'jsma':
-            self.params["y_target"] = tf.Variable(self.params["y_target"], tf.uint8)
+            self.params["y_target"] = tf.Variable(self.params["y_target"], dtype=tf.uint8)
 
         self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
         adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
