@@ -197,6 +197,7 @@ def classify_and_extract_attack():
     print("- PARAMETERS:")
     for key in attacks_params[args.attack_type]["params"]:
         print("\t- " + key + " = " + str(attacks_params[args.attack_type]["params"][key]))
+    print("\n")
 
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
