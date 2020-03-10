@@ -27,8 +27,8 @@ class VisualAttack:
         self.one_hot_encoded()
         self.params["y_target"] = self.y_target
 
-        self.height = tf.placeholder(tf.uint64)
-        self.width = tf.placeholder(tf.uint64)
+        self.height = tf.placeholder(tf.uint64, shape=(1, ))
+        self.width = tf.placeholder(tf.uint64, shape=(1, ))
 
         if self.attack_type == 'fgsm':
             self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
