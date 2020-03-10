@@ -53,7 +53,7 @@ class VisualAttack:
         # self.x_op = tf.placeholder(tf.float32, shape=(1, 3, image.shape[1], image.shape[2]))
 
         self.x_op = tf.placeholder(tf.float32, shape=(1, 3, image.shape[1], image.shape[2]))
-        self.adv_x_op = self.attack_op.generate_np(self.x_op, **self.params)
+        self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
         adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
         adv_img_out = transforms.ToTensor()(adv_img[0])
         adv_img_out = adv_img_out.permute(1, 2, 0)
