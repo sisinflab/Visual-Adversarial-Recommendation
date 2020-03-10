@@ -22,6 +22,7 @@ class VisualAttack:
         self.cleverhans_model = CallableModelWrapper(self.tf_model, output_layer='logits')
         self.sess = tf.compat.v1.Session()
         self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
+        self.adv_x_op = None
 
         self.y_target = np.zeros((1, 1000))
         self.one_hot_encoded()
@@ -37,7 +38,6 @@ class VisualAttack:
             self.attack_op = SaliencyMapMethod(self.cleverhans_model, sess=self.sess)
 
         self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
-        self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
     def must_attack(self, filename):
         if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
@@ -49,6 +49,10 @@ class VisualAttack:
         self.y_target[0, self.target_class] = 1
 
     def run_attack(self, image):
+        if self.attack_type in ['cw', 'jsma']:
+            self.x_op = tf.reshape(self.x_op, shape=(3, image.shape[1], image.shape[2]))
+            self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
+
         adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
         adv_img_out = transforms.ToTensor()(adv_img[0])
         adv_img_out = adv_img_out.permute(1, 2, 0)
