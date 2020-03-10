@@ -94,92 +94,92 @@ def classify_and_extract_attack():
         path_output_images_attack = path_output_images_attack.format(args.attack_type,
                                                                      args.origin_class,
                                                                      args.target_class,
-                                                                     'eps' + attacks_params[args.attack_type]["eps_denorm"],
-                                                                     'it' + attacks_params[args.attack_type]["iter"],
-                                                                     'l' + attacks_params[args.attack_type]["ord_str"],
+                                                                     'eps' + str(attacks_params[args.attack_type]["eps_denorm"]),
+                                                                     'it' + str(attacks_params[args.attack_type]["iter"]),
+                                                                     'l' + str(attacks_params[args.attack_type]["ord_str"]),
                                                                      'XX')
         path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
                                                                        args.origin_class,
                                                                        args.target_class,
-                                                                       'eps' + attacks_params[args.attack_type]["eps_denorm"],
-                                                                       'it' + attacks_params[args.attack_type]["iter"],
-                                                                       'l' + attacks_params[args.attack_type]["ord_str"],
+                                                                       'eps' + str(attacks_params[args.attack_type]["eps_denorm"]),
+                                                                       'it' + str(attacks_params[args.attack_type]["iter"]),
+                                                                       'l' + str(attacks_params[args.attack_type]["ord_str"]),
                                                                        'XX')
         path_output_features_attack = path_output_features_attack.format(args.attack_type,
                                                                          args.origin_class,
                                                                          args.target_class,
-                                                                         'eps' + attacks_params[args.attack_type]["eps_denorm"],
-                                                                         'it' + attacks_params[args.attack_type]["iter"],
-                                                                         'l' + attacks_params[args.attack_type]["ord_str"],
+                                                                         'eps' + str(attacks_params[args.attack_type]["eps_denorm"]),
+                                                                         'it' + str(attacks_params[args.attack_type]["iter"]),
+                                                                         'l' + str(attacks_params[args.attack_type]["ord_str"]),
                                                                          'XX')
 
     elif args.attack_type == 'cw':
         path_output_images_attack = path_output_images_attack.format(args.attack_type,
                                                                      args.origin_class,
                                                                      args.target_class,
-                                                                     'confidence' + attacks_params[args.attack_type]["params"]["confidence"],
-                                                                     'learning_rate' + attacks_params[args.attack_type]["params"]["learning_rate"],
-                                                                     'binary_search_steps' + attacks_params[args.attack_type]["params"]["binary_search_steps"],
-                                                                     'max_iterations' + attacks_params[args.attack_type]["params"]["max_iterations"])
+                                                                     'confidence' + str(attacks_params[args.attack_type]["params"]["confidence"]),
+                                                                     'learning_rate' + str(attacks_params[args.attack_type]["params"]["learning_rate"]),
+                                                                     'binary_search_steps' + str(attacks_params[args.attack_type]["params"]["binary_search_steps"]),
+                                                                     'max_iterations' + str(attacks_params[args.attack_type]["params"]["max_iterations"]))
         path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
                                                                        args.origin_class,
                                                                        args.target_class,
-                                                                       'confidence' + attacks_params[args.attack_type]["params"]["confidence"],
-                                                                       'learning_rate' + attacks_params[args.attack_type]["params"]["learning_rate"],
-                                                                       'binary_search_steps' + attacks_params[args.attack_type]["params"]["binary_search_steps"],
-                                                                       'max_iterations' + attacks_params[args.attack_type]["params"]["max_iterations"])
+                                                                       'confidence' + str(attacks_params[args.attack_type]["params"]["confidence"]),
+                                                                       'learning_rate' + str(attacks_params[args.attack_type]["params"]["learning_rate"]),
+                                                                       'binary_search_steps' + str(attacks_params[args.attack_type]["params"]["binary_search_steps"]),
+                                                                       'max_iterations' + str(attacks_params[args.attack_type]["params"]["max_iterations"]))
         path_output_features_attack = path_output_features_attack.format(args.attack_type,
                                                                          args.origin_class,
                                                                          args.target_class,
-                                                                         'confidence' + attacks_params[args.attack_type]["params"]["confidence"],
-                                                                         'learning_rate' + attacks_params[args.attack_type]["params"]["learning_rate"],
-                                                                         'binary_search_steps' + attacks_params[args.attack_type]["params"]["binary_search_steps"],
-                                                                         'max_iterations' + attacks_params[args.attack_type]["params"]["max_iterations"])
+                                                                         'confidence' + str(attacks_params[args.attack_type]["params"]["confidence"]),
+                                                                         'learning_rate' + str(attacks_params[args.attack_type]["params"]["learning_rate"]),
+                                                                         'binary_search_steps' + str(attacks_params[args.attack_type]["params"]["binary_search_steps"]),
+                                                                         'max_iterations' + str(attacks_params[args.attack_type]["params"]["max_iterations"]))
 
     elif args.attack_type == 'pgd':
         path_output_images_attack = path_output_images_attack.format(args.attack_type,
                                                                      args.origin_class,
                                                                      args.target_class,
-                                                                     'eps' + attacks_params[args.attack_type]["params"]["eps"],
-                                                                     'eps_iter' + attacks_params[args.attack_type]["params"]["eps_iter"],
-                                                                     'nb_iter' + attacks_params[args.attack_type]["params"]["nb_iter"],
-                                                                     'l' + attacks_params[args.attack_type]["ord_str"])
+                                                                     'eps' + str(attacks_params[args.attack_type]["params"]["eps"]),
+                                                                     'eps_iter' + str(attacks_params[args.attack_type]["params"]["eps_iter"]),
+                                                                     'nb_iter' + str(attacks_params[args.attack_type]["params"]["nb_iter"]),
+                                                                     'l' + str(attacks_params[args.attack_type]["ord_str"]))
         path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
                                                                        args.origin_class,
                                                                        args.target_class,
-                                                                       'eps' + attacks_params[args.attack_type]["params"]["eps"],
-                                                                       'eps_iter' + attacks_params[args.attack_type]["params"]["eps_iter"],
-                                                                       'nb_iter' + attacks_params[args.attack_type]["params"]["nb_iter"],
-                                                                       'l' + attacks_params[args.attack_type]["ord_str"])
+                                                                       'eps' + str(attacks_params[args.attack_type]["params"]["eps"]),
+                                                                       'eps_iter' + str(attacks_params[args.attack_type]["params"]["eps_iter"]),
+                                                                       'nb_iter' + str(attacks_params[args.attack_type]["params"]["nb_iter"]),
+                                                                       'l' + str(attacks_params[args.attack_type]["ord_str"]))
         path_output_features_attack = path_output_features_attack.format(args.attack_type,
                                                                          args.origin_class,
                                                                          args.target_class,
-                                                                         'eps' + attacks_params[args.attack_type]["params"]["eps"],
-                                                                         'eps_iter' + attacks_params[args.attack_type]["params"]["eps_iter"],
-                                                                         'nb_iter' + attacks_params[args.attack_type]["params"]["nb_iter"],
-                                                                         'l' + attacks_params[args.attack_type]["ord_str"])
+                                                                         'eps' + str(attacks_params[args.attack_type]["params"]["eps"]),
+                                                                         'eps_iter' + str(attacks_params[args.attack_type]["params"]["eps_iter"]),
+                                                                         'nb_iter' + str(attacks_params[args.attack_type]["params"]["nb_iter"]),
+                                                                         'l' + str(attacks_params[args.attack_type]["ord_str"]))
 
     elif args.attack_type == 'jsma':
         path_output_images_attack = path_output_images_attack.format(args.attack_type,
                                                                      args.origin_class,
                                                                      args.target_class,
-                                                                     'theta' + attacks_params[args.attack_type]["params"]["theta"],
-                                                                     'gamma' + attacks_params[args.attack_type]["params"]["gamma"],
-                                                                     'symbolic_impl' + attacks_params[args.attack_type]["params"]["symbolic_impl"],
+                                                                     'theta' + str(attacks_params[args.attack_type]["params"]["theta"]),
+                                                                     'gamma' + str(attacks_params[args.attack_type]["params"]["gamma"]),
+                                                                     'symbolic_impl' + str(attacks_params[args.attack_type]["params"]["symbolic_impl"]),
                                                                      'XX')
         path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
                                                                        args.origin_class,
                                                                        args.target_class,
-                                                                       'theta' + attacks_params[args.attack_type]["params"]["theta"],
-                                                                       'gamma' + attacks_params[args.attack_type]["params"]["gamma"],
-                                                                       'symbolic_impl' + attacks_params[args.attack_type]["params"]["symbolic_impl"],
+                                                                       'theta' + str(attacks_params[args.attack_type]["params"]["theta"]),
+                                                                       'gamma' + str(attacks_params[args.attack_type]["params"]["gamma"]),
+                                                                       'symbolic_impl' + str(attacks_params[args.attack_type]["params"]["symbolic_impl"]),
                                                                        'XX')
         path_output_features_attack = path_output_features_attack.format(args.attack_type,
                                                                          args.origin_class,
                                                                          args.target_class,
-                                                                         'theta' + attacks_params[args.attack_type]["params"]["theta"],
-                                                                         'gamma' + attacks_params[args.attack_type]["params"]["gamma"],
-                                                                         'symbolic_impl' + attacks_params[args.attack_type]["params"]["symbolic_impl"],
+                                                                         'theta' + str(attacks_params[args.attack_type]["params"]["theta"]),
+                                                                         'gamma' + str(attacks_params[args.attack_type]["params"]["gamma"]),
+                                                                         'symbolic_impl' + str(attacks_params[args.attack_type]["params"]["symbolic_impl"]),
                                                                          'XX')
     else:
         print('Uknown attack type.')
