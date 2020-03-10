@@ -14,6 +14,7 @@ class Solver:
     def __init__(self, args):
         self.dataset = Dataset(args)
         self.dataset_name = args.dataset
+        self.experiment_name = args.experiment_name
         self.model = VBPR(args, self.dataset.usz, self.dataset.isz, self.dataset.fsz)
         self.epoch = args.epoch
         self.verbose = args.verbose
@@ -22,18 +23,27 @@ class Solver:
         self.sess.run(tf.compat.v1.global_variables_initializer())
         self.saver = tf.compat.v1.train.Saver(tf.compat.v1.trainable_variables(), max_to_keep=0)
         self.sess.run(self.model.assign_image, feed_dict={self.model.init_image: self.dataset.emb_image})
+
         self.tp_k_predictions = args.tp_k_predictions
         self.weight_dir = '../' + args.weight_dir + '/'
-
         self.result_dir = '../' + args.result_dir + '/'
-        self.attack_type = args.attack_type
-        self.iteration_attack_type = args.iteration_attack_type
-        self.attacked_categories = args.attacked_categories
-        self.eps_cnn = args.eps_cnn
 
-        self.experiment_name = '{0}/{1}_{2}_eps{3}_it{4}_'.format(self.dataset_name, self.attack_type,
+        if self.experiment_name == 'original_images':
+            self.attack_type = 'original_images'
+            self.attacked_categories = ''
+            self.eps_cnn = ''
+            self.iteration_attack_type = ''
+            self.norm = ''
+        else:
+            self.attack_type = self.experiment_name.split('_')[0]
+            self.attacked_categories = '_' + self.experiment_name.split('_')[1] + '_' + self.experiment_name.split('_')[2]
+            self.eps_cnn = '_' + self.experiment_name.split('_')[3]
+            self.iteration_attack_type = '_' + self.experiment_name.split('_')[4]
+            self.norm = '_' + self.experiment_name.split('_')[5]
+
+        self.experiment_name = '{0}/{1}{2}{3}{4}{5}'.format(self.dataset_name, self.attack_type,
                                                                   self.attacked_categories, self.eps_cnn,
-                                                                  self.iteration_attack_type)
+                                                                  self.iteration_attack_type, self.norm)
 
         self.load()
 
