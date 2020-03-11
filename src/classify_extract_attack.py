@@ -67,7 +67,7 @@ attacks_params = {
             "clip_min": 0.0,
             "clip_max": 1.0,
             "y_target": None,
-            "symbolic_impl": True  #
+            "symbolic_impl": False  #
         }
     }
 
