@@ -30,7 +30,7 @@ attacks_params = {
 }
 
 def parse_ord(ord_str):
-    if ord_str == 'str':
+    if ord_str == 'inf':
         return np.inf
     else:
         return int(ord_str)
