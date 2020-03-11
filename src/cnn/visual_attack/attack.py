@@ -7,7 +7,8 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
-
+import tensorflow.python.util.deprecation as deprecation
+deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 class VisualAttack:
     def __init__(self, df_classes, num_classes, origin_class, target_class, model, params, attack_type):
