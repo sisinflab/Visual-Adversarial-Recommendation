@@ -49,13 +49,15 @@ class VisualAttack:
         self.y_target[0, self.target_class] = 1
 
     def run_attack(self, image):
-        if self.attack_type in ['cw', 'jsma']:
+        if self.attack_type == 'cw':
             self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
-            self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
         if self.attack_type == 'jsma':
-            self.params["y_target"] = tf.convert_to_tensor(self.y_target, dtype=tf.uint8)
-            self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
+            self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
+            self.y_target = tf.cast(tf.convert_to_tensor(self.y_target), tf.int64)
+            self.params["y_target"] = self.y_target
+
+        self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
         adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
         adv_img_out = transforms.ToTensor()(adv_img[0])
