@@ -136,7 +136,7 @@ def classify_and_extract_attack():
     elif args.attack_type == 'pgd':
         params = {
             "eps": args.eps / 255,
-            "eps_iter": 0.05,  #
+            "eps_iter": args.eps / 6,  #
             "nb_iter": 10,  #
             "ord": parse_ord(args.l),  #
             "clip_min": 0.0,
