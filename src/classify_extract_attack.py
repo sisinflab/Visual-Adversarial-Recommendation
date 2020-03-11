@@ -263,7 +263,7 @@ def classify_and_extract_attack():
                                                                                  "symbolic_impl"]),
                                                                          'XX')
     else:
-        print('Uknown attack type.')
+        print('Unknown attack type.')
         exit(0)
 
     imgnet_classes = read_imagenet_classes_txt(path_classes)
