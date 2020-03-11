@@ -2,11 +2,11 @@ from cleverhans.attacks import FastGradientMethod, MadryEtAl, CarliniWagnerL2, S
 from cleverhans.model import CallableModelWrapper
 from cleverhans.utils_pytorch import convert_pytorch_model_to_tf
 from torchvision import transforms
-import tensorflow as tf
 import numpy as np
 import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import tensorflow as tf
 
 
 class VisualAttack:
