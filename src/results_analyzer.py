@@ -13,7 +13,7 @@ import os
 result_dir = '../rec_results/'
 dataset_name = 'amazon_men/'
 experiment_name = ''
-tp_k_predictions = 300
+tp_k_predictions = 1000
 prediction_files_path = result_dir + dataset_name
 
 K = 100
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     prediction_files = os.listdir(prediction_files_path)
 
-    for prediction_file in prediction_files:
+    for prediction_file in ['fgsm_531_770_eps4_it1_linftop1000_predictions_epoch4000.pkl']:
         if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
             predictions = read.load_obj(prediction_files_path + prediction_file)
 

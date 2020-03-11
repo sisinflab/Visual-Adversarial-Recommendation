@@ -45,8 +45,9 @@ attacks_params = {
     "pgd": {
         "name": "Projected Gradient Descent (PGD)",
         "ord_str": 'inf',
+        "eps_denorm": 4,  #
         "params": {
-            "eps": 0.3,  #
+            "eps": 4/255,
             "eps_iter": 0.05,  #
             "nb_iter": 10,  #
             "ord": np.inf,  #

@@ -48,4 +48,4 @@ if __name__ == '__main__':
             plt.legend(bbox_to_anchor=(1, 1), loc="upper right", borderaxespad=0.5)
 
             plt.savefig(prediction_files_path + 'Plot_' + prediction_file.split('.')[0] + '.svg')
-            plt.show()
+            #plt.show()
