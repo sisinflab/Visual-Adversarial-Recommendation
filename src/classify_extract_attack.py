@@ -105,7 +105,7 @@ def classify_and_extract_attack():
             "confidence": args.confidence,  #
             "learning_rate": 5e-3,  #
             "binary_search_steps": 5,  #
-            "max_iterations": 1000,  #
+            "max_iterations": 5,  #
             "abort_early": True,
             "initial_const": 1e-2,
             "clip_min": 0.0,
