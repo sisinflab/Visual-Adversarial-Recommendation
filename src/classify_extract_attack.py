@@ -216,6 +216,7 @@ def classify_and_extract_attack():
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
+                             transforms.CenterCrop(20),
                              transforms.ToTensor()
                          ]))
     model = Model(model=models.resnet50(pretrained=True))
