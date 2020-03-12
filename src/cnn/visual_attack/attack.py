@@ -33,7 +33,7 @@ class VisualAttack:
         if self.attack_type == 'fgsm':
             self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'cw':
-            self.attack_op = CarliniWagnerL2(self.tf_model, sess=self.sess)
+            self.attack_op = CarliniWagnerL2(self.cleverhans_mode, sess=self.sess)
         elif self.attack_type == 'pgd':
             self.attack_op = MadryEtAl(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'jsma':
@@ -62,7 +62,7 @@ class VisualAttack:
                 [[instance] * nb_classes for
                  instance in [image]], dtype=np.float32)
 
-            adv_inputs = adv_inputs.reshape((nb_classes, img_row, img_col, nchannel))
+            adv_inputs = adv_inputs.reshape((nb_classes, nchannel, img_row, img_col))
             return self.attack_op.generate_np(adv_inputs, **self.params)
 
             # self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
