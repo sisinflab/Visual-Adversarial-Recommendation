@@ -61,21 +61,20 @@ class VisualAttack:
             adv_inputs = np.array(
                 [[instance] * nb_classes for
                  instance in [image]], dtype=np.float32)
-            #one_hot = np.zeros((nb_classes, nb_classes))
 
-            #one_hot[np.arange(nb_classes), np.arange(nb_classes)] = 1
-            self.x_op = adv_inputs.reshape(
-                (nb_classes, img_row, img_col, nchannel))
+            adv_inputs = adv_inputs.reshape((nb_classes, img_row, img_col, nchannel))
+            return self.attack_op.generate_np(adv_inputs, **self.params)
 
             # self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
             # self.x_op = tf.reshape(self.x_op, shape=tf.cast(tf.expand_dims(image, 1), tf.int32))
 
-        if self.attack_type == 'jsma':
+        elif self.attack_type == 'jsma':
             self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
             self.y_target = tf.cast(tf.convert_to_tensor(self.y_target), tf.int64)
             self.params["y_target"] = self.y_target
 
-        self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
+        else:
+            self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
         adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
         adv_img_out = transforms.ToTensor()(adv_img[0])
