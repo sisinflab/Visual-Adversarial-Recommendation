@@ -1,0 +1,8 @@
+nohup python -u rec_generator.py --experiment_name fgsm_409_770_eps1.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-fgsm_409_770_eps1.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
+echo "------> Finish ----> Start New"
+nohup python -u rec_generator.py --experiment_name fgsm_409_770_eps2.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-fgsm_409_770_eps2.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
+echo "------> Finish ----> Start New"
+nohup python -u rec_generator.py --experiment_name fgsm_409_770_eps4.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-fgsm_409_770_eps4.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
+echo "------> Finish ----> Start New"
+nohup python -u rec_generator.py --experiment_name fgsm_409_770_eps8.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-fgsm_409_770_eps8.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
+echo "****** Finish ALL ******"
