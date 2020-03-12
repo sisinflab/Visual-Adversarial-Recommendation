@@ -242,7 +242,8 @@ def classify_and_extract_attack():
             if args.attack_type == 'fgsm':
                 save_image(image=attacked, filename=path_output_images_attack + name)
             elif args.attack_type == 'cw':
-                save_image(image=attacked, filename=path_output_images_attack + name)
+
+                save_image(image=attacked[args.target_class], filename=path_output_images_attack + name)
             elif args.attack_type == 'pgd':
                 save_image(image=attacked, filename=path_output_images_attack + name)
             elif args.attack_type == 'jsma':

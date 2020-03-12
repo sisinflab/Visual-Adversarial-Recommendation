@@ -72,7 +72,7 @@ class VisualAttack:
 
             # adv_inputs = adv_inputs.reshape((nb_classes, nchannel, img_row, img_col))
             self.params["y_target"] = adv_ys
-            create = self.attack_op.generate_np(adv_inputs, **self.params)
+            create = self.attack_op.generate(tf.convert_to_tensor(adv_inputs), **self.params)
             print('GENERATE')
             return create
 
