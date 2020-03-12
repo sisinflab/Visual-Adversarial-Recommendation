@@ -237,7 +237,10 @@ def classify_and_extract_attack():
         im, name = d
 
         if attack.must_attack(filename=name):
-            attacked = attack.run_attack(image=im)
+            to_resize = transforms.CenterCrop(20)
+            im_resized = to_resize(im)
+            # attacked = attack.run_attack(image=im)
+            attacked = attack.run_attack(image=im_resized)
 
             if args.attack_type == 'fgsm':
                 save_image(image=attacked, filename=path_output_images_attack + name)
