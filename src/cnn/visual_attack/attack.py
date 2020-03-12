@@ -66,7 +66,7 @@ class VisualAttack:
             one_hot[np.arange(nb_classes), np.arange(nb_classes)] = 1
 
             adv_inputs = adv_inputs.reshape(
-                (nb_classes, img_row, img_col, nchannel))
+                (nb_classes, nchannel, img_row, img_col))
             adv_ys = np.array([one_hot],
                               dtype=np.float32).reshape((nb_classes, nb_classes))
 
