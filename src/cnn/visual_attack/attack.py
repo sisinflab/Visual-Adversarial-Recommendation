@@ -54,20 +54,16 @@ class VisualAttack:
     def run_attack(self, image):
         if self.attack_type == 'cw':
             # Obtain Image Parameters
-            img_row, img_col, nchannel = image.shape[1:4]
+            image = image.cpu().numpy()
+            img_row, img_col, nchannel = image.shape[1], image.shape[2], image.shape[0]
             nb_classes = self.y_target.shape[1]
-
-            # Define input TF placeholder
-            x = tf.placeholder(tf.float32, shape=(None, img_row, img_col,
-                                                  nchannel))
-            y = tf.placeholder(tf.float32, shape=(None, nb_classes))
 
             adv_inputs = np.array(
                 [[instance] * nb_classes for
                  instance in [image]], dtype=np.float32)
-            one_hot = np.zeros((nb_classes, nb_classes))
+            #one_hot = np.zeros((nb_classes, nb_classes))
 
-            one_hot[np.arange(nb_classes), np.arange(nb_classes)] = 1
+            #one_hot[np.arange(nb_classes), np.arange(nb_classes)] = 1
             self.x_op = adv_inputs.reshape(
                 (nb_classes, img_row, img_col, nchannel))
 
