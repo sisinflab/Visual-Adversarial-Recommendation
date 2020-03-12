@@ -60,8 +60,8 @@ class Solver:
         for i in range(1, self.epoch + 1):
             start = time.time()
             self.one_epoch()
-            # if i % self.verbose == 0:
-            #    self.save(i)
+            if i % self.verbose == 0:
+               self.save(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
 
         self.store_predictions(i)
