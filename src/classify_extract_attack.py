@@ -101,10 +101,10 @@ def classify_and_extract_attack():
     elif args.attack_type == 'cw':
         params = {
             "y_target": None,
-            "batch_size": 1,
+            "batch_size": 1000,
             "confidence": args.confidence,  #
             "learning_rate": 5e-3,  #
-            "binary_search_steps": 5,  #
+            "binary_search_steps": 1,  #
             "max_iterations": 1,  #
             "abort_early": True,
             "initial_const": 1e-2,
