@@ -56,7 +56,7 @@ class VisualAttack:
             # Obtain Image Parameters
             image = image.cpu().numpy()
             img_row, img_col, nchannel = image.shape[1], image.shape[2], image.shape[0]
-            nb_classes = self.y_target.shape[1]
+            nb_classes = self.num_classes
 
             adv_inputs = np.array(
                 [[instance] * nb_classes for
