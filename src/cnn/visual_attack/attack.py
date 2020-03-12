@@ -25,11 +25,10 @@ class VisualAttack:
         self.sess = tf.compat.v1.Session()
         self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
         self.adv_x_op = None
-        self.x_op_cw = None
 
-        self.y_target = np.zeros((1, 1000), dtype=np.uint8)
-        self.one_hot_encoded()
-        self.params["y_target"] = self.y_target
+        # self.y_target = np.zeros((1, 1000), dtype=np.uint8)
+        # self.one_hot_encoded()
+        # self.params["y_target"] = self.y_target
 
         if self.attack_type == 'fgsm':
             self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
@@ -72,12 +71,12 @@ class VisualAttack:
                               dtype=np.float32).reshape((nb_classes, nb_classes))
 
             # adv_inputs = adv_inputs.reshape((nb_classes, nchannel, img_row, img_col))
+            self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
             self.params["y_target"] = adv_ys
-            self.x_op_cw = tf.placeholder(shape=(1, nchannel, img_row, img_col), dtype=tf.float32)
-            self.adv_x_op = self.attack_op.generate(self.x_op_cw, **self.params)
+            self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
-            adv_imgs = self.sess.run(self.adv_x_op, feed_dict={self.x_op_cw: adv_inputs})
-            return adv_imgs[self.target_class]
+            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: adv_inputs})[self.target_class]
+            return adv_img
 
             # self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
             # self.x_op = tf.reshape(self.x_op, shape=tf.cast(tf.expand_dims(image, 1), tf.int32))
