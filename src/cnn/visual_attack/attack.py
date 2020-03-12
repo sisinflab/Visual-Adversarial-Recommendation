@@ -33,7 +33,7 @@ class VisualAttack:
         if self.attack_type == 'fgsm':
             self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'cw':
-            self.attack_op = CarliniWagnerL2(self.cleverhans_model, sess=self.sess)
+            self.attack_op = CarliniWagnerL2(self.tf_model, sess=self.sess)
         elif self.attack_type == 'pgd':
             self.attack_op = MadryEtAl(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'jsma':
