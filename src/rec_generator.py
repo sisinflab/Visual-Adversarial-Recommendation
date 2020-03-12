@@ -33,7 +33,7 @@ def parse_args():
     # parser.add_argument('--eps_cnn', nargs='?', default='0.015686275',
     #                     help='pixel modified on the picture: 4 pixel is the default')
 
-    parser.add_argument('--tp_k_predictions', type=int, default=10,
+    parser.add_argument('--tp_k_predictions', type=int, default=1000,
                         help='top k predictions to store before the evaluation')
 
     return parser.parse_args()
