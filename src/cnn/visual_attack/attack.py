@@ -72,10 +72,11 @@ class VisualAttack:
 
             # adv_inputs = adv_inputs.reshape((nb_classes, nchannel, img_row, img_col))
             self.params["y_target"] = adv_ys
-            create = self.attack_op.generate(tf.convert_to_tensor(adv_inputs), **self.params)
-            print('GENERATE')
-            create_target = self.sess.run(create)[self.target_class]
-            return create_target
+            self.adv_x_op = self.attack_op.generate(tf.convert_to_tensor(adv_inputs), **self.params)
+            self.x_op_cw = tf.placeholder(shape=(nb_classes, nchannel, img_row, img_col))
+
+            adv_imgs = self.sess.run(self.adv_x_op, feed_dict={self.x_op_cw: adv_inputs})
+            return adv_imgs[self.target_class]
 
             # self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
             # self.x_op = tf.reshape(self.x_op, shape=tf.cast(tf.expand_dims(image, 1), tf.int32))
