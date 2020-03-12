@@ -62,7 +62,16 @@ class VisualAttack:
                 [[instance] * nb_classes for
                  instance in [image]], dtype=np.float32)
 
-            adv_inputs = adv_inputs.reshape((nb_classes, nchannel, img_row, img_col))
+            one_hot = np.zeros((nb_classes, nb_classes))
+            one_hot[np.arange(nb_classes), np.arange(nb_classes)] = 1
+
+            adv_inputs = adv_inputs.reshape(
+                (nb_classes, img_row, img_col, nchannel))
+            adv_ys = np.array([one_hot],
+                              dtype=np.float32).reshape((nb_classes, nb_classes))
+
+            # adv_inputs = adv_inputs.reshape((nb_classes, nchannel, img_row, img_col))
+            self.params["y_target"] = adv_ys
             return self.attack_op.generate_np(adv_inputs, **self.params)
 
             # self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
