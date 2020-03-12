@@ -71,7 +71,7 @@ class VisualAttack:
                               dtype=np.float32).reshape((nb_classes, nb_classes))
 
             # adv_inputs = adv_inputs.reshape((nb_classes, nchannel, img_row, img_col))
-            self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
+            self.x_op = tf.reshape(self.x_op, shape=(nb_classes, 3, image.shape[1], image.shape[2]))
             self.params["y_target"] = adv_ys
             self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
