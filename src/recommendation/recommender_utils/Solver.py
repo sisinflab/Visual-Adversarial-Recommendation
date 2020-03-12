@@ -41,9 +41,7 @@ class Solver:
             self.iteration_attack_type = '_' + self.experiment_name.split('_')[4]
             self.norm = '_' + self.experiment_name.split('_')[5]
 
-        self.experiment_name = '{0}/{1}{2}{3}{4}{5}'.format(self.dataset_name, self.attack_type,
-                                                                  self.attacked_categories, self.eps_cnn,
-                                                                  self.iteration_attack_type, self.norm)
+        self.experiment_name = '{0}/{1}'.format(self.dataset_name, self.experiment_name)
 
         self.load()
 

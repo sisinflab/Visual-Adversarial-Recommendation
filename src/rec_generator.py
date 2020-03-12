@@ -7,8 +7,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path')
-    parser.add_argument('--experiment_name', nargs='?', default='fgsm_531_770_eps4_it1_linf_images',
-                        help='original_images, fgsm_images')
+    parser.add_argument('--experiment_name', nargs='?', default=None,
+                        help='original_images, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--model', nargs='?', default='VBPR',
                         help='recommender models: VBPR')
     parser.add_argument('--emb1_K', type=int, default=64, help='size of embeddings')
