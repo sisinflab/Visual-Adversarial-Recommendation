@@ -42,7 +42,8 @@ class VisualAttack:
         self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
 
     def must_attack(self, filename):
-        if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
+        if self.df_classes.loc[
+            self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
             return True
         else:
             return False
@@ -52,8 +53,26 @@ class VisualAttack:
 
     def run_attack(self, image):
         if self.attack_type == 'cw':
-            #self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
-            self.x_op = tf.reshape(self.x_op, shape=tf.cast(tf.expand_dims(image, 1), tf.int32))
+            # Obtain Image Parameters
+            img_row, img_col, nchannel = image.shape[1:4]
+            nb_classes = self.y_target.shape[1]
+
+            # Define input TF placeholder
+            x = tf.placeholder(tf.float32, shape=(None, img_row, img_col,
+                                                  nchannel))
+            y = tf.placeholder(tf.float32, shape=(None, nb_classes))
+
+            adv_inputs = np.array(
+                [[instance] * nb_classes for
+                 instance in [image]], dtype=np.float32)
+            one_hot = np.zeros((nb_classes, nb_classes))
+
+            one_hot[np.arange(nb_classes), np.arange(nb_classes)] = 1
+            self.x_op = adv_inputs.reshape(
+                (nb_classes, img_row, img_col, nchannel))
+
+            # self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
+            # self.x_op = tf.reshape(self.x_op, shape=tf.cast(tf.expand_dims(image, 1), tf.int32))
 
         if self.attack_type == 'jsma':
             self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
