@@ -74,7 +74,8 @@ class VisualAttack:
             self.params["y_target"] = adv_ys
             create = self.attack_op.generate(tf.convert_to_tensor(adv_inputs), **self.params)
             print('GENERATE')
-            return create
+            create_target = self.sess.run(create)[self.target_class]
+            return create_target
 
             # self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
             # self.x_op = tf.reshape(self.x_op, shape=tf.cast(tf.expand_dims(image, 1), tf.int32))
