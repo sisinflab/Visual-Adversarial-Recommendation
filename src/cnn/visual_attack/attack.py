@@ -52,7 +52,8 @@ class VisualAttack:
 
     def run_attack(self, image):
         if self.attack_type == 'cw':
-            self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
+            #self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
+            self.x_op = tf.reshape(self.x_op, shape=(1, 3, None, None))
 
         if self.attack_type == 'jsma':
             self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
