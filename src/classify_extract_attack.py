@@ -216,6 +216,7 @@ def classify_and_extract_attack():
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
+                             transforms.CenterCrop(20),
                              transforms.ToTensor()
                          ]))
     model = Model(model=models.resnet50(pretrained=True))
@@ -237,10 +238,7 @@ def classify_and_extract_attack():
         im, name = d
 
         if attack.must_attack(filename=name):
-            to_resize = transforms.CenterCrop(20)
-            im_resized = to_resize(im)
-            # attacked = attack.run_attack(image=im)
-            attacked = attack.run_attack(image=im_resized)
+            attacked = attack.run_attack(image=im)
 
             if args.attack_type == 'fgsm':
                 save_image(image=attacked, filename=path_output_images_attack + name)
