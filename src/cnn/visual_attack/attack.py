@@ -56,7 +56,6 @@ class VisualAttack:
             # Obtain Image Parameters
             image = image.cpu().numpy()
             img_row, img_col, nchannel = image.shape[1], image.shape[2], image.shape[0]
-            # nb_classes = self.num_classes
             nb_classes = 1
 
             adv_inputs = np.array(
@@ -64,7 +63,6 @@ class VisualAttack:
                  instance in [image]], dtype=np.float32)
 
             one_hot = np.zeros((1, 1000))
-            # one_hot[np.arange(nb_classes), np.arange(nb_classes)] = 1
             one_hot[0, 770] = 1
 
             adv_inputs = adv_inputs.reshape(
@@ -72,7 +70,7 @@ class VisualAttack:
             adv_ys = np.array([one_hot],
                               dtype=np.float32).reshape((nb_classes, 1000))
 
-            # adv_inputs = adv_inputs.reshape((nb_classes, nchannel, img_row, img_col))
+            self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
             self.x_op = tf.reshape(self.x_op, shape=(nb_classes, 3, image.shape[1], image.shape[2]))
             self.params["y_target"] = adv_ys
             self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
@@ -82,16 +80,12 @@ class VisualAttack:
             adv_img_out = adv_img_out.permute(1, 2, 0)
             return adv_img_out
 
-            # self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
-            # self.x_op = tf.reshape(self.x_op, shape=tf.cast(tf.expand_dims(image, 1), tf.int32))
-
         elif self.attack_type == 'jsma':
             self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
             self.y_target = tf.cast(tf.convert_to_tensor(self.y_target), tf.int64)
             self.params["y_target"] = self.y_target
 
-        else:
-            self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
+        self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
         adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
         adv_img_out = transforms.ToTensor()(adv_img[0])

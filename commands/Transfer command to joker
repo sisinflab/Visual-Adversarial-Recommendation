@@ -1,0 +1,40 @@
+scp fgsm_409_770_eps1.0_it1_linf_XX_images/classes.csv joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/fgsm_409_770_eps1.0_it1_linf_XX_images	OK
+scp fgsm_409_770_eps1.0_it1_linf_XX_images/features.npy joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/fgsm_409_770_eps1.0_it1_linf_XX_images	OK
+
+scp fgsm_409_770_eps2.0_it1_linf_XX_images/classes.csv joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/fgsm_409_770_eps2.0_it1_linf_XX_images	OK
+scp fgsm_409_770_eps2.0_it1_linf_XX_images/features.npy joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/fgsm_409_770_eps2.0_it1_linf_XX_images 	OK
+
+scp fgsm_409_770_eps4.0_it1_linf_XX_images/classes.csv joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/fgsm_409_770_eps4.0_it1_linf_XX_images	OK
+scp fgsm_409_770_eps4.0_it1_linf_XX_images/features.npy joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/fgsm_409_770_eps4.0_it1_linf_XX_images	OK
+
+scp fgsm_409_770_eps8.0_it1_linf_XX_images/classes.csv joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/fgsm_409_770_eps8.0_it1_linf_XX_images	OK
+scp fgsm_409_770_eps8.0_it1_linf_XX_images/features.npy joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/fgsm_409_770_eps8.0_it1_linf_XX_images	OK
+
+scp pgd_409_770_eps1.0_eps_it0.00065359477124183_nb_it10_linf_images/classes.csv joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/pgd_409_770_eps1.0_eps_it0.00065359477124183_nb_it10_linf_images	OK
+scp pgd_409_770_eps1.0_eps_it0.00065359477124183_nb_it10_linf_images/features.npy joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/pgd_409_770_eps1.0_eps_it0.00065359477124183_nb_it10_linf_images	OK
+
+scp pgd_409_770_eps2.0_eps_it0.00130718954248366_nb_it10_linf_images/classes.csv joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/pgd_409_770_eps2.0_eps_it0.00130718954248366_nb_it10_linf_images	OK
+scp pgd_409_770_eps2.0_eps_it0.00130718954248366_nb_it10_linf_images/features.npy joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/pgd_409_770_eps2.0_eps_it0.00130718954248366_nb_it10_linf_images	OK
+
+scp pgd_409_770_eps4.0_eps_it0.00261437908496732_nb_it10_linf_images/classes.csv joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/pgd_409_770_eps4.0_eps_it0.00261437908496732_nb_it10_linf_images	OK
+scp pgd_409_770_eps4.0_eps_it0.00261437908496732_nb_it10_linf_images/features.npy joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/pgd_409_770_eps4.0_eps_it0.00261437908496732_nb_it10_linf_images	OK
+
+scp pgd_409_770_eps8.0_eps_it0.00522875816993464_nb_it10_linf_images/classes.csv joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/pgd_409_770_eps8.0_eps_it0.00522875816993464_nb_it10_linf_images	OK	
+scp pgd_409_770_eps8.0_eps_it0.00522875816993464_nb_it10_linf_images/features.npy joker@10.74.0.70:/home/joker/PycharmProjects/recsys2020_visual/data/amazon_men/pgd_409_770_eps8.0_eps_it0.00522875816993464_nb_it10_linf_images	OK
+
+scp cw_409_770_conf0_lr0.005_c0.001_max_it1000_images/classes.csv daniele@10.74.0.72:/home/daniele/recsys2020_visual/data/amazon_men/cw_409_770_conf0_lr0.005_c0.001_max_it1000_images	OK
+scp cw_409_770_conf0_lr0.005_c0.001_max_it1000_images/features.npy daniele@10.74.0.72:/home/daniele/recsys2020_visual/data/amazon_men/cw_409_770_conf0_lr0.005_c0.001_max_it1000_images	OK
+
+scp cw_409_770_conf0_lr0.005_c0.01_max_it1000_images/classes.csv daniele@10.74.0.72:/home/daniele/recsys2020_visual/data/amazon_men/cw_409_770_conf0_lr0.005_c0.01_max_it1000_images	OK
+scp cw_409_770_conf0_lr0.005_c0.01_max_it1000_images/features.npy daniele@10.74.0.72:/home/daniele/recsys2020_visual/data/amazon_men/cw_409_770_conf0_lr0.005_c0.01_max_it1000_images	OK
+
+scp cw_409_770_conf0_lr0.005_c1.0_max_it1000_images/classes.csv daniele@10.74.0.72:/home/daniele/recsys2020_visual/data/amazon_men/cw_409_770_conf0_lr0.005_c1.0_max_it1000_images	OK
+scp cw_409_770_conf0_lr0.005_c1.0_max_it1000_images/features.npy daniele@10.74.0.72:/home/daniele/recsys2020_visual/data/amazon_men/cw_409_770_conf0_lr0.005_c1.0_max_it1000_images	OK
+
+scp cw_409_770_conf0_lr0.005_c10.0_max_it1000_images/classes.csv daniele@10.74.0.72:/home/daniele/recsys2020_visual/data/amazon_men/cw_409_770_conf0_lr0.005_c10.0_max_it1000_images	OK
+scp cw_409_770_conf0_lr0.005_c10.0_max_it1000_images/features.npy daniele@10.74.0.72:/home/daniele/recsys2020_visual/data/amazon_men/cw_409_770_conf0_lr0.005_c10.0_max_it1000_images	OK
+
+scp /classes.csv daniele@10.74.0.72:/home/daniele/recsys2020_visual/data/amazon_men/
+scp /features.npy daniele@10.74.0.72:/home/daniele/recsys2020_visual/data/amazon_men/
+
+

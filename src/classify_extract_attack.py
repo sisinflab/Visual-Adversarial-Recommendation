@@ -49,6 +49,7 @@ def parse_args():
     parser.add_argument('--l', type=str, default='inf')
     parser.add_argument('--confidence', type=int, default=0)
     parser.add_argument('--nb_iter', type=int, default=10)
+    parser.add_argument('--c', type=float, default=0)
 
     return parser.parse_args()
 
@@ -103,11 +104,11 @@ def classify_and_extract_attack():
             "y_target": None,
             "batch_size": 1,
             "confidence": args.confidence,  #
-            "learning_rate": 5e-3,  #
-            "binary_search_steps": 1,  #
-            "max_iterations": 1,  #
+            "learning_rate": 5e-3,
+            "binary_search_steps": 0,  #
+            "max_iterations": 1000,  #
             "abort_early": True,
-            "initial_const": 1e-2,
+            "initial_const": args.c, #
             "clip_min": 0.0,
             "clip_max": 1.0
         }
@@ -116,21 +117,21 @@ def classify_and_extract_attack():
                                                                      args.target_class,
                                                                      'conf' + str(params["confidence"]),
                                                                      'lr' + str(params["learning_rate"]),
-                                                                     'bss' + str(params["binary_search_steps"]),
+                                                                     'c' + str(params["initial_const"]),
                                                                      'max_it' + str(params["max_iterations"]))
         path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
                                                                        args.origin_class,
                                                                        args.target_class,
                                                                        'conf' + str(params["confidence"]),
                                                                        'lr' + str(params["learning_rate"]),
-                                                                       'bss' + str(params["binary_search_steps"]),
+                                                                       'c' + str(params["initial_const"]),
                                                                        'max_it' + str(params["max_iterations"]))
         path_output_features_attack = path_output_features_attack.format(args.attack_type,
                                                                          args.origin_class,
                                                                          args.target_class,
                                                                          'conf' + str(params["confidence"]),
                                                                          'lr' + str(params["learning_rate"]),
-                                                                         'bss' + str(params["binary_search_steps"]),
+                                                                         'c' + str(params["initial_const"]),
                                                                          'max_it' + str(params["max_iterations"]))
 
     elif args.attack_type == 'pgd':

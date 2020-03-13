@@ -5,6 +5,9 @@ import utils.write as write
 
 import numpy as np
 import tensorflow as tf
+import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 from recommendation.recommender_models.VBPR import VBPR
 from recommendation.recommender_dataset.Dataset import Dataset
@@ -41,9 +44,7 @@ class Solver:
             self.iteration_attack_type = '_' + self.experiment_name.split('_')[4]
             self.norm = '_' + self.experiment_name.split('_')[5]
 
-        self.experiment_name = '{0}/{1}{2}{3}{4}{5}'.format(self.dataset_name, self.attack_type,
-                                                                  self.attacked_categories, self.eps_cnn,
-                                                                  self.iteration_attack_type, self.norm)
+        self.experiment_name = '{0}/{1}'.format(self.dataset_name, self.experiment_name)
 
         self.load()
 
@@ -62,8 +63,8 @@ class Solver:
         for i in range(1, self.epoch + 1):
             start = time.time()
             self.one_epoch()
-            # if i % self.verbose == 0:
-            #    self.save(i)
+            if i % self.verbose == 0:
+               self.save(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
 
         self.store_predictions(i)
