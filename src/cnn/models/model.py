@@ -77,6 +77,4 @@ class Model:
         image, filename = sample
         if self.feature_model:
             feature = np.squeeze(self.feature_model(image[None, ...].to(self.device)).data.cpu().numpy())
-            print(self.feature_model(image[None, ...].to(self.device)).data.cpu().numpy().shape)
-            print(feature.shape)
             return feature
