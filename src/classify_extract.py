@@ -17,7 +17,8 @@ def classify_and_extract():
                          ('PATHS', 'ImagenetClasses')])
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
-                             transforms.ToTensor()
+                             transforms.ToTensor(),
+                             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                          ]))
     model = Model(model=models.resnet50(pretrained=True))
     model.set_out_layer(drop_layers=1)
@@ -29,6 +30,9 @@ def classify_and_extract():
 
     for i, d in enumerate(data):
         out_class = model.classification(list_classes=img_classes, sample=d)
+
+        exit(0)
+
         features[i, :] = model.feature_extraction(sample=d)
         df = df.append(out_class, ignore_index=True)
         sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
