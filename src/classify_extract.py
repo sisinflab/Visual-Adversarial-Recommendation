@@ -6,8 +6,14 @@ from torchvision import transforms
 import torchvision.models as models
 import pandas as pd
 import numpy as np
+import argparse
 import sys
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Run classification and feature extraction for original images.")
+    parser.add_argument('--gpu', type=int, default=0)
+
+    return parser.parse_args()
 
 def classify_and_extract():
     path_images, path_output_classes, path_output_features, path_classes = read_config(
@@ -21,7 +27,8 @@ def classify_and_extract():
                              transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                   std=[0.229, 0.224, 0.225])
                          ]))
-    model = Model(model=models.resnet50(pretrained=True))
+    args = parse_args()
+    model = Model(model=models.resnet50(pretrained=True), gpu=args.gpu)
     model.set_out_layer(drop_layers=1)
     img_classes = read_imagenet_classes_txt(path_classes)
 

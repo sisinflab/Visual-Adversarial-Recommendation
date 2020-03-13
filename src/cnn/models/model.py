@@ -9,12 +9,12 @@ class Model:
     (by specifying its path) and use it for training/testing purposes.
     Attributes:
         model: pytorch-like model (e.g. resnet50)
-        eval: True to use the model in inference-mode, otherwise False
+        do_eval: True to use the model in inference-mode, otherwise False
         gpu (int): index of gpu to use (-1 for cpu)
         model_path (str): model path (when it is loaded from memory, e.g. your custom trained model
     """
 
-    def __init__(self, model=None, eval=True, gpu=0, model_path=None):
+    def __init__(self, model=None, do_eval=True, gpu=0, model_path=None):
         """
         Args:
             model: pytorch-like model (e.g. resnet50)
@@ -23,7 +23,7 @@ class Model:
             model_path (str): model path (when it is loaded from memory, e.g. your custom trained model
         """
         self.model = model
-        self.eval = eval
+        self.eval = do_eval
         self.gpu = gpu
         self.model_path = model_path
         self.feature_model = None
