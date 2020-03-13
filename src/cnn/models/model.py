@@ -63,7 +63,8 @@ class Model:
         output = torch.nn.functional.softmax(input=self.model(image[None, ...].to(self.device)), dim=1)
         return {'ImageID': os.path.splitext(filename)[0],
                 'ClassStr': list_classes[int(np.argmax(output.data.cpu().numpy()))],
-                'ClassNum': np.argmax(output.data.cpu().numpy())}
+                'ClassNum': np.argmax(output.data.cpu().numpy()),
+                'Prob': np.argmax(output.data.cpu().numpy())}
 
     def feature_extraction(self, sample):
         """

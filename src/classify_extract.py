@@ -24,7 +24,7 @@ def classify_and_extract():
     model.set_out_layer(drop_layers=1)
     img_classes = read_imagenet_classes_txt(path_classes)
 
-    df = pd.DataFrame([], columns={'ImageID', 'ClassStr', 'ClassNum'})
+    df = pd.DataFrame([], columns={'ImageID', 'ClassStr', 'ClassNum', 'Prob'})
 
     features = np.empty(shape=(data.num_samples, 2048))
 
