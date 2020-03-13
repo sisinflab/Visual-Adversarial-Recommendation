@@ -230,7 +230,7 @@ def classify_and_extract_attack():
                           attack_type=args.attack_type,
                           num_classes=args.num_classes)
 
-    df = pd.DataFrame([], columns={'ImageID', 'ClassNumStart', 'ClassStrStart', 'ClassNum', 'ClassStr'})
+    df = pd.DataFrame([], columns={'ImageID', 'ClassNumStart', 'ClassStrStart', 'ProbStart', 'ClassNum', 'ClassStr', 'Prob'})
     # ClassNum and ClassStr should be the target class if everything works fine
 
     features = read_np(filename=path_input_features)
@@ -256,6 +256,8 @@ def classify_and_extract_attack():
                 df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
             out_class["ClassNumStart"] = df_origin_classification.loc[
                 df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassNum"].item()
+            out_class["ProbStart"] = df_origin_classification.loc[
+                df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ProbStart"].item()
             df = df.append(out_class, ignore_index=True)
 
         sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
