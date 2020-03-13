@@ -57,7 +57,7 @@ class Model:
             list_classes (list): list of possible classes (as strings)
             sample: tuple (sample, sample_filename)
         Return:
-            A dictionary with ImageID, class (as string) and class (as number).
+            A dictionary with ImageID, class (as string), class (as number), probability of classification.
         """
         image, filename = sample
         output = torch.nn.functional.softmax(input=self.model(image[None, ...].to(self.device)), dim=1)
