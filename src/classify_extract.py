@@ -22,10 +22,6 @@ def classify_and_extract():
                                                   std=[0.229, 0.224, 0.225])
                          ]))
     model = Model(model=models.resnet50(pretrained=True))
-
-    print(model.model)
-    exit(0)
-
     model.set_out_layer(drop_layers=1)
     img_classes = read_imagenet_classes_txt(path_classes)
 
