@@ -64,7 +64,7 @@ class Model:
         return {'ImageID': os.path.splitext(filename)[0],
                 'ClassStr': list_classes[int(np.argmax(output.data.cpu().numpy()))],
                 'ClassNum': np.argmax(output.data.cpu().numpy()),
-                'Prob': np.argmax(output.data.cpu().numpy())}
+                'Prob': np.amax(output.data.cpu().numpy())}
 
     def feature_extraction(self, sample):
         """
