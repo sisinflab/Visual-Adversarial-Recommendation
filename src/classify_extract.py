@@ -38,6 +38,8 @@ def classify_and_extract():
 
     for i, d in enumerate(data):
         out_class = model.classification(list_classes=img_classes, sample=d)
+        print(out_class)
+        exit(0)
         features[i, :] = model.feature_extraction(sample=d)
         df = df.append(out_class, ignore_index=True)
         sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
