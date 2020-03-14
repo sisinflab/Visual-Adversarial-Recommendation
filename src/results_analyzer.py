@@ -29,7 +29,7 @@ def elaborate(class_frequency, user_id, user_positive_items, sorted_item_predict
         if item_index not in user_positive_items:
             item_original_class = item_classes[item_classes['ImageID'] == item_index]['ClassStr'].values[0]
             class_frequency[item_original_class] += 1
-            k += 1
+            k += 1['fgsm_531_770_eps4_it1_linftop1000_predictions_epoch4000.pkl'
             if k == K:
                 break
     if k < K:
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     prediction_files = os.listdir(prediction_files_path)
 
-    for prediction_file in ['fgsm_531_770_eps4_it1_linftop1000_predictions_epoch4000.pkl']:
+    for prediction_file in prediction_files:
         if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
             predictions = read.load_obj(prediction_files_path + prediction_file)
 
