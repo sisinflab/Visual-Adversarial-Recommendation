@@ -71,15 +71,18 @@ def classify_and_extract_attack():
 
     # Z-score
     args.z_eps = args.eps / 255
-    args.z_eps = tf.reshape(tf.convert_to_tensor(
-        (np.array([args.z_eps, args.z_eps, args.z_eps]) - np.array([0.485, 0.456, 0.406])) / np.array([0.229, 0.224, 0.225])),
+    args.z_eps = tf.reshape(tf.cast(tf.convert_to_tensor(
+        np.divide((np.array([args.z_eps, args.z_eps, args.z_eps]) - np.array([0.485, 0.456, 0.406])), np.array(
+            [0.229, 0.224, 0.225]))),
+        dtype=tf.float32), shape=(1, 3, 1, 1))
+    args.clip_min = tf.reshape(tf.cast(tf.convert_to_tensor(
+        np.divide((np.array([0.0, 0.0, 0.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))),
+        dtype=tf.float32),
         shape=(1, 3, 1, 1))
-    args.clip_min = tf.reshape(tf.convert_to_tensor(
-                (np.array([0.0, 0.0, 0.0]) - np.array([0.485, 0.456, 0.406])) / np.array([0.229, 0.224, 0.225])),
-                shape=(1, 3, 1, 1))
-    args.clip_max =  tf.reshape(tf.convert_to_tensor(
-                (np.array([1.0, 1.0, 1.0]) - np.array([0.485, 0.456, 0.406])) / np.array([0.229, 0.224, 0.225])),
-                shape=(1, 3, 1, 1))
+    args.clip_max = tf.reshape(tf.cast(tf.convert_to_tensor(
+        np.divide((np.array([1.0, 1.0, 1.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))),
+        dtype=tf.float32),
+        shape=(1, 3, 1, 1))
 
     os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
@@ -150,10 +153,11 @@ def classify_and_extract_attack():
 
     elif args.attack_type == 'pgd':
         args.z_eps_iter = args.eps / 255 / 6
-        args.z_eps = tf.reshape(tf.convert_to_tensor(
-            (np.array([args.z_eps_iter, args.z_eps_iter, args.z_eps_iter]) - np.array([0.485, 0.456, 0.406])) / np.array(
-                [0.229, 0.224, 0.225])),
-            shape=(1, 3, 1, 1))
+        args.z_eps = tf.reshape(tf.cast(tf.convert_to_tensor(
+            np.divide((np.array([args.z_eps_iter, args.z_eps_iter, args.z_eps_iter]) - np.array(
+                [0.485, 0.456, 0.406])), np.array(
+                [0.229, 0.224, 0.225]))),
+            dtype=tf.float32), shape=(1, 3, 1, 1))
 
         params = {
             "eps": args.z_eps,
