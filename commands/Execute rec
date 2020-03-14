@@ -1,31 +1,18 @@
-### JOKER FGSM 409->770
+### JOKER FGSM 488->770
 
-nohup python -u rec_generator.py --experiment_name fgsm_409_770_eps1.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-fgsm_409_770_eps1.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
+nohup python -u rec_generator.py --experiment_name fgsm_488_770_eps1.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 > ../log/log-fgsm_488_770_eps1.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
 echo "------> Finish ----> Start New"
-nohup python -u rec_generator.py --experiment_name fgsm_409_770_eps2.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-fgsm_409_770_eps2.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
+nohup python -u rec_generator.py --experiment_name fgsm_488_770_eps2.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 > ../log/log-fgsm_488_770_eps2.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
 echo "------> Finish ----> Start New"
-nohup python -u rec_generator.py --experiment_name fgsm_409_770_eps4.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-fgsm_409_770_eps4.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
+nohup python -u rec_generator.py --experiment_name fgsm_488_770_eps4.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 > ../log/log-fgsm_488_770_eps4.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
 echo "------> Finish ----> Start New"
-nohup python -u rec_generator.py --experiment_name fgsm_409_770_eps8.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-fgsm_409_770_eps8.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
-echo "****** Finish ALL ******"
-
-### MASTER CW 409->770
-nohup python -u rec_generator.py --experiment_name cw_409_770_conf0_lr0.005_c0.001_max_it1000_images --emb1_K 64 --epoch 4000 > ../log/log-cw_409_770_conf0_lr0.005_c0.001_max_it1000
-echo "------> Run ----> Start New"
-nohup python -u rec_generator.py --experiment_name cw_409_770_conf0_lr0.005_c0.01_max_it1000_images --emb1_K 64 --epoch 4000 > ../log/log-cw_409_770_conf0_lr0.005_c0.01_max_it1000
+nohup python -u rec_generator.py --experiment_name fgsm_488_770_eps8.0_it1_linf_XX_images --emb1_K 64 --epoch 4000 > ../log/log-fgsm_488_770_eps8.0_it1_linf_XX_images-k64-ep4000-adv0-eps0
 echo "------> Finish ----> Start New"
-nohup python -u rec_generator.py --experiment_name cw_409_770_conf0_lr0.005_c1.0_max_it1000_images --emb1_K 64 --epoch 4000 > ../log/log-cw_409_770_conf0_lr0.005_c1.0_max_it1000
-echo "------> Run ----> Start New"
-nohup python -u rec_generator.py --experiment_name cw_409_770_conf0_lr0.005_c10.0_max_it1000_images --emb1_K 64 --epoch 4000 > ../log/log-cw_409_770_conf0_lr0.005_c10.0_max_it1000_images
-echo "****** Finish CW ******"
-
-### JOKER PGD 409->770  -> loaded on the server
-
-nohup python -u rec_generator.py --experiment_name pgd_409_770_eps8.0_eps_it0.00522875816993464_nb_it10_linf_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-pgd_409_770_eps8.0_eps_it0.00522875816993464_nb_it10_linf
+nohup python -u rec_generator.py --experiment_name pgd_488_770_eps8.0_eps_it0.00522875816993464_nb_it10_linf_images --emb1_K 64 --epoch 4000 > ../log/log-pgd_488_770_eps8.0_eps_it0.00522875816993464_nb_it10_linf
 echo "------> Finish ----> Start New"
-nohup python -u rec_generator.py --experiment_name pgd_409_770_eps4.0_eps_it0.00261437908496732_nb_it10_linf_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-pgd_409_770_eps4.0_eps_it0.00261437908496732_nb_it10_linf
+nohup python -u rec_generator.py --experiment_name pgd_488_770_eps4.0_eps_it0.00261437908496732_nb_it10_linf_images --emb1_K 64 --epoch 4000 > ../log/log-pgd_488_770_eps4.0_eps_it0.00261437908496732_nb_it10_linf
 echo "------> Finish ----> Start New"
-nohup python -u rec_generator.py --experiment_name pgd_409_770_eps2.0_eps_it0.00130718954248366_nb_it10_linf_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-pgd_409_770_eps2.0_eps_it0.00130718954248366_nb_it10_linf
+nohup python -u rec_generator.py --experiment_name pgd_488_770_eps2.0_eps_it0.00130718954248366_nb_it10_linf_images --emb1_K 64 --epoch 4000 > ../log/log-pgd_488_770_eps2.0_eps_it0.00130718954248366_nb_it10_linf
 echo "------> Finish ----> Start New"
-nohup python -u rec_generator.py --experiment_name pgd_409_770_eps1.0_eps_it0.00065359477124183_nb_it10_linf_images --emb1_K 64 --epoch 4000 --epsilon 0 > ../log/log-pgd_409_770_eps1.0_eps_it0.00065359477124183_nb_it10_linf
+nohup python -u rec_generator.py --experiment_name pgd_488_770_eps1.0_eps_it0.00065359477124183_nb_it10_linf_images --emb1_K 64 --epoch 4000 > ../log/log-pgd_488_770_eps1.0_eps_it0.00065359477124183_nb_it10_linf
 echo "****** Finish ALL ******"

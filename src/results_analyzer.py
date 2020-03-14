@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     prediction_files = os.listdir(prediction_files_path)
 
-    for prediction_file in ['fgsm_531_770_eps4_it1_linftop1000_predictions_epoch4000.pkl']:
+    for prediction_file in prediction_files:
         if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
             predictions = read.load_obj(prediction_files_path + prediction_file)
 
