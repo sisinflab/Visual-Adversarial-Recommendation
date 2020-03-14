@@ -29,7 +29,7 @@ def elaborate(class_frequency, user_id, user_positive_items, sorted_item_predict
         if item_index not in user_positive_items:
             item_original_class = item_classes[item_classes['ImageID'] == item_index]['ClassStr'].values[0]
             class_frequency[item_original_class] += 1
-            k += 1['fgsm_531_770_eps4_it1_linftop1000_predictions_epoch4000.pkl'
+            k += 1
             if k == K:
                 break
     if k < K:
