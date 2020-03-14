@@ -29,11 +29,13 @@ attacks_params = {
 
 }
 
+
 def parse_ord(ord_str):
     if ord_str == 'inf':
         return np.inf
     else:
         return int(ord_str)
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
@@ -71,7 +73,7 @@ def classify_and_extract_attack():
 
     if args.attack_type == 'fgsm':
         params = {
-            "eps": args.eps / 255, #
+            "eps": args.eps / 255,  #
             "clip_min": 0.0,
             "clip_max": 1.0,
             "ord": parse_ord(args.l),  #
@@ -108,7 +110,7 @@ def classify_and_extract_attack():
             "binary_search_steps": 0,  #
             "max_iterations": 1000,  #
             "abort_early": True,
-            "initial_const": args.c, #
+            "initial_const": args.c,  #
             "clip_min": 0.0,
             "clip_max": 1.0
         }
@@ -230,38 +232,39 @@ def classify_and_extract_attack():
                           attack_type=args.attack_type,
                           num_classes=args.num_classes)
 
-    df = pd.DataFrame([], columns={'ImageID', 'ClassNumStart', 'ClassStrStart', 'ProbStart', 'ClassNum', 'ClassStr', 'Prob'})
+    df = pd.DataFrame([], columns={'ImageID', 'ClassNumStart', 'ClassStrStart', 'ProbStart', 'ClassNum', 'ClassStr',
+                                   'Prob'})
     # ClassNum and ClassStr should be the target class if everything works fine
 
     features = read_np(filename=path_input_features)
 
-    for i, d in enumerate(data):
-        im, name = d
+    with open('nome.csv', 'w') as f:
+        # metti l'header del CSV
 
-        if attack.must_attack(filename=name):
-            attacked = attack.run_attack(image=im)
+        for i, d in enumerate(data):
+            im, name = d
 
-            if args.attack_type == 'fgsm':
-                save_image(image=attacked, filename=path_output_images_attack + name)
-            elif args.attack_type == 'cw':
-                save_image(image=attacked, filename=path_output_images_attack + name)
-            elif args.attack_type == 'pgd':
-                save_image(image=attacked, filename=path_output_images_attack + name)
-            elif args.attack_type == 'jsma':
+            if attack.must_attack(filename=name):
+                attacked = attack.run_attack(image=im)
+
                 save_image(image=attacked, filename=path_output_images_attack + name)
 
-            out_class = model.classification(list_classes=imgnet_classes, sample=(attacked, name))
-            features[i, :] = model.feature_extraction(sample=(attacked, name))
-            out_class["ClassStrStart"] = df_origin_classification.loc[
-                df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
-            out_class["ClassNumStart"] = df_origin_classification.loc[
-                df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassNum"].item()
-            out_class["ProbStart"] = df_origin_classification.loc[
-                df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ProbStart"].item()
-            df = df.append(out_class, ignore_index=True)
+                out_class = model.classification(list_classes=imgnet_classes, sample=(attacked, name))
+                features[i, :] = model.feature_extraction(sample=(attacked, name))
 
-        sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
-        sys.stdout.flush()
+                f.write()
+
+                out_class["ClassStrStart"] = df_origin_classification.loc[
+                    df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
+                out_class["ClassNumStart"] = df_origin_classification.loc[
+                    df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassNum"].item()
+                out_class["ProbStart"] = df_origin_classification.loc[
+                    df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ProbStart"].item()
+                df = df.append(out_class, ignore_index=True)
+
+            if (i + 1) % 1000 == 0:
+                sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
+                sys.stdout.flush()
 
     write_csv(df=df, filename=path_output_classes_attack)
     save_np(npy=features, filename=path_output_features_attack)
