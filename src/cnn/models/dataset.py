@@ -1,8 +1,7 @@
 from torch.utils.data import Dataset, DataLoader
+from PIL import ImageFile
 from PIL import Image
 import os
-from torchvision import transforms
-from PIL import ImageFile
 
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -46,8 +45,9 @@ class CustomDataset(Dataset):
             sample = sample.convert(mode='RGB')
 
         if self.transform:
-            to_tensor = transforms.ToTensor()
-            sample = to_tensor(sample)
+            # to_tensor = transforms.ToTensor()
+            # sample = to_tensor(sample)
+            sample = self.transform(sample)
 
         return sample, self.filenames[idx]
 
