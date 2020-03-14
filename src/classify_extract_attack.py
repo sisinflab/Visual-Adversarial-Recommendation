@@ -5,10 +5,9 @@ from utils.read import *
 from utils.write import *
 from torchvision import transforms
 import torchvision.models as models
-import pandas as pd
 import numpy as np
 import argparse
-import sys
+import csv
 import os
 
 # per parametri vuoti, usare X
@@ -41,8 +40,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
     parser.add_argument('--attack_type', nargs='?', type=str, default='cw')
-    parser.add_argument('--origin_class', type=int, default=409)
-    parser.add_argument('--target_class', type=int, default=770)
+    parser.add_argument('--origin_class', type=int, default=630)
+    parser.add_argument('--target_class', type=int, default=610)
     parser.add_argument('--gpu', type=int, default=0)
 
     # attacks specific parameters
@@ -220,7 +219,8 @@ def classify_and_extract_attack():
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
                              transforms.ToTensor(),
-                             transforms.Normalize,
+                             transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                                  std=[0.229, 0.224, 0.225])
                          ]))
     model = Model(model=models.resnet50(pretrained=True))
     model.set_out_layer(drop_layers=1)
@@ -232,41 +232,39 @@ def classify_and_extract_attack():
                           attack_type=args.attack_type,
                           num_classes=args.num_classes)
 
-    df = pd.DataFrame([], columns={'ImageID', 'ClassNumStart', 'ClassStrStart', 'ProbStart', 'ClassNum', 'ClassStr',
-                                   'Prob'})
-    # ClassNum and ClassStr should be the target class if everything works fine
-
     features = read_np(filename=path_input_features)
 
-    with open('nome.csv', 'w') as f:
-        # metti l'header del CSV
+    denormalize = transforms.Normalize(mean=[-0.485/0.229, -0.456/0.224, -0.406/0.225],
+                                       std=[1/0.229, 1/0.224, 1/0.225])
+
+    with open(path_output_classes_attack, 'w') as f:
+        fieldnames = ['ImageID', 'ClassNum', 'ClassStr', 'Prob', 'ClassNumStart', 'ClassStrStart', 'ProbStart']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
 
         for i, d in enumerate(data):
             im, name = d
 
             if attack.must_attack(filename=name):
+
                 attacked = attack.run_attack(image=im)
 
-                save_image(image=attacked, filename=path_output_images_attack + name)
+                save_image(image=denormalize(attacked), filename=path_output_images_attack + name)
 
                 out_class = model.classification(list_classes=imgnet_classes, sample=(attacked, name))
-                features[i, :] = model.feature_extraction(sample=(attacked, name))
-
-                f.write()
-
                 out_class["ClassStrStart"] = df_origin_classification.loc[
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
                 out_class["ClassNumStart"] = df_origin_classification.loc[
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassNum"].item()
                 out_class["ProbStart"] = df_origin_classification.loc[
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ProbStart"].item()
-                df = df.append(out_class, ignore_index=True)
+                writer.writerow(out_class)
+
+                features[i, :] = model.feature_extraction(sample=(attacked, name))
 
             if (i + 1) % 1000 == 0:
-                sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
-                sys.stdout.flush()
+                print('%d/%d samples completed' % (i + 1, data.num_samples))
 
-    write_csv(df=df, filename=path_output_classes_attack)
     save_np(npy=features, filename=path_output_features_attack)
 
 
