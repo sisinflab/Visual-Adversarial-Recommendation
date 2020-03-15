@@ -18,7 +18,7 @@ class Model:
         """
         Args:
             model: pytorch-like model (e.g. resnet50)
-            eval (bool): True to use the model in inference-mode, otherwise False
+            do_eval (bool): True to use the model in inference-mode, otherwise False
             gpu (int): index of gpu to use (-1 for cpu)
             model_path (str): model path (when it is loaded from memory, e.g. your custom trained model
         """
@@ -47,6 +47,9 @@ class Model:
             drop_layers (int): index of layers to drop from model (inverse order)
         """
         self.feature_model = torch.nn.Sequential(*list(self.model.children())[:-drop_layers])
+
+        if self.eval:
+            self.feature_model.eval()
 
     def classification(self, list_classes, sample):
         """
