@@ -63,7 +63,7 @@ class VisualAttack:
     def run_attack(self, image):
         if self.attack_type == 'fgsm':
             return fast_gradient_method(model_fn=self.model,
-                                        x=image,
+                                        x=image.to(self.device),
                                         eps=self.params["eps"],
                                         norm=self.params["ord"],
                                         clip_min=self.params["clip_min"],
@@ -73,7 +73,7 @@ class VisualAttack:
 
         elif self.attack_type == 'pgd':
             return projected_gradient_descent(model_fn=self.model,
-                                              x=image,
+                                              x=image.to(self.device),
                                               eps=self.params["eps"],
                                               eps_iter=self.params["eps_iter"],
                                               nb_iter=self.params["nb_iter"],
