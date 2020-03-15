@@ -46,7 +46,7 @@ def parse_args():
     parser.add_argument('--gpu', type=int, default=0)
 
     # attacks specific parameterspgd
-    parser.add_argument('--eps', type=float, default=4)
+    parser.add_argument('--eps', type=float, default=8)
     parser.add_argument('--it', type=int, default=1)
     parser.add_argument('--l', type=str, default='inf')
     parser.add_argument('--confidence', type=int, default=0)
@@ -278,10 +278,10 @@ def classify_and_extract_attack():
             im, name = d
 
             if attack.must_attack(filename=name):
-                adv_perturbed_out = attack.run_attack(image=im)
+                adv_perturbed_out = attack.run_attack_pytorch(image=im[None, ...])
 
                 out_class = model.classification(list_classes=imgnet_classes,
-                                                 sample=(adv_perturbed_out, name))
+                                                 sample=(adv_perturbed_out[0], name))
                 out_class["ClassStrStart"] = df_origin_classification.loc[
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
                 out_class["ClassNumStart"] = df_origin_classification.loc[
@@ -290,9 +290,9 @@ def classify_and_extract_attack():
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "Prob"].item()
                 writer.writerow(out_class)
 
-                features[i, :] = model.feature_extraction(sample=(adv_perturbed_out, name))
+                features[i, :] = model.feature_extraction(sample=(adv_perturbed_out[0], name))
 
-                adv_perturbed_out = denormalize(adv_perturbed_out)
+                adv_perturbed_out = denormalize(adv_perturbed_out[0])
 
                 # Clip
                 adv_perturbed_out[adv_perturbed_out < 0] = 0
@@ -302,6 +302,9 @@ def classify_and_extract_attack():
 
             if (i + 1) % 1000 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
+
+            if (i + 1) == 300:
+                break
 
     save_np(npy=features, filename=path_output_features_attack)
 

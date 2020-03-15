@@ -1,8 +1,10 @@
 from cleverhans.attacks import FastGradientMethod, MadryEtAl, CarliniWagnerL2, SaliencyMapMethod
+from cleverhans.future.torch.attacks import *
 from cleverhans.model import CallableModelWrapper
 from cleverhans.utils_pytorch import convert_pytorch_model_to_tf
 from torchvision import transforms
 import numpy as np
+import torch
 import os
 import logging
 
@@ -20,18 +22,23 @@ class VisualAttack:
         self.num_classes = num_classes
         self.attack_type = attack_type
 
-        self.tf_model = convert_pytorch_model_to_tf(model)
-        self.cleverhans_model = CallableModelWrapper(self.tf_model, output_layer='logits')
-        self.sess = tf.compat.v1.Session()
-        self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
-        self.adv_x_op = None
+        ## NUOVA IMPLEMENTAZIONE PYTORCH
+        self.model = model
+        ################################
+
+        # self.tf_model = convert_pytorch_model_to_tf(model)
+        # self.cleverhans_model = CallableModelWrapper(self.tf_model, output_layer='logits')
+        # self.sess = tf.compat.v1.Session()
+        # self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
+        # self.adv_x_op = None
 
         self.y_target = np.zeros((1, 1000), dtype=np.uint8)
         self.one_hot_encoded()
         self.params["y_target"] = self.y_target
 
         if self.attack_type == 'fgsm':
-            self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
+            print("setting fgsm attack")
+            # self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'cw':
             self.attack_op = CarliniWagnerL2(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'pgd':
@@ -48,6 +55,16 @@ class VisualAttack:
 
     def one_hot_encoded(self):
         self.y_target[0, self.target_class] = 1
+
+    def run_attack_pytorch(self, image):
+        return fast_gradient_method(model_fn=self.model,
+                                    x=image,
+                                    eps=self.params["eps"],
+                                    norm=self.params["ord"],
+                                    clip_min=None,
+                                    clip_max=None,
+                                    targeted=True,
+                                    y=torch.from_numpy(np.array([self.target_class])))
 
     def run_attack(self, image):
         if self.attack_type == 'cw':
