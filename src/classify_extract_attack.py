@@ -40,7 +40,7 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
+    parser.add_argument('--attack_type', nargs='?', type=str, default='pgd')
     parser.add_argument('--origin_class', type=int, default=409)
     parser.add_argument('--target_class', type=int, default=530)
     parser.add_argument('--gpu', type=int, default=0)
@@ -68,22 +68,6 @@ def classify_and_extract_attack():
                          ('PATHS', 'OutputAmazonMenClassesAttack')])
 
     args = parse_args()
-
-    # Z-score
-    clip_min = np.divide((np.array([0.0, 0.0, 0.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))
-    args.clip_min = tf.reshape(tf.cast(tf.convert_to_tensor(
-        np.divide((np.array([0.0, 0.0, 0.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))),
-        dtype=tf.float32),
-        shape=(1, 3, 1, 1))
-    clip_max = np.divide((np.array([1.0, 1.0, 1.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))
-    args.clip_max = tf.reshape(tf.cast(tf.convert_to_tensor(
-        np.divide((np.array([1.0, 1.0, 1.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))),
-        dtype=tf.float32),
-        shape=(1, 3, 1, 1))
-
-    args.norm_eps = np.multiply((clip_max - clip_min), np.array([args.eps / 255, args.eps / 255, args.eps / 255]))
-    args.norm_eps = tf.reshape(tf.cast(tf.convert_to_tensor(args.norm_eps),
-                                       dtype=tf.float32), shape=(1, 3, 1, 1))
 
     os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
@@ -117,6 +101,43 @@ def classify_and_extract_attack():
                                                                          'l' + str(args.l),
                                                                          'XX')
 
+    elif args.attack_type == 'pgd':
+        params = {
+            "eps": args.eps / 255,
+            "eps_iter": args.eps / 255 / 6,  #
+            "nb_iter": 10,  #
+            "ord": parse_ord(args.l),  #
+            "clip_min": None,
+            "clip_max": None,
+            "y_target": None,
+            "rand_init": None,
+            "rand_init_eps": None,
+            "clip_grad": False,
+            "sanity_checks": True
+        }
+        path_output_images_attack = path_output_images_attack.format(args.attack_type,
+                                                                     args.origin_class,
+                                                                     args.target_class,
+                                                                     'eps' + str(args.eps),
+                                                                     'eps_it' + str(args.eps / 255 / 6),
+                                                                     'nb_it' + str(params["nb_iter"]),
+                                                                     'l' + str(params["ord"]))
+        path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
+                                                                       args.origin_class,
+                                                                       args.target_class,
+                                                                       'eps' + str(args.eps),
+                                                                       'eps_it' + str(params["eps_iter"]),
+                                                                       'nb_it' + str(params["nb_iter"]),
+                                                                       'l' + str(params["ord"]))
+        path_output_features_attack = path_output_features_attack.format(args.attack_type,
+                                                                         args.origin_class,
+                                                                         args.target_class,
+                                                                         'eps' + str(args.eps),
+                                                                         'eps_it' + str(params["eps_iter"]),
+                                                                         'nb_it' + str(params["nb_iter"]),
+                                                                         'l' + str(params["ord"]))
+
+    # TO REVISE Carlini & Wagner and JSMA
     elif args.attack_type == 'cw':
         params = {
             "y_target": None,
@@ -151,49 +172,6 @@ def classify_and_extract_attack():
                                                                          'lr' + str(params["learning_rate"]),
                                                                          'c' + str(params["initial_const"]),
                                                                          'max_it' + str(params["max_iterations"]))
-
-    elif args.attack_type == 'pgd':
-        args.z_eps_iter = args.eps / 255 / 6
-        args.z_eps = tf.reshape(tf.cast(tf.convert_to_tensor(
-            np.divide((np.array([args.z_eps_iter, args.z_eps_iter, args.z_eps_iter]) - np.array(
-                [0.485, 0.456, 0.406])), np.array(
-                [0.229, 0.224, 0.225]))),
-            dtype=tf.float32), shape=(1, 3, 1, 1))
-
-        params = {
-            "eps": args.norm_eps / 255,
-            "eps_iter": args.norm_eps / 255 / 6,  #
-            "nb_iter": 10,  #
-            "ord": parse_ord(args.l),  #
-            "clip_min": args.clip_min,
-            "clip_max": args.clip_max,
-            "y_target": None,
-            "rand_init": None,
-            "rand_init_eps": None,
-            "clip_grad": False,
-            "sanity_checks": True
-        }
-        path_output_images_attack = path_output_images_attack.format(args.attack_type,
-                                                                     args.origin_class,
-                                                                     args.target_class,
-                                                                     'eps' + str(args.eps),
-                                                                     'eps_it' + str(args.eps / 255 / 6),
-                                                                     'nb_it' + str(params["nb_iter"]),
-                                                                     'l' + str(params["ord"]))
-        path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
-                                                                       args.origin_class,
-                                                                       args.target_class,
-                                                                       'eps' + str(args.eps),
-                                                                       'eps_it' + str(params["eps_iter"]),
-                                                                       'nb_it' + str(params["nb_iter"]),
-                                                                       'l' + str(params["ord"]))
-        path_output_features_attack = path_output_features_attack.format(args.attack_type,
-                                                                         args.origin_class,
-                                                                         args.target_class,
-                                                                         'eps' + str(args.eps),
-                                                                         'eps_it' + str(params["eps_iter"]),
-                                                                         'nb_it' + str(params["nb_iter"]),
-                                                                         'l' + str(params["ord"]))
 
     elif args.attack_type == 'jsma':
         params = {
@@ -242,8 +220,7 @@ def classify_and_extract_attack():
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
-                             transforms.ToTensor()
-                             ,
+                             transforms.ToTensor(),
                              transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                   std=[0.229, 0.224, 0.225])
                          ]))
@@ -262,9 +239,7 @@ def classify_and_extract_attack():
     denormalize = transforms.Normalize(mean=[-0.485 / 0.229, -0.456 / 0.224, -0.406 / 0.225],
                                        std=[1 / 0.229, 1 / 0.224, 1 / 0.225])
 
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
-
+    # Check if attack directory already created. If so, delete it, and then create it again.
     if os.path.exists(os.path.dirname(path_output_classes_attack)):
         shutil.rmtree(os.path.dirname(path_output_classes_attack))
     os.makedirs(os.path.dirname(path_output_classes_attack))
@@ -278,8 +253,11 @@ def classify_and_extract_attack():
             im, name = d
 
             if attack.must_attack(filename=name):
-                adv_perturbed_out = attack.run_attack_pytorch(image=im[None, ...])
 
+                # Generate attacked image with chosen attack algorithm
+                adv_perturbed_out = attack.run_attack(image=im[None, ...])
+
+                # Classify attacked image with pretrained model and append new classification to csv
                 out_class = model.classification(list_classes=imgnet_classes,
                                                  sample=(adv_perturbed_out[0], name))
                 out_class["ClassStrStart"] = df_origin_classification.loc[
@@ -290,22 +268,26 @@ def classify_and_extract_attack():
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "Prob"].item()
                 writer.writerow(out_class)
 
+                # Extract features using pretrained model
                 features[i, :] = model.feature_extraction(sample=(adv_perturbed_out[0], name))
 
+                # Denormalize image before saving to memory
                 adv_perturbed_out = denormalize(adv_perturbed_out[0])
 
-                # Clip
-                adv_perturbed_out[adv_perturbed_out < 0] = 0
-                adv_perturbed_out[adv_perturbed_out > 1] = 1
+                # Clip before saving image to memory
+                adv_perturbed_out[adv_perturbed_out < 0.0] = 0.0
+                adv_perturbed_out[adv_perturbed_out > 1.0] = 1.0
 
+                # Save image to memory
                 save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
 
             if (i + 1) % 1000 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
 
-            if (i + 1) == 300:
+            if (i + 1) == 10:
                 break
 
+    # Save all extracted features (attacked and non-attacked ones)
     save_np(npy=features, filename=path_output_features_attack)
 
 

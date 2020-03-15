@@ -22,33 +22,35 @@ class VisualAttack:
         self.num_classes = num_classes
         self.attack_type = attack_type
 
-        ## NUOVA IMPLEMENTAZIONE PYTORCH
+        # NEW PYTORCH IMPLEMENTATION
         self.model = model
-        ################################
 
+        # OLD TENSORFLOW TO PYTORCH IMPLEMENTATION
         # self.tf_model = convert_pytorch_model_to_tf(model)
         # self.cleverhans_model = CallableModelWrapper(self.tf_model, output_layer='logits')
         # self.sess = tf.compat.v1.Session()
         # self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
         # self.adv_x_op = None
 
-        self.y_target = np.zeros((1, 1000), dtype=np.uint8)
-        self.one_hot_encoded()
-        self.params["y_target"] = self.y_target
+        # self.y_target = np.zeros((1, 1000), dtype=np.uint8)
+        # self.one_hot_encoded()
+        # self.params["y_target"] = self.y_target
 
         if self.attack_type == 'fgsm':
-            print("setting fgsm attack")
+            print("Setting fgsm attack")
             # self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'cw':
-            self.attack_op = CarliniWagnerL2(self.cleverhans_model, sess=self.sess)
+            print("Setting carlini & wagner attack")
+            # self.attack_op = CarliniWagnerL2(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'pgd':
-            self.attack_op = MadryEtAl(self.cleverhans_model, sess=self.sess)
+            print("Setting pgd attack")
+            # self.attack_op = MadryEtAl(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'jsma':
-            self.attack_op = SaliencyMapMethod(self.cleverhans_model, sess=self.sess)
+            print("Setting jsma attack")
+            # self.attack_op = SaliencyMapMethod(self.cleverhans_model, sess=self.sess)
 
     def must_attack(self, filename):
-        if self.df_classes.loc[
-            self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
+        if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
             return True
         else:
             return False
@@ -56,17 +58,35 @@ class VisualAttack:
     def one_hot_encoded(self):
         self.y_target[0, self.target_class] = 1
 
-    def run_attack_pytorch(self, image):
-        return fast_gradient_method(model_fn=self.model,
-                                    x=image,
-                                    eps=self.params["eps"],
-                                    norm=self.params["ord"],
-                                    clip_min=None,
-                                    clip_max=None,
-                                    targeted=True,
-                                    y=torch.from_numpy(np.array([self.target_class])))
-
+    # NEW VERSION WITH PYTORCH MODEL
     def run_attack(self, image):
+        if self.attack_type == 'fgsm':
+            return fast_gradient_method(model_fn=self.model,
+                                        x=image,
+                                        eps=self.params["eps"],
+                                        norm=self.params["ord"],
+                                        clip_min=self.params["clip_min"],
+                                        clip_max=self.params["clip_max"],
+                                        targeted=True,
+                                        y=torch.from_numpy(np.array([self.target_class])))
+
+        elif self.attack_type == 'pgd':
+            return projected_gradient_descent(model_fn=self.model,
+                                              x=image,
+                                              eps=self.params["eps"],
+                                              eps_iter=self.params["eps_iter"],
+                                              nb_iter=self.params["nb_iter"],
+                                              norm=self.params["ord"],
+                                              clip_min=self.params["clip_min"],
+                                              clip_max=self.params["clip_max"],
+                                              targeted=True,
+                                              y=torch.from_numpy(np.array([self.target_class])))
+        else:
+            print("Attack not implemented yet.")
+            exit(0)
+
+    # OLD VERSION
+    def run_attack_old(self, image):
         if self.attack_type == 'cw':
             # Obtain Image Parameters
             image = image.cpu().numpy()
