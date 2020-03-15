@@ -224,12 +224,14 @@ def classify_and_extract_attack():
                              transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                   std=[0.229, 0.224, 0.225])
                          ]))
-    model = Model(model=models.resnet50(pretrained=True))
+    model = Model(model=models.resnet50(pretrained=True),
+                  gpu=args.gpu)
     model.set_out_layer(drop_layers=1)
     attack = VisualAttack(df_classes=df_origin_classification,
                           origin_class=args.origin_class,
                           target_class=args.target_class,
                           model=model.model,
+                          device=model.device,
                           params=params,
                           attack_type=args.attack_type,
                           num_classes=args.num_classes)

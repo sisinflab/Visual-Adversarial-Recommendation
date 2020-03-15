@@ -14,13 +14,14 @@ import tensorflow as tf
 
 
 class VisualAttack:
-    def __init__(self, df_classes, num_classes, origin_class, target_class, model, params, attack_type):
+    def __init__(self, df_classes, num_classes, origin_class, target_class, model, device, params, attack_type):
         self.origin_class = origin_class
         self.target_class = target_class
         self.df_classes = df_classes
         self.params = params
         self.num_classes = num_classes
         self.attack_type = attack_type
+        self.device = device
 
         # NEW PYTORCH IMPLEMENTATION
         self.model = model
@@ -68,7 +69,7 @@ class VisualAttack:
                                         clip_min=self.params["clip_min"],
                                         clip_max=self.params["clip_max"],
                                         targeted=True,
-                                        y=torch.from_numpy(np.array([self.target_class])))
+                                        y=torch.from_numpy(np.array([self.target_class]))).to(self.device)
 
         elif self.attack_type == 'pgd':
             return projected_gradient_descent(model_fn=self.model,
@@ -80,7 +81,7 @@ class VisualAttack:
                                               clip_min=self.params["clip_min"],
                                               clip_max=self.params["clip_max"],
                                               targeted=True,
-                                              y=torch.from_numpy(np.array([self.target_class])))
+                                              y=torch.from_numpy(np.array([self.target_class]))).to(self.device)
         else:
             print("Attack not implemented yet.")
             exit(0)
