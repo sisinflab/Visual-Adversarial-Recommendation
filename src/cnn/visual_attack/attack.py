@@ -63,7 +63,6 @@ class VisualAttack:
     # NEW VERSION WITH PYTORCH MODEL
     def run_attack(self, image):
         if self.attack_type == 'fgsm':
-            print(self.device)
             return fast_gradient_method(model_fn=self.model,
                                         x=image.to(self.device),
                                         eps=self.params["eps"],
