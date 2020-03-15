@@ -41,8 +41,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
     parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
-    parser.add_argument('--origin_class', type=int, default=630)
-    parser.add_argument('--target_class', type=int, default=610)
+    parser.add_argument('--origin_class', type=int, default=409)
+    parser.add_argument('--target_class', type=int, default=530)
     parser.add_argument('--gpu', type=int, default=0)
 
     # attacks specific parameterspgd

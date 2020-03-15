@@ -15,7 +15,7 @@ pos_elements.columns = ['u', 'i']
 
 N_USERS = pos_elements['u'].nunique()
 K = 100
-N = 20  # Top-N classes
+N = 30  # Top-N classes
 class_str_length = 10
 
 if __name__ == '__main__':
