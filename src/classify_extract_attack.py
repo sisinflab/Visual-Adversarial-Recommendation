@@ -40,7 +40,7 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
+    parser.add_argument('--attack_type', nargs='?', type=str, default='pgd')
     parser.add_argument('--origin_class', type=int, default=630)
     parser.add_argument('--target_class', type=int, default=610)
     parser.add_argument('--gpu', type=int, default=0)
@@ -161,8 +161,8 @@ def classify_and_extract_attack():
             dtype=tf.float32), shape=(1, 3, 1, 1))
 
         params = {
-            "eps": args.z_eps,
-            "eps_iter": args.z_eps_iter,  #
+            "eps": args.norm_eps / 255,
+            "eps_iter": args.norm_eps / 255 / 6,  #
             "nb_iter": 10,  #
             "ord": parse_ord(args.l),  #
             "clip_min": args.clip_min,
