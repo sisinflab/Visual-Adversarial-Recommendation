@@ -25,6 +25,7 @@ class VisualAttack:
 
         # NEW PYTORCH IMPLEMENTATION
         self.model = model
+        self.model.to(self.device)
 
         # OLD TENSORFLOW TO PYTORCH IMPLEMENTATION
         # self.tf_model = convert_pytorch_model_to_tf(model)
