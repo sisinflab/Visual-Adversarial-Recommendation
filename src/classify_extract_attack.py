@@ -46,7 +46,7 @@ def parse_args():
     parser.add_argument('--gpu', type=int, default=0)
 
     # attacks specific parameters
-    parser.add_argument('--eps', type=float, default=4)
+    parser.add_argument('--eps', type=float, default=8)
     parser.add_argument('--it', type=int, default=1)
     parser.add_argument('--l', type=str, default='inf')
     parser.add_argument('--confidence', type=int, default=0)
@@ -70,27 +70,27 @@ def classify_and_extract_attack():
     args = parse_args()
 
     # Z-score
-    args.z_eps = args.eps / 255
-    args.z_eps = tf.reshape(tf.cast(tf.convert_to_tensor(
-        np.divide((np.array([args.z_eps, args.z_eps, args.z_eps]) - np.array([0.485, 0.456, 0.406])), np.array(
-            [0.229, 0.224, 0.225]))),
-        dtype=tf.float32), shape=(1, 3, 1, 1))
+    clip_min = np.divide((np.array([0.0, 0.0, 0.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))
     args.clip_min = tf.reshape(tf.cast(tf.convert_to_tensor(
         np.divide((np.array([0.0, 0.0, 0.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))),
         dtype=tf.float32),
         shape=(1, 3, 1, 1))
+    clip_max = np.divide((np.array([1.0, 1.0, 1.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))
     args.clip_max = tf.reshape(tf.cast(tf.convert_to_tensor(
         np.divide((np.array([1.0, 1.0, 1.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))),
         dtype=tf.float32),
         shape=(1, 3, 1, 1))
+    args.norm_eps = np.multiply((clip_max - clip_min), np.array([args.eps / 255, args.eps / 255, args.eps / 255]))
+    args.norm_eps = tf.reshape(tf.cast(tf.convert_to_tensor(args.norm_eps),
+                                       dtype=tf.float32), shape=(1, 3, 1, 1))
 
     os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
     if args.attack_type == 'fgsm':
         params = {
-            "eps": args.z_eps,  #
-            "clip_min": args.clip_min,
-            "clip_max": args.clip_max,
+            "eps": args.norm_eps,  #
+            "clip_min": None,
+            "clip_max": None,
             "ord": parse_ord(args.l),  #
             "y_target": None
         }
@@ -290,6 +290,9 @@ def classify_and_extract_attack():
 
             if (i + 1) % 1000 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
+
+            if (i + 1) == 200:
+                break
 
     save_np(npy=features, filename=path_output_features_attack)
 

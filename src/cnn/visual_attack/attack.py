@@ -39,8 +39,6 @@ class VisualAttack:
         elif self.attack_type == 'jsma':
             self.attack_op = SaliencyMapMethod(self.cleverhans_model, sess=self.sess)
 
-        self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
-
     def must_attack(self, filename):
         if self.df_classes.loc[
             self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
