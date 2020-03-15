@@ -40,7 +40,7 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='pgd')
+    parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
     parser.add_argument('--origin_class', type=int, default=630)
     parser.add_argument('--target_class', type=int, default=610)
     parser.add_argument('--gpu', type=int, default=0)
@@ -278,17 +278,10 @@ def classify_and_extract_attack():
             im, name = d
 
             if attack.must_attack(filename=name):
-                _, pert = attack.run_attack(image=im)
-
-                adv_perturbed_out = denormalize(im) + pert
-
-                adv_perturbed_out[adv_perturbed_out < 0] = 0
-                adv_perturbed_out[adv_perturbed_out > 1] = 1
-
-                save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
+                adv_perturbed_out = attack.run_attack(image=im)
 
                 out_class = model.classification(list_classes=imgnet_classes,
-                                                 sample=(normalize(adv_perturbed_out), name))
+                                                 sample=(adv_perturbed_out, name))
                 out_class["ClassStrStart"] = df_origin_classification.loc[
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
                 out_class["ClassNumStart"] = df_origin_classification.loc[
@@ -297,7 +290,15 @@ def classify_and_extract_attack():
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "Prob"].item()
                 writer.writerow(out_class)
 
-                features[i, :] = model.feature_extraction(sample=(normalize(adv_perturbed_out), name))
+                features[i, :] = model.feature_extraction(sample=(adv_perturbed_out, name))
+
+                adv_perturbed_out = denormalize(adv_perturbed_out)
+
+                # Clip
+                adv_perturbed_out[adv_perturbed_out < 0] = 0
+                adv_perturbed_out[adv_perturbed_out > 1] = 1
+
+                save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
 
             if (i + 1) % 1000 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
