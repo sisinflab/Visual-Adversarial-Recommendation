@@ -64,6 +64,11 @@ class Model:
         """
         image, filename = sample
         output = torch.nn.functional.softmax(input=self.model(image[None, ...].to(self.device)), dim=1)
+
+        if self.model.training:
+            print("Run model in inference mode!")
+            exit(0)
+
         return {'ImageID': os.path.splitext(filename)[0],
                 'ClassStr': list_classes[int(np.argmax(output.data.cpu().numpy()))],
                 'ClassNum': np.argmax(output.data.cpu().numpy()),
@@ -78,6 +83,11 @@ class Model:
            The extracted feature.
         """
         image, filename = sample
+
+        if self.feature_model.training:
+            print("Run feature model in inference mode!")
+            exit(0)
+
         if self.feature_model:
             feature = np.squeeze(self.feature_model(image[None, ...].to(self.device)).data.cpu().numpy())
             return feature
