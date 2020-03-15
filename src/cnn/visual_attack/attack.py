@@ -25,6 +25,7 @@ class VisualAttack:
 
         # NEW PYTORCH IMPLEMENTATION
         self.model = model
+        print(self.device)
         self.model.to(self.device)
 
         # OLD TENSORFLOW TO PYTORCH IMPLEMENTATION
