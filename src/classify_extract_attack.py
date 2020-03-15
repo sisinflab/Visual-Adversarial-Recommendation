@@ -45,8 +45,8 @@ def parse_args():
     parser.add_argument('--target_class', type=int, default=610)
     parser.add_argument('--gpu', type=int, default=0)
 
-    # attacks specific parameters
-    parser.add_argument('--eps', type=float, default=8)
+    # attacks specific parameterspgd
+    parser.add_argument('--eps', type=float, default=4)
     parser.add_argument('--it', type=int, default=1)
     parser.add_argument('--l', type=str, default='inf')
     parser.add_argument('--confidence', type=int, default=0)
@@ -80,6 +80,7 @@ def classify_and_extract_attack():
         np.divide((np.array([1.0, 1.0, 1.0]) - np.array([0.485, 0.456, 0.406])), np.array([0.229, 0.224, 0.225]))),
         dtype=tf.float32),
         shape=(1, 3, 1, 1))
+
     args.norm_eps = np.multiply((clip_max - clip_min), np.array([args.eps / 255, args.eps / 255, args.eps / 255]))
     args.norm_eps = tf.reshape(tf.cast(tf.convert_to_tensor(args.norm_eps),
                                        dtype=tf.float32), shape=(1, 3, 1, 1))
@@ -88,7 +89,7 @@ def classify_and_extract_attack():
 
     if args.attack_type == 'fgsm':
         params = {
-            "eps": args.norm_eps,  #
+            "eps": args.eps / 255,  #
             "clip_min": None,
             "clip_max": None,
             "ord": parse_ord(args.l),  #
@@ -176,7 +177,7 @@ def classify_and_extract_attack():
                                                                      args.origin_class,
                                                                      args.target_class,
                                                                      'eps' + str(args.eps),
-                                                                     'eps_it' + str(params["eps_iter"]),
+                                                                     'eps_it' + str(args.eps / 255 / 6),
                                                                      'nb_it' + str(params["nb_iter"]),
                                                                      'l' + str(params["ord"]))
         path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
@@ -241,7 +242,8 @@ def classify_and_extract_attack():
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
-                             transforms.ToTensor(),
+                             transforms.ToTensor()
+                             ,
                              transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                   std=[0.229, 0.224, 0.225])
                          ]))
@@ -260,6 +262,9 @@ def classify_and_extract_attack():
     denormalize = transforms.Normalize(mean=[-0.485 / 0.229, -0.456 / 0.224, -0.406 / 0.225],
                                        std=[1 / 0.229, 1 / 0.224, 1 / 0.225])
 
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+
     if os.path.exists(os.path.dirname(path_output_classes_attack)):
         shutil.rmtree(os.path.dirname(path_output_classes_attack))
     os.makedirs(os.path.dirname(path_output_classes_attack))
@@ -273,11 +278,17 @@ def classify_and_extract_attack():
             im, name = d
 
             if attack.must_attack(filename=name):
-                attacked = attack.run_attack(image=im)
+                _, pert = attack.run_attack(image=im)
 
-                save_image(image=denormalize(attacked), filename=path_output_images_attack + name)
+                adv_perturbed_out = denormalize(im) + pert
 
-                out_class = model.classification(list_classes=imgnet_classes, sample=(attacked, name))
+                adv_perturbed_out[adv_perturbed_out < 0] = 0
+                adv_perturbed_out[adv_perturbed_out > 1] = 1
+
+                save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
+
+                out_class = model.classification(list_classes=imgnet_classes,
+                                                 sample=(normalize(adv_perturbed_out), name))
                 out_class["ClassStrStart"] = df_origin_classification.loc[
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
                 out_class["ClassNumStart"] = df_origin_classification.loc[
@@ -286,13 +297,10 @@ def classify_and_extract_attack():
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "Prob"].item()
                 writer.writerow(out_class)
 
-                features[i, :] = model.feature_extraction(sample=(attacked, name))
+                features[i, :] = model.feature_extraction(sample=(normalize(adv_perturbed_out), name))
 
             if (i + 1) % 1000 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
-
-            if (i + 1) == 200:
-                break
 
     save_np(npy=features, filename=path_output_features_attack)
 
