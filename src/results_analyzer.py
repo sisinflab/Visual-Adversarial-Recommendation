@@ -2,6 +2,7 @@ import utils.read as read
 import utils.write as write
 from utils.sendmail import sendmail
 from utils import get_server_name, cpu_count
+from operator import itemgetter
 
 import pandas as pd
 import time
@@ -88,9 +89,24 @@ if __name__ == '__main__':
 
             print(novel.items())
 
+            N_USERS = pos_elements['u'].nunique()
+            N = 30  # Top-N classes
+            class_str_length = 10
+
             # Store class frequencies results
             class_frequency_file_name = 'Top{0}_class_frequency_of_'.format(K) + prediction_file.split('.')[0]
             write.save_obj(novel, prediction_files_path + class_frequency_file_name)
 
-            sendmail('Elaborate Predictions on {0}', 'Execution time: {1}'.format(get_server_name(), time.time() - start))
+            res = dict(sorted(novel.items(), key=itemgetter(1), reverse=True)[:N])
+
+            res = {str(k)[:class_str_length]: v / N_USERS for k, v in res.items()}
+
+            keys = res.keys()
+            values = res.values()
+
+            ordered = pd.DataFrame(list(zip(keys, values)), columns=['x', 'y']).sort_values(by=['y'], ascending=False)
+
+            print(ordered)
+
+            sendmail('Elaborate Predictions on {0}'.format(get_server_name()), '{0} - {1}'.format(prediction_file, ordered))
 
