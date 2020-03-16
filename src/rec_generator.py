@@ -19,7 +19,7 @@ def parse_args():
     parser.add_argument('--regs', nargs='?', default='[1e-1,1e-3,0]', help='lambdas for regularization')
     parser.add_argument('--lmd', type=float, default=1, help='lambda for balance the common loss and adversarial loss')
     parser.add_argument('--keep_prob', type=float, default=0.6, help='keep probability of dropout layers')
-    parser.add_argument('--adv', type=int, default=1, help='adversarial training')
+    parser.add_argument('--adv', type=int, default=0, help='adversarial training')
     parser.add_argument('--adv_type', nargs='?', default='grad', help='adversarial training type: grad, rand')
     parser.add_argument('--cnn', nargs='?', default='resnet', help='cnn type: resnet50')
     parser.add_argument('--epsilon', type=float, default=0.1, help='epsilon for adversarial')
