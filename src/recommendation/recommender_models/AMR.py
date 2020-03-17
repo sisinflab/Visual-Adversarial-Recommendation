@@ -84,13 +84,7 @@ class AMR:
     def _prediction(self):
         with tf.name_scope("prediction"):
             self.emb2_Q = tf.matmul(self.image_feature, self.phi)
-
-            self.d = self.epsilon * tf.nn.l2_normalize(self.delta, 1)
-            self.watch.append(self.d)
-            self.emb2_Q = self.emb2_Q + tf.matmul(self.d, self.phi)
-
             self.temp_emb_Q = self.emb_Q + self.emb2_Q
-
             self.predictions = tf.matmul(self.emb_P * -1, self.temp_emb_Q, transpose_b=True)
 
     def _create_loss(self):
@@ -145,9 +139,10 @@ class AMR:
     def build_graph(self):
         self._create_placeholders()
         self._create_variables()
+        self._prediction()
         self._create_loss()
         self._create_optimizer()
-        self._prediction()
+
 
     def get_saver_name(self):
         return "stored_vbpr_k_%d_lr_%s_regs_%s_eps_%f_lmd_%f" % \

@@ -25,13 +25,6 @@ def parse_args():
     parser.add_argument('--epsilon', type=float, default=1, help='epsilon for adversarial')
     parser.add_argument('--weight_dir', nargs='?', default='rec_model_weights', help='directory to store the weights')
     parser.add_argument('--result_dir', nargs='?', default='rec_results', help='directory to store the predictions')
-    # parser.add_argument('--attack_type', nargs='?', default='none', help='attack types: none, fgsm, bim, pgd, cw, deepfool')
-    # parser.add_argument('--iteration_attack_type', nargs='?', default='1',
-    #                     help='number of attack iteration: fgsm: 1, bim: k, pgd: k, cw: 1, deepfool: 1')
-    # # parser.add_argument('--attacked_categories', nargs='?', default='',
-    #                     help='attacked category: targeted misclassification from Start ID  Category to ENd Id Category')
-    # parser.add_argument('--eps_cnn', nargs='?', default='0.015686275',
-    #                     help='pixel modified on the picture: 4 pixel is the default')
 
     parser.add_argument('--tp_k_predictions', type=int, default=1000,
                         help='top k predictions to store before the evaluation')
