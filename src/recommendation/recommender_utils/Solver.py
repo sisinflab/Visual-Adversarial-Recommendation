@@ -76,7 +76,6 @@ class Solver:
             if i % self.verbose == 0:
                 self.save(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
-            break
 
         self.store_predictions(i)
         self.save(i)
