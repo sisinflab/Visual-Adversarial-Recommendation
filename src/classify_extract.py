@@ -9,25 +9,33 @@ import numpy as np
 import argparse
 import sys
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for original images.")
     parser.add_argument('--gpu', type=int, default=0)
+    parser.add_argument('--dataset', nargs='?', default='amazon_men',
+                        help='dataset path: amazon_men, amazon_women')
 
     return parser.parse_args()
 
+
 def classify_and_extract():
+    args = parse_args()
     path_images, path_output_classes, path_output_features, path_classes = read_config(
-        sections_fields=[('PATHS', 'InputAmazonMenImages'),
-                         ('PATHS', 'OutputAmazonMenClasses'),
-                         ('PATHS', 'OutputAmazonMenFeatures'),
+        sections_fields=[('PATHS', 'InputImages'),
+                         ('PATHS', 'OutputClasses'),
+                         ('PATHS', 'OutputFeatures'),
                          ('PATHS', 'ImagenetClasses')])
+    path_images, path_output_classes, path_output_features = path_images.format(
+        args.dataset), path_output_classes.format(args.dataset), path_output_features.format(args.dataset)
+
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
                              transforms.ToTensor(),
                              transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                   std=[0.229, 0.224, 0.225])
                          ]))
-    args = parse_args()
+
     model = Model(model=models.resnet50(pretrained=True), gpu=args.gpu)
     model.set_out_layer(drop_layers=1)
     img_classes = read_imagenet_classes_txt(path_classes)

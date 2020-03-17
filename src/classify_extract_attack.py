@@ -44,6 +44,8 @@ def parse_args():
     parser.add_argument('--origin_class', type=int, default=409)
     parser.add_argument('--target_class', type=int, default=530)
     parser.add_argument('--gpu', type=int, default=0)
+    parser.add_argument('--dataset', nargs='?', default='amazon_men',
+                        help='dataset path: amazon_men, amazon_women')
 
     # attacks specific parameterspgd
     parser.add_argument('--eps', type=float, default=8)
@@ -57,17 +59,20 @@ def parse_args():
 
 
 def classify_and_extract_attack():
+    args = parse_args()
+
     path_images, path_input_classes, path_input_features, path_classes, \
     path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
-        sections_fields=[('PATHS', 'InputAmazonMenImages'),
-                         ('PATHS', 'OutputAmazonMenClasses'),
-                         ('PATHS', 'OutputAmazonMenFeatures'),
+        sections_fields=[('PATHS', 'InputImages'),
+                         ('PATHS', 'OutputClasses'),
+                         ('PATHS', 'OutputFeatures'),
                          ('PATHS', 'ImagenetClasses'),
-                         ('PATHS', 'OutputAmazonMenImagesAttack'),
-                         ('PATHS', 'OutputAmazonMenFeaturesAttack'),
-                         ('PATHS', 'OutputAmazonMenClassesAttack')])
+                         ('PATHS', 'OutputImagesAttack'),
+                         ('PATHS', 'OutputFeaturesAttack'),
+                         ('PATHS', 'OutputClassesAttack')])
 
-    args = parse_args()
+    path_images, path_input_classes, path_input_features = path_images.format(args.dataset), path_input_classes.format(
+        args.dataset), path_input_features.format(args.dataset)
 
     os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
@@ -79,21 +84,24 @@ def classify_and_extract_attack():
             "ord": parse_ord(args.l),  #
             "y_target": None
         }
-        path_output_images_attack = path_output_images_attack.format(args.attack_type,
+        path_output_images_attack = path_output_images_attack.format(args.dataset,
+                                                                     args.attack_type,
                                                                      args.origin_class,
                                                                      args.target_class,
                                                                      'eps' + str(args.eps),
                                                                      'it' + str(args.it),
                                                                      'l' + str(args.l),
                                                                      'XX')
-        path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
+        path_output_classes_attack = path_output_classes_attack.format(args.dataset,
+                                                                       args.attack_type,
                                                                        args.origin_class,
                                                                        args.target_class,
                                                                        'eps' + str(args.eps),
                                                                        'it' + str(args.it),
                                                                        'l' + str(args.l),
                                                                        'XX')
-        path_output_features_attack = path_output_features_attack.format(args.attack_type,
+        path_output_features_attack = path_output_features_attack.format(args.dataset,
+                                                                         args.attack_type,
                                                                          args.origin_class,
                                                                          args.target_class,
                                                                          'eps' + str(args.eps),
@@ -115,21 +123,24 @@ def classify_and_extract_attack():
             "clip_grad": False,
             "sanity_checks": True
         }
-        path_output_images_attack = path_output_images_attack.format(args.attack_type,
+        path_output_images_attack = path_output_images_attack.format(args.dataset,
+                                                                     args.attack_type,
                                                                      args.origin_class,
                                                                      args.target_class,
                                                                      'eps' + str(args.eps),
                                                                      'eps_it' + str(args.eps / 255 / 6),
                                                                      'nb_it' + str(params["nb_iter"]),
                                                                      'l' + str(params["ord"]))
-        path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
+        path_output_classes_attack = path_output_classes_attack.format(args.dataset,
+                                                                       args.attack_type,
                                                                        args.origin_class,
                                                                        args.target_class,
                                                                        'eps' + str(args.eps),
                                                                        'eps_it' + str(params["eps_iter"]),
                                                                        'nb_it' + str(params["nb_iter"]),
                                                                        'l' + str(params["ord"]))
-        path_output_features_attack = path_output_features_attack.format(args.attack_type,
+        path_output_features_attack = path_output_features_attack.format(args.dataset,
+                                                                         args.attack_type,
                                                                          args.origin_class,
                                                                          args.target_class,
                                                                          'eps' + str(args.eps),
@@ -151,21 +162,24 @@ def classify_and_extract_attack():
             "clip_min": args.clip_min,
             "clip_max": args.clip_min
         }
-        path_output_images_attack = path_output_images_attack.format(args.attack_type,
+        path_output_images_attack = path_output_images_attack.format(args.dataset,
+                                                                     args.attack_type,
                                                                      args.origin_class,
                                                                      args.target_class,
                                                                      'conf' + str(params["confidence"]),
                                                                      'lr' + str(params["learning_rate"]),
                                                                      'c' + str(params["initial_const"]),
                                                                      'max_it' + str(params["max_iterations"]))
-        path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
+        path_output_classes_attack = path_output_classes_attack.format(args.dataset,
+                                                                       args.attack_type,
                                                                        args.origin_class,
                                                                        args.target_class,
                                                                        'conf' + str(params["confidence"]),
                                                                        'lr' + str(params["learning_rate"]),
                                                                        'c' + str(params["initial_const"]),
                                                                        'max_it' + str(params["max_iterations"]))
-        path_output_features_attack = path_output_features_attack.format(args.attack_type,
+        path_output_features_attack = path_output_features_attack.format(args.dataset,
+                                                                         args.attack_type,
                                                                          args.origin_class,
                                                                          args.target_class,
                                                                          'conf' + str(params["confidence"]),
@@ -182,21 +196,24 @@ def classify_and_extract_attack():
             "y_target": None,
             "symbolic_impl": True  #
         }
-        path_output_images_attack = path_output_images_attack.format(args.attack_type,
+        path_output_images_attack = path_output_images_attack.format(args.dataset,
+                                                                     args.attack_type,
                                                                      args.origin_class,
                                                                      args.target_class,
                                                                      'th' + str(params["theta"]),
                                                                      'ga' + str(params["gamma"]),
                                                                      'symb' + str(params["symbolic_impl"]),
                                                                      'XX')
-        path_output_classes_attack = path_output_classes_attack.format(args.attack_type,
+        path_output_classes_attack = path_output_classes_attack.format(args.dataset,
+                                                                       args.attack_type,
                                                                        args.origin_class,
                                                                        args.target_class,
                                                                        'th' + str(params["theta"]),
                                                                        'ga' + str(params["gamma"]),
                                                                        'symb' + str(params["symbolic_impl"]),
                                                                        'XX')
-        path_output_features_attack = path_output_features_attack.format(args.attack_type,
+        path_output_features_attack = path_output_features_attack.format(args.dataset,
+                                                                         args.attack_type,
                                                                          args.origin_class,
                                                                          args.target_class,
                                                                          'th' + str(params["theta"]),
@@ -209,7 +226,7 @@ def classify_and_extract_attack():
 
     imgnet_classes = read_imagenet_classes_txt(path_classes)
 
-    print("RUNNING {0} ATTACK".format(attacks_params[args.attack_type]["name"]))
+    print("RUNNING {0} ATTACK on DATASET {1}".format(attacks_params[args.attack_type]["name"], args.dataset))
     print("- ORIGINAL CLASS: %d/%d (%s)" % (args.origin_class, args.num_classes - 1, imgnet_classes[args.origin_class]))
     print("- TARGET CLASS: %d/%d (%s)" % (args.target_class, args.num_classes - 1, imgnet_classes[args.target_class]))
     print("- PARAMETERS:")
@@ -254,7 +271,6 @@ def classify_and_extract_attack():
             im, name = d
 
             if attack.must_attack(filename=name):
-
                 # Generate attacked image with chosen attack algorithm
                 adv_perturbed_out = attack.run_attack(image=im[None, ...])
 
