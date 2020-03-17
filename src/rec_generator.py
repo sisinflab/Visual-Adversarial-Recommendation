@@ -3,6 +3,8 @@ from recommendation.recommender_utils.Solver import Solver
 from time import time
 import os
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
     parser.add_argument('--gpu', type=int, default=0)
@@ -37,7 +39,7 @@ if __name__ == '__main__':
     args = parse_args()
     solver = Solver(args)
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
+
 
     print(parse_args())
 
