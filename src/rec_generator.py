@@ -1,10 +1,11 @@
 import argparse
 from recommendation.recommender_utils.Solver import Solver
 from time import time
-
+import os
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
+    parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path')
     parser.add_argument('--experiment_name', nargs='?', default='fgsm_806_409_eps16.0_it1_linf_XX_images',
@@ -33,7 +34,11 @@ def parse_args():
 
 
 if __name__ == '__main__':
-    solver = Solver(parse_args())
+    args = parse_args()
+    solver = Solver(args)
+
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
+
     print(parse_args())
 
     start_time = time()
