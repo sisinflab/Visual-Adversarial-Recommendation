@@ -71,6 +71,7 @@ class Solver:
             start_epoch = self.epoch // 2
 
         for i in range(start_epoch + 1, self.epoch + 1):
+            break
             start = time.time()
             self.one_epoch()
             if i % self.verbose == 0:
