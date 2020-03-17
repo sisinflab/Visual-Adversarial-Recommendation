@@ -2,11 +2,12 @@ import math
 import time
 import utils.read as read
 import utils.write as write
-from AMR import AMR
 
 import numpy as np
 import tensorflow as tf
 import os
+
+from AMR import AMR
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
