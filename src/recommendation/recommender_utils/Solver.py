@@ -122,20 +122,20 @@ class Solver:
 
     def store_predictions(self, epoch):
         # We multiply the users embeddings by -1 to have the np sorting operation in the correct order
-        with tf.device('/cpu:0'):
-            print('Start Store Predictions at epoch {0}'.format(epoch))
-            start = time.time()
-            predictions = self.sess.run(self.model.predictions)
-            predictions = predictions.argsort(axis=1)
-            predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
-            prediction_name = self.result_dir + self.experiment_name + 'top{0}_predictions_epoch{1}'.format(
-                self.tp_k_predictions, epoch)
-            if self.adv:
-                prediction_name = prediction_name + '_AMR'
+        # with tf.device('/cpu:0'):
+        print('Start Store Predictions at epoch {0}'.format(epoch))
+        start = time.time()
+        predictions = self.sess.run(self.model.predictions)
+        predictions = predictions.argsort(axis=1)
+        predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
+        prediction_name = self.result_dir + self.experiment_name + 'top{0}_predictions_epoch{1}'.format(
+            self.tp_k_predictions, epoch)
+        if self.adv:
+            prediction_name = prediction_name + '_AMR'
 
-            write.save_obj(predictions, prediction_name)
+        write.save_obj(predictions, prediction_name)
 
-            print('End Store Predictions {0}'.format(time.time() - start))
+        print('End Store Predictions {0}'.format(time.time() - start))
 
     def load(self):
         try:
