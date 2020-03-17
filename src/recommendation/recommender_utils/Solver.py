@@ -27,7 +27,7 @@ class Solver:
         self.epoch = args.epoch
         self.verbose = args.verbose
 
-        self.sess = tf.compat.v1.Session()
+        self.sess = tf.compat.v1.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True))
         self.sess.run(tf.compat.v1.global_variables_initializer())
         self.saver = tf.compat.v1.train.Saver(tf.compat.v1.trainable_variables(), max_to_keep=0)
         self.sess.run(self.model.assign_image, feed_dict={self.model.init_image: self.dataset.emb_image})
