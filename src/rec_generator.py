@@ -37,9 +37,11 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    solver = Solver(args)
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = 1
+    print('Device gpu: {0}'.format(args.gpu))
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
+
+    solver = Solver(args)
 
     print(parse_args())
 
