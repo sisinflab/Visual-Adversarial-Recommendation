@@ -12,7 +12,7 @@ import os
 
 # Global Configuration
 result_dir = '../rec_results/'
-dataset_name = 'amazon_men/'
+dataset_name = 'amazon_women/'
 experiment_name = ''
 tp_k_predictions = 1000
 prediction_files_path = result_dir + dataset_name
