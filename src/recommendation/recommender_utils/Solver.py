@@ -71,12 +71,12 @@ class Solver:
             start_epoch = self.epoch // 2
 
         for i in range(start_epoch + 1, self.epoch + 1):
-            break
             start = time.time()
             self.one_epoch()
             if i % self.verbose == 0:
                 self.save(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
+            break
 
         self.store_predictions(i)
         self.save(i)
@@ -122,19 +122,20 @@ class Solver:
 
     def store_predictions(self, epoch):
         # We multiply the users embeddings by -1 to have the np sorting operation in the correct order
-        # with tf.device('/cpu:0'):
-        print('Start Store Predictions at epoch {0}'.format(epoch))
-        start = time.time()
-        predictions = self.sess.run(self.model.predictions)
-        predictions = predictions.argsort(axis=1)
-        predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
-        prediction_name = self.result_dir + self.experiment_name + 'top{0}_predictions_epoch{1}'.format(
-            self.tp_k_predictions, epoch)
-        if self.adv:
-            prediction_name = prediction_name + '_AMR'
+        with tf.device('/cpu:0'):
+            print('Start Store Predictions at epoch {0}'.format(epoch))
+            start = time.time()
+            predictions = self.sess.run(self.model.predictions)
+            predictions = predictions.argsort(axis=1)
+            predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
+            prediction_name = self.result_dir + self.experiment_name + 'top{0}_predictions_epoch{1}'.format(
+                self.tp_k_predictions, epoch)
+            if self.adv:
+                prediction_name = prediction_name + '_AMR'
 
-        write.save_obj(predictions, prediction_name)
-        print('End Store Predictions {0}'.format(time.time() - start))
+            write.save_obj(predictions, prediction_name)
+
+            print('End Store Predictions {0}'.format(time.time() - start))
 
     def load(self):
         try:
