@@ -1,6 +1,7 @@
 import argparse
 from recommendation.recommender_utils.Solver import Solver
 from time import time
+import os
 
 
 def parse_args():
@@ -18,7 +19,8 @@ def parse_args():
     parser.add_argument('--verbose', type=int, default=1000, help='verbose')
     parser.add_argument('--epoch', type=int, default=4000, help='epochs')
     parser.add_argument('--regs', nargs='?', default='[1e-1,1e-3,0]', help='lambdas for regularization')
-    parser.add_argument('--lmd', type=float, default=0.1, help='lambda for balance the common loss and adversarial loss')
+    parser.add_argument('--lmd', type=float, default=0.1,
+                        help='lambda for balance the common loss and adversarial loss')
     parser.add_argument('--keep_prob', type=float, default=0.6, help='keep probability of dropout layers')
     parser.add_argument('--adv', type=int, default=0, help='adversarial training')
     parser.add_argument('--adv_type', nargs='?', default='grad', help='adversarial training type: grad, rand')
@@ -34,8 +36,11 @@ def parse_args():
 
 
 if __name__ == '__main__':
-    solver = Solver(parse_args())
-    print(parse_args())
+    args = parse_args()
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
+    print('Device gpu: {0}'.format(os.environ['CUDA_VISIBLE_DEVICES']))
+    solver = Solver(args)
+    print(args)
 
     start_time = time()
 
