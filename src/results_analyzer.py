@@ -43,7 +43,7 @@ def count_elaborated(r):
     global counter, start_counter, users_size
     counter += 1
     if (counter + 1) % 100 == 0:
-        print('{0}/{1} in {2}'.format(counter + 1, users_size, time.time() - start_counter))
+        # print('{0}/{1} in {2}'.format(counter + 1, users_size, time.time() - start_counter))
         start_counter = time.time()
 
 
@@ -87,14 +87,14 @@ if __name__ == '__main__':
             for key in class_frequency.keys():
                 novel[key] = class_frequency[key]
 
-            print(novel.items())
+            # print(novel.items())
 
             N_USERS = pos_elements['u'].nunique()
             N = 30  # Top-N classes
             class_str_length = 10
 
             # Store class frequencies results
-            class_frequency_file_name = 'Top{0}_class_frequency_of_'.format(K) + prediction_file.split('.')[0]
+            class_frequency_file_name = 'Top{0}/Top{0}_class_frequency_of_'.format(K) + prediction_file.split('.')[0]
             write.save_obj(novel, prediction_files_path + class_frequency_file_name)
 
             res = dict(sorted(novel.items(), key=itemgetter(1), reverse=True)[:N])
@@ -106,7 +106,8 @@ if __name__ == '__main__':
 
             ordered = pd.DataFrame(list(zip(keys, values)), columns=['x', 'y']).sort_values(by=['y'], ascending=False)
 
+            print('\nExperiment Name: {0}'.format(prediction_file))
             print(ordered)
 
-            sendmail('Elaborate Predictions on {0}'.format(get_server_name()), '{0} - {1}'.format(prediction_file, ordered))
+    sendmail('Elaborate Predictions on {0}'.format(get_server_name()), 'Amazon Men')
 
