@@ -10,13 +10,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run visual metrics evaluation.")
     parser.add_argument('--dataset', type=str, default='amazon_men', help='dataset path: amazon_men, amazon_women')
     parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
-    parser.add_argument('--origin_class', type=int, default=409)
-    parser.add_argument('--target_class', type=str, default=530)
+    parser.add_argument('--origin_class', type=int, default=806)
+    parser.add_argument('--target_class', type=str, default=770)
     parser.add_argument('--num_classes', type=int, default=1000)
     parser.add_argument('--gpu', type=int, default=0)
 
     # attacks specific parameters
-    parser.add_argument('--eps', type=float, default=8)
+    parser.add_argument('--eps', type=float, default=16)
     parser.add_argument('--it', type=int, default=1)
     parser.add_argument('--l', type=str, default='inf')
     parser.add_argument('--confidence', type=int, default=0)
@@ -173,7 +173,7 @@ def evaluate_visual_metrics_jpeg():
                 avg_perceptual_loss += current_perceptual_loss
                 num_targeted_attacked += 1
 
-                writer.writerow({'ImageID': origin_filename,
+                writer.writerow({'ImageID': os.path.splitext(origin_filename)[0],
                                  'Mse': current_mse,
                                  'Psnr': current_psnr,
                                  'Ssim': current_ssim,
