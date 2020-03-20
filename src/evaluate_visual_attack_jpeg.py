@@ -189,9 +189,10 @@ def evaluate_visual_metrics_jpeg():
             if (i + 1) % 100 == 0:
                 print('%d/%d samples completed' % (i + 1, origin_data.num_samples))
 
-    print('Visual evaluation completed. Final results:')
+    print('\n\nVisual evaluation completed.')
 
     if num_targeted_attacked:
+        print('Final visual metrics:')
         print('- Average mse: %.7f' % (avg_mse / num_targeted_attacked))
         print('- Average psnr: %.5f' % (avg_psnr / num_targeted_attacked))
         print('- Average ssim: %.7f' % (avg_ssim / num_targeted_attacked))
@@ -199,6 +200,7 @@ def evaluate_visual_metrics_jpeg():
 
     else:
         print('No correctly attacked image.')
+    print('Final success metrics:')
     print('- Correctly attacked: %.7f' % (num_targeted_attacked / num_total_attacked))
     print('- Incorrectly attacked: %.7f' % (num_untargeted_attacked / num_total_attacked))
     print('- Non attacked: %.7f' % (num_non_attacked / num_total_attacked))
