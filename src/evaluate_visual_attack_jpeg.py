@@ -16,7 +16,7 @@ def parse_args():
     parser.add_argument('--gpu', type=int, default=0)
 
     # attacks specific parameters
-    parser.add_argument('--eps', type=float, default=16)
+    parser.add_argument('--eps', type=float, default=16.0)
     parser.add_argument('--it', type=int, default=1)
     parser.add_argument('--l', type=str, default='inf')
     parser.add_argument('--confidence', type=int, default=0)
@@ -151,36 +151,38 @@ def evaluate_visual_metrics_jpeg():
             origin_img, origin_filename = d
             attacked_img, attacked_filename = a
 
+            # Normalize images between [0, 1]
+            origin_img = np.array(origin_img / np.float32(255), dtype=np.float32)
+            attacked_img = np.array(attacked_img / np.float32(255), dtype=np.float32)
+
+            # Calculate current visual metrics
+            current_mse = mse(im1=origin_img, im2=attacked_img)
+            current_psnr = psnr(im1=origin_img, im2=attacked_img)
+            current_ssim = ssim(im1=origin_img, im2=attacked_img)
+            current_perceptual_loss = mse(im1=original_features[i, :], im2=attacked_features[i, :])
+
+            # Accumulate visual metrics to calculate the final average on attacked images
+            avg_mse += current_mse
+            avg_psnr += current_psnr
+            avg_ssim += current_ssim
+            avg_perceptual_loss += current_perceptual_loss
+
+            writer.writerow({'ImageID': os.path.splitext(origin_filename)[0],
+                             'Mse': current_mse,
+                             'Psnr': current_psnr,
+                             'Ssim': current_ssim,
+                             'Percep': current_perceptual_loss
+                             })
+
+            print('------')
+            print(df_attacked_classification.loc[df_attacked_classification["ImageID"] == int(
+                    os.path.splitext(origin_filename)[0]), "ClassNum"].item())
+            print(args.target_class)
+            print('------')
+
             if df_attacked_classification.loc[df_attacked_classification["ImageID"] == int(
                     os.path.splitext(origin_filename)[0]), "ClassNum"].item() == args.target_class:
-
-                print('entrato')
-
-                # Calculate the visual metrics only if the targeted attack was successful
-
-                # Normalize images between [0, 1]
-                origin_img = np.array(origin_img / np.float32(255), dtype=np.float32)
-                attacked_img = np.array(attacked_img / np.float32(255), dtype=np.float32)
-
-                # Calculate current visual metrics
-                current_mse = mse(im1=origin_img, im2=attacked_img)
-                current_psnr = psnr(im1=origin_img, im2=attacked_img)
-                current_ssim = ssim(im1=origin_img, im2=attacked_img)
-                current_perceptual_loss = mse(im1=original_features[i, :], im2=attacked_features[i, :])
-
-                # Accumulate visual metrics to calculate the final average on attacked images
-                avg_mse += current_mse
-                avg_psnr += current_psnr
-                avg_ssim += current_ssim
-                avg_perceptual_loss += current_perceptual_loss
                 num_targeted_attacked += 1
-
-                writer.writerow({'ImageID': os.path.splitext(origin_filename)[0],
-                                 'Mse': current_mse,
-                                 'Psnr': current_psnr,
-                                 'Ssim': current_ssim,
-                                 'Percep': current_perceptual_loss
-                                 })
 
             elif df_attacked_classification.loc[df_attacked_classification["ImageID"] == int(
                     os.path.splitext(origin_filename)[0]), "ClassNum"].item() == args.origin_class:
@@ -191,21 +193,17 @@ def evaluate_visual_metrics_jpeg():
             if (i + 1) % 100 == 0:
                 print('%d/%d samples completed' % (i + 1, origin_data.num_samples))
 
-    print('\n\nVisual evaluation completed.')
-
-    if num_targeted_attacked:
-        print('Final visual metrics:')
-        print('- Average mse: %.7f' % (avg_mse / num_targeted_attacked))
-        print('- Average psnr: %.5f' % (avg_psnr / num_targeted_attacked))
-        print('- Average ssim: %.7f' % (avg_ssim / num_targeted_attacked))
-        print('- Average perceptual loss: %.7f' % (avg_perceptual_loss / num_targeted_attacked))
-
-    else:
-        print('No correctly attacked image.')
-    print('Final success metrics:')
-    print('- Correctly attacked: %.7f' % (num_targeted_attacked / num_total_attacked))
-    print('- Incorrectly attacked: %.7f' % (num_untargeted_attacked / num_total_attacked))
-    print('- Non attacked: %.7f' % (num_non_attacked / num_total_attacked))
+    with open(os.path.dirname(path_output_visual_metrics_csv) + '/average_results', mode='w') as f:
+        print('Visual evaluation completed.', file=f)
+        print('Final visual metrics:', file=f)
+        print('- Average mse: %.20f' % (avg_mse / num_total_attacked), file=f)
+        print('- Average psnr: %.20f' % (avg_psnr / num_total_attacked), file=f)
+        print('- Average ssim: %.20f' % (avg_ssim / num_total_attacked), file=f)
+        print('- Average perceptual loss: %.20f' % (avg_perceptual_loss / num_total_attacked), file=f)
+        print('Final success metrics:', file=f)
+        print('- Correctly attacked: %.7f' % (num_targeted_attacked / num_total_attacked), file=f)
+        print('- Incorrectly attacked: %.7f' % (num_untargeted_attacked / num_total_attacked), file=f)
+        print('- Non attacked: %.7f' % (num_non_attacked / num_total_attacked), file=f)
 
 
 if __name__ == '__main__':
