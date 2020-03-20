@@ -174,6 +174,12 @@ def evaluate_visual_metrics_jpeg():
                              'Percep': current_perceptual_loss
                              })
 
+            print('predicted target')
+            print(df_attacked_classification.loc[df_attacked_classification["ImageID"] == int(
+                    os.path.splitext(origin_filename)[0]), "ClassNum"].item())
+            print('actual target')
+            print(args.target_class)
+
             if df_attacked_classification.loc[df_attacked_classification["ImageID"] == int(
                     os.path.splitext(origin_filename)[0]), "ClassNum"].item() == args.target_class:
                 num_targeted_attacked += 1
@@ -183,6 +189,9 @@ def evaluate_visual_metrics_jpeg():
                 num_non_attacked += 1
             else:
                 num_untargeted_attacked += 1
+
+            if (i + 1) == 8:
+                exit(0)
 
             if (i + 1) % 100 == 0:
                 print('%d/%d samples completed' % (i + 1, origin_data.num_samples))
