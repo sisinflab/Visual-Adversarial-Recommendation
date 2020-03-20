@@ -176,7 +176,6 @@ def evaluate_visual_metrics_jpeg():
 
             if df_attacked_classification.loc[df_attacked_classification["ImageID"] == int(
                     os.path.splitext(origin_filename)[0]), "ClassNum"].item() == args.target_class:
-                print('qui')
                 num_targeted_attacked += 1
 
             elif df_attacked_classification.loc[df_attacked_classification["ImageID"] == int(
