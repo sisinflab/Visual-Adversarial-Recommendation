@@ -1,10 +1,13 @@
-import tensorflow as tf
+from skimage.metrics import mean_squared_error, peak_signal_noise_ratio, structural_similarity
+
 
 def mse(im1, im2):
-    return tf.math.reduce_mean(tf.math.squared_difference(im1, im2)).numpy()
+    return mean_squared_error(im1, im2)
 
-def psnr(im1, im2, max_val):
-    return tf.image.psnr(im1, im2, max_val=max_val).numpy()
 
-def ssim(im1, im2, max_val):
-    return tf.image.ssim(im1, im2, max_val=max_val).numpy()
+def psnr(im1, im2):
+    return peak_signal_noise_ratio(im1, im2)
+
+
+def ssim(im1, im2):
+    return structural_similarity(im1, im2, multichannel=True)

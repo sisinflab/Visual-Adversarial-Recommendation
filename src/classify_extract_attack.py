@@ -47,7 +47,7 @@ def parse_args():
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path: amazon_men, amazon_women')
 
-    # attacks specific parameterspgd
+    # attacks specific parameters
     parser.add_argument('--eps', type=float, default=8)
     parser.add_argument('--it', type=int, default=1)
     parser.add_argument('--l', type=str, default='inf')
