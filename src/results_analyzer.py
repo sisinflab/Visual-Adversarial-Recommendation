@@ -43,7 +43,7 @@ def count_elaborated(r):
     global counter, start_counter, users_size
     counter += 1
     if (counter + 1) % 100 == 0:
-        # print('{0}/{1} in {2}'.format(counter + 1, users_size, time.time() - start_counter))
+        print('{0}/{1} in {2}'.format(counter + 1, users_size, time.time() - start_counter))
         start_counter = time.time()
 
 
@@ -52,7 +52,9 @@ if __name__ == '__main__':
     prediction_files = os.listdir(prediction_files_path)
 
     for prediction_file in prediction_files:
-        if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
+        # if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
+        if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot') and ('806_610' in prediction_file and '_AMR' in prediction_file):
+            print(prediction_file)
             predictions = read.load_obj(prediction_files_path + prediction_file)
 
             pos_elements = pd.read_csv('../data/{0}/pos.txt'.format(dataset_name), sep='\t', header=None)
@@ -90,7 +92,7 @@ if __name__ == '__main__':
             # print(novel.items())
 
             N_USERS = pos_elements['u'].nunique()
-            N = 30  # Top-N classes
+            N = 50  # Top-N classes
             class_str_length = 10
 
             # Store class frequencies results
