@@ -154,6 +154,8 @@ def evaluate_visual_metrics_jpeg():
             if df_attacked_classification.loc[df_attacked_classification["ImageID"] == int(
                     os.path.splitext(origin_filename)[0]), "ClassNum"].item() == args.target_class:
 
+                print('entrato')
+
                 # Calculate the visual metrics only if the targeted attack was successful
 
                 # Normalize images between [0, 1]
