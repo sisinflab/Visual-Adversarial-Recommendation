@@ -12,7 +12,7 @@ import os
 
 # Global Configuration
 result_dir = '../rec_results/'
-dataset_name = 'amazon_women/'
+dataset_name = 'amazon_men/'
 experiment_name = ''
 tp_k_predictions = 1000
 prediction_files_path = result_dir + dataset_name
@@ -52,7 +52,9 @@ if __name__ == '__main__':
     prediction_files = os.listdir(prediction_files_path)
 
     for prediction_file in prediction_files:
-        if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
+        # if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
+        if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot') and ('806_610' in prediction_file and '_AMR' in prediction_file):
+            print(prediction_file)
             predictions = read.load_obj(prediction_files_path + prediction_file)
 
             pos_elements = pd.read_csv('../data/{0}/pos.txt'.format(dataset_name), sep='\t', header=None)
@@ -87,14 +89,14 @@ if __name__ == '__main__':
             for key in class_frequency.keys():
                 novel[key] = class_frequency[key]
 
-            print(novel.items())
+            # print(novel.items())
 
             N_USERS = pos_elements['u'].nunique()
-            N = 30  # Top-N classes
+            N = 50  # Top-N classes
             class_str_length = 10
 
             # Store class frequencies results
-            class_frequency_file_name = 'Top{0}_class_frequency_of_'.format(K) + prediction_file.split('.')[0]
+            class_frequency_file_name = 'Top{0}/Top{0}_class_frequency_of_'.format(K) + prediction_file.split('.')[0]
             write.save_obj(novel, prediction_files_path + class_frequency_file_name)
 
             res = dict(sorted(novel.items(), key=itemgetter(1), reverse=True)[:N])
@@ -106,7 +108,8 @@ if __name__ == '__main__':
 
             ordered = pd.DataFrame(list(zip(keys, values)), columns=['x', 'y']).sort_values(by=['y'], ascending=False)
 
+            print('\nExperiment Name: {0}'.format(prediction_file))
             print(ordered)
 
-            sendmail('Elaborate Predictions on {0}'.format(get_server_name()), '{0} - {1}'.format(prediction_file, ordered))
+    sendmail('Elaborate Predictions on {0}'.format(get_server_name()), 'Amazon Men')
 
