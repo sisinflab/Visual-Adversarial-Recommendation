@@ -77,6 +77,7 @@ class Solver:
                 self.save(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
 
+
         self.store_predictions(i)
         self.save(i)
 

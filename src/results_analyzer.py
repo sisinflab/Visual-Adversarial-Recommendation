@@ -12,7 +12,7 @@ import os
 
 # Global Configuration
 result_dir = '../rec_results/'
-dataset_name = 'amazon_men/'
+dataset_name = 'amazon_women/'
 experiment_name = ''
 tp_k_predictions = 1000
 prediction_files_path = result_dir + dataset_name
@@ -51,65 +51,70 @@ if __name__ == '__main__':
 
     prediction_files = os.listdir(prediction_files_path)
 
-    for prediction_file in prediction_files:
-        # if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
-        if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot') and ('806_610' in prediction_file and '_AMR' in prediction_file):
-            print(prediction_file)
-            predictions = read.load_obj(prediction_files_path + prediction_file)
+    with open('results_aw_amr', 'w') as f:
 
-            pos_elements = pd.read_csv('../data/{0}/pos.txt'.format(dataset_name), sep='\t', header=None)
-            pos_elements.columns = ['u', 'i']
-            pos_elements.u = pos_elements.u.astype(int)
-            pos_elements.i = pos_elements.i.astype(int)
-            pos_elements = pos_elements.sort_values(by=['u', 'i'])
+        for prediction_file in prediction_files:
+            # if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
+            if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
+                print(prediction_file)
+                predictions = read.load_obj(prediction_files_path + prediction_file)
 
-            item_classes = pd.read_csv('../data/{0}/original_images/classes.csv'.format(dataset_name))
+                pos_elements = pd.read_csv('../data/{0}/pos.txt'.format(dataset_name), sep='\t', header=None)
+                pos_elements.columns = ['u', 'i']
+                pos_elements.u = pos_elements.u.astype(int)
+                pos_elements.i = pos_elements.i.astype(int)
+                pos_elements = pos_elements.sort_values(by=['u', 'i'])
 
-            manager = mp.Manager()
-            class_frequency = manager.dict()
-            for item_class in item_classes['ClassStr'].unique():
-                class_frequency[item_class] = 0
+                item_classes = pd.read_csv('../data/{0}/original_images/classes.csv'.format(dataset_name))
 
-            users_size = len(predictions)
+                manager = mp.Manager()
+                class_frequency = manager.dict()
+                for item_class in item_classes['ClassStr'].unique():
+                    class_frequency[item_class] = 0
 
-            p = mp.Pool(cpu_count()-1)
+                users_size = len(predictions)
 
-            for user_id, sorted_item_predictions in enumerate(predictions):
-                user_positive_items = pos_elements[pos_elements['u'] == user_id]['i'].to_list()
-                p.apply_async(elaborate, args=(class_frequency, user_id, user_positive_items, sorted_item_predictions,),
-                              callback=count_elaborated)
+                p = mp.Pool(cpu_count()-1)
 
-            p.close()
-            p.join()
+                for user_id, sorted_item_predictions in enumerate(predictions):
+                    user_positive_items = pos_elements[pos_elements['u'] == user_id]['i'].to_list()
+                    p.apply_async(elaborate, args=(class_frequency, user_id, user_positive_items, sorted_item_predictions,),
+                                  callback=count_elaborated)
 
-            print('END in {0} - {1}'.format(time.time() - start, max(class_frequency.values())))
+                p.close()
+                p.join()
 
-            # We need this operation to use the results in the Manager
-            novel = dict()
-            for key in class_frequency.keys():
-                novel[key] = class_frequency[key]
+                print('END in {0} - {1}'.format(time.time() - start, max(class_frequency.values())))
 
-            # print(novel.items())
+                # We need this operation to use the results in the Manager
+                novel = dict()
+                for key in class_frequency.keys():
+                    novel[key] = class_frequency[key]
 
-            N_USERS = pos_elements['u'].nunique()
-            N = 50  # Top-N classes
-            class_str_length = 10
+                # print(novel.items())
 
-            # Store class frequencies results
-            class_frequency_file_name = 'Top{0}/Top{0}_class_frequency_of_'.format(K) + prediction_file.split('.')[0]
-            write.save_obj(novel, prediction_files_path + class_frequency_file_name)
+                N_USERS = pos_elements['u'].nunique()
+                N = 50  # Top-N classes
+                class_str_length = 10
 
-            res = dict(sorted(novel.items(), key=itemgetter(1), reverse=True)[:N])
+                # Store class frequencies results
+                class_frequency_file_name = 'Top{0}/Top{0}_class_frequency_of_'.format(K) + prediction_file.split('.')[0]
+                write.save_obj(novel, prediction_files_path + class_frequency_file_name)
 
-            res = {str(k)[:class_str_length]: v / N_USERS for k, v in res.items()}
+                res = dict(sorted(novel.items(), key=itemgetter(1), reverse=True)[:N])
 
-            keys = res.keys()
-            values = res.values()
+                res = {str(k)[:class_str_length]: v / N_USERS for k, v in res.items()}
 
-            ordered = pd.DataFrame(list(zip(keys, values)), columns=['x', 'y']).sort_values(by=['y'], ascending=False)
+                keys = res.keys()
+                values = res.values()
 
-            print('\nExperiment Name: {0}'.format(prediction_file))
-            print(ordered)
+                ordered = pd.DataFrame(list(zip(keys, values)), columns=['x', 'y']).sort_values(by=['y'], ascending=False)
 
-    sendmail('Elaborate Predictions on {0}'.format(get_server_name()), 'Amazon Men')
+                print('\nExperiment Name: {0}'.format(prediction_file))
+                print(ordered)
+
+                f.writelines('\nExperiment Name: {0}'.format(prediction_file))
+                f.writelines(ordered.to_string())
+
+    sendmail('Elaborate Predictions on {0}'.format(get_server_name()), 'Amazon Women')
 
