@@ -19,4 +19,5 @@ pip-selfcheck.json
 rec_results/*
 rec_model_weights/*
 data/amazon_men/*
+data/pdf_images
 /rec_results/*
