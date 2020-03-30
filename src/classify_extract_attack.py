@@ -300,7 +300,7 @@ def classify_and_extract_attack():
                 adv_perturbed_out[adv_perturbed_out > 1.0] = 1.0
 
                 # Save image to memory
-                save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
+                save_image(image=adv_perturbed_out, filename=path_output_images_attack + out_class['ImageID'], mode='lossy')
 
             if (i + 1) % 1 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
