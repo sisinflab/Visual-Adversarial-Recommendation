@@ -46,6 +46,6 @@ def save_image(image, filename, mode='lossless'):
         os.makedirs(os.path.dirname(filename))
 
     if mode == 'lossy':
-        torchvision.utils.save_image(image, filename + 'jpg')
+        torchvision.utils.save_image(image, filename)
     elif mode == 'lossless':
         save_np(npy=image, filename=filename)
