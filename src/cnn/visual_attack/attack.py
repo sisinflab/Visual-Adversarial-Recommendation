@@ -34,7 +34,7 @@ class VisualAttack:
             self.tf_model = convert_pytorch_model_to_tf(model)
             self.cleverhans_model = CallableModelWrapper(self.tf_model, output_layer='logits')
             self.sess = tf.compat.v1.Session()
-            self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
+            self.x_op = tf.placeholder(tf.float32, shape=(3, None, None))
             self.adv_x_op = None
 
             self.y_target = np.zeros((1, 1000), dtype=np.uint8)
