@@ -156,14 +156,13 @@ def classify_and_extract_attack():
 
     # TO REVISE Carlini & Wagner and JSMA
     elif args.attack_type == 'cw':
-        attack_id = 'e-cleverhans'
         params = {'max_iterations': 50, 'learning_rate': 0.005,
                   'binary_search_steps': 1, 'confidence': 1e6,
                   'abort_early': False, 'initial_const': 0.4,
-                  'n_feats': 150528, 'n_classes': 1000,
+                  'n_classes': 1000,
                   'y_target': args.target_class,
-                  'clip_min': None, 'clip_max': None,
-                  'clvh_attack_class': CarliniWagnerL2}
+                  'clip_min': None, 'clip_max': None
+                  }
         path_output_images_attack = path_output_images_attack.format(args.dataset,
                                                                      args.attack_type,
                                                                      args.origin_class,
