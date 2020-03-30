@@ -1,4 +1,5 @@
 from secml.adv.attacks import CAttackEvasion
+from secml.ml.classifiers import CClassifierPyTorch
 from cnn.models.dataset import *
 from cnn.models.model import *
 from cnn.visual_attack.attack import *
@@ -258,10 +259,12 @@ def classify_and_extract_attack():
                               num_classes=args.num_classes)
 
     elif args.attack_type in ['cw', 'jsma']:
+        clf = CClassifierPyTorch(model=model.model,
+                                 random_state=0)
         attack = CAttackEvasion.create(
             attack_id,
-            model.model,
-            surrogate_classifier=model.model,
+            clf,
+            surrogate_classifier=clf,
             surrogate_data=data,
             **params)
 
