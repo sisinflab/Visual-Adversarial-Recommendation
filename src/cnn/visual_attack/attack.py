@@ -93,8 +93,7 @@ class VisualAttack:
         elif self.attack_type == 'cw':
             self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
             self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[2], image.shape[3]))
-            self._y_P = tf.compat.v1.placeholder(
-                tf.float32, shape=(1, 1000))
+            self._y_P = tf.placeholder(tf.float32, shape=(1, 1000))
 
             self.adv_x_op = self.attack_op.generate(self.x_op, y_target=self._y_P, **self.params)
 
