@@ -158,8 +158,8 @@ def classify_and_extract_attack():
     elif args.attack_type == 'cw':
         # 'n_classes': 1000
         params = {'max_iterations': 50, 'learning_rate': 0.005,
-                  'binary_search_steps': 5, 'confidence': 40,
-                  'abort_early': False, 'initial_const': 10,
+                  'binary_search_steps': 1, 'confidence': 1e6,
+                  'abort_early': False, 'initial_const': 0.4,
                   'y_target': args.target_class,
                   'clip_min': 0, 'clip_max': 1
                   }
@@ -300,7 +300,7 @@ def classify_and_extract_attack():
                 adv_perturbed_out[adv_perturbed_out > 1.0] = 1.0
 
                 # Save image to memory
-                save_image(image=adv_perturbed_out, filename=path_output_images_attack + name, mode='lossy')
+                save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
 
             if (i + 1) % 1 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
