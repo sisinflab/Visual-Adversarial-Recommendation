@@ -95,7 +95,7 @@ class VisualAttack:
             self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
             adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image})
-            adv_img_out = transforms.ToTensor()(adv_img)
+            adv_img_out = torch.from_numpy(adv_img)
             return adv_img_out
 
         else:
