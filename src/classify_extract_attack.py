@@ -1,5 +1,3 @@
-from secml.adv.attacks import CAttackEvasion
-from secml.ml.classifiers import CClassifierPyTorch
 from cnn.models.dataset import *
 from cnn.models.model import *
 from cnn.visual_attack.attack import *
@@ -48,9 +46,9 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='cw')
-    parser.add_argument('--origin_class', type=int, default=806)
-    parser.add_argument('--target_class', type=int, default=770)
+    parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
+    parser.add_argument('--origin_class', type=int, default=409)
+    parser.add_argument('--target_class', type=int, default=530)
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path: amazon_men, amazon_women')
@@ -247,28 +245,14 @@ def classify_and_extract_attack():
                          ]))
     model = Model(model=models.resnet50(pretrained=True))
     model.set_out_layer(drop_layers=1)
-
-    if args.attack_type in ['fgsm', 'pgd']:
-        attack = VisualAttack(df_classes=df_origin_classification,
-                              origin_class=args.origin_class,
-                              target_class=args.target_class,
-                              model=model.model,
-                              device=model.device,
-                              params=params,
-                              attack_type=args.attack_type,
-                              num_classes=args.num_classes)
-
-    elif args.attack_type in ['cw', 'jsma']:
-        clf = CClassifierPyTorch(model=model.model,
-                                 input_shape=(3, None, None),
-                                 pretrained=True,
-                                 random_state=0)
-        attack = CAttackEvasion.create(
-            attack_id,
-            clf,
-            surrogate_classifier=clf,
-            surrogate_data=data,
-            **params)
+    attack = VisualAttack(df_classes=df_origin_classification,
+                          origin_class=args.origin_class,
+                          target_class=args.target_class,
+                          model=model.model,
+                          device=model.device,
+                          params=params,
+                          attack_type=args.attack_type,
+                          num_classes=args.num_classes)
 
     features = read_np(filename=path_input_features)
 
@@ -290,14 +274,7 @@ def classify_and_extract_attack():
 
             if attack.must_attack(filename=name):
                 # Generate attacked image with chosen attack algorithm
-
-                if args.attack_type in ['fgsm', 'pgd']:
-                    adv_perturbed_out = attack.run_attack(image=im[None, ...])
-
-                elif args.attack_type in ['cw', 'jsma']:
-                    eva_y_pred, _, eva_adv_ds, _ = attack.run(im, model.classification(list_classes=imgnet_classes,
-                                                                                       sample=(im, name))['Prob'])
-                    adv_perturbed_out = eva_adv_ds.X
+                adv_perturbed_out = attack.run_attack(image=im[None, ...])
 
                 # Classify attacked image with pretrained model and append new classification to csv
                 out_class = model.classification(list_classes=imgnet_classes,
