@@ -95,8 +95,7 @@ class VisualAttack:
             self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
 
             adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image})
-            adv_img_out = transforms.ToTensor()(adv_img[0])
-            adv_img_out = adv_img_out.permute(1, 2, 0)
+            adv_img_out = transforms.ToTensor()(adv_img)
             return adv_img_out
 
         else:
