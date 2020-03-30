@@ -260,6 +260,8 @@ def classify_and_extract_attack():
 
     elif args.attack_type in ['cw', 'jsma']:
         clf = CClassifierPyTorch(model=model.model,
+                                 input_shape=(3, None, None),
+                                 pretrained=True,
                                  random_state=0)
         attack = CAttackEvasion.create(
             attack_id,
