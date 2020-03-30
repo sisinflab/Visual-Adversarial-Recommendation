@@ -1,3 +1,4 @@
+from secml.adv.attacks import CAttackEvasion
 from cnn.models.dataset import *
 from cnn.models.model import *
 from cnn.visual_attack.attack import *
@@ -5,11 +6,17 @@ from utils.read import *
 from utils.write import *
 from torchvision import transforms
 import torchvision.models as models
+import torch
 import numpy as np
 import argparse
 import csv
 import os
 import shutil
+
+# settare random seed
+
+np.random.seed(0)
+torch.manual_seed(0)
 
 # per parametri vuoti, usare X
 
@@ -40,9 +47,9 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
-    parser.add_argument('--origin_class', type=int, default=409)
-    parser.add_argument('--target_class', type=int, default=530)
+    parser.add_argument('--attack_type', nargs='?', type=str, default='cw')
+    parser.add_argument('--origin_class', type=int, default=806)
+    parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path: amazon_men, amazon_women')
@@ -150,18 +157,14 @@ def classify_and_extract_attack():
 
     # TO REVISE Carlini & Wagner and JSMA
     elif args.attack_type == 'cw':
-        params = {
-            "y_target": None,
-            "batch_size": 1,
-            "confidence": args.confidence,  #
-            "learning_rate": 5e-3,
-            "binary_search_steps": 0,  #
-            "max_iterations": 1000,  #
-            "abort_early": True,
-            "initial_const": args.c,  #
-            "clip_min": args.clip_min,
-            "clip_max": args.clip_min
-        }
+        attack_id = 'e-cleverhans'
+        params = {'max_iterations': 50, 'learning_rate': 0.005,
+                  'binary_search_steps': 1, 'confidence': 1e6,
+                  'abort_early': False, 'initial_const': 0.4,
+                  'n_feats': 150528, 'n_classes': 1000,
+                  'y_target': args.target_class,
+                  'clip_min': None, 'clip_max': None,
+                  'clvh_attack_class': CarliniWagnerL2}
         path_output_images_attack = path_output_images_attack.format(args.dataset,
                                                                      args.attack_type,
                                                                      args.origin_class,
@@ -243,14 +246,24 @@ def classify_and_extract_attack():
                          ]))
     model = Model(model=models.resnet50(pretrained=True))
     model.set_out_layer(drop_layers=1)
-    attack = VisualAttack(df_classes=df_origin_classification,
-                          origin_class=args.origin_class,
-                          target_class=args.target_class,
-                          model=model.model,
-                          device=model.device,
-                          params=params,
-                          attack_type=args.attack_type,
-                          num_classes=args.num_classes)
+
+    if args.attack_type in ['fgsm', 'pgd']:
+        attack = VisualAttack(df_classes=df_origin_classification,
+                              origin_class=args.origin_class,
+                              target_class=args.target_class,
+                              model=model.model,
+                              device=model.device,
+                              params=params,
+                              attack_type=args.attack_type,
+                              num_classes=args.num_classes)
+
+    elif args.attack_type in ['cw', 'jsma']:
+        attack = CAttackEvasion.create(
+            attack_id,
+            model.model,
+            surrogate_classifier=model.model,
+            surrogate_data=data,
+            **params)
 
     features = read_np(filename=path_input_features)
 
@@ -272,7 +285,14 @@ def classify_and_extract_attack():
 
             if attack.must_attack(filename=name):
                 # Generate attacked image with chosen attack algorithm
-                adv_perturbed_out = attack.run_attack(image=im[None, ...])
+
+                if args.attack_type in ['fgsm', 'pgd']:
+                    adv_perturbed_out = attack.run_attack(image=im[None, ...])
+
+                elif args.attack_type in ['cw', 'jsma']:
+                    eva_y_pred, _, eva_adv_ds, _ = attack.run(im, model.classification(list_classes=imgnet_classes,
+                                                                                       sample=(im, name))['Prob'])
+                    adv_perturbed_out = eva_adv_ds.X
 
                 # Classify attacked image with pretrained model and append new classification to csv
                 out_class = model.classification(list_classes=imgnet_classes,
