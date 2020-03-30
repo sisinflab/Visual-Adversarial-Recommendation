@@ -302,7 +302,7 @@ def classify_and_extract_attack():
                 # Save image to memory
                 save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
 
-            if (i + 1) % 1000 == 0:
+            if (i + 1) % 1 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
 
     # Save all extracted features (attacked and non-attacked ones)
