@@ -38,7 +38,8 @@ class VisualAttack:
 
             self.y_target = np.zeros((1, 1000), dtype=np.uint8)
             self.one_hot_encoded()
-            self.params["y_target"] = self.y_target
+            self.params.pop('y_target')
+            # self.params["y_target"] = self.y_target
 
         else:
             print('Library not recognized')
@@ -92,9 +93,12 @@ class VisualAttack:
         elif self.attack_type == 'cw':
             self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
             self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[2], image.shape[3]))
-            self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
+            self._y_P = tf.compat.v1.placeholder(
+                tf.float32, shape=(1, 1000))
 
-            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image})
+            self.adv_x_op = self.attack_op.generate(self.x_op, y_target=self._y_P, **self.params)
+
+            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image, self._y_P: self.y_target})
             adv_img_out = torch.from_numpy(adv_img)
             return adv_img_out
 
