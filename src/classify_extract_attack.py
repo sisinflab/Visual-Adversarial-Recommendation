@@ -160,8 +160,8 @@ def classify_and_extract_attack():
         params = {'max_iterations': 1000, 'learning_rate': 5e-3,
                   'binary_search_steps': 5, 'confidence': 0,
                   'abort_early': True, 'initial_const': 1e-2,
-                  'y_target': args.target_class,
-                  'clip_min': 0, 'clip_max': 1
+                  'y_target': args.target_class
+                  # ,      'clip_min': None, 'clip_max': None
                   }
         path_output_images_attack = path_output_images_attack.format(args.dataset,
                                                                      args.attack_type,
@@ -304,9 +304,6 @@ def classify_and_extract_attack():
 
             if (i + 1) % 1 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
-
-            if (i + 1) % 300 == 0:
-                break
 
     # Save all extracted features (attacked and non-attacked ones)
     save_np(npy=features, filename=path_output_features_attack)

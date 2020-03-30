@@ -34,7 +34,7 @@ def save_np(npy, filename):
     np.save(filename, npy)
 
 
-def save_image(image, filename, mode='lossless'):
+def save_image(image, filename, mode='lossy'):
     """
     Store an image to hard disk
     Args:
