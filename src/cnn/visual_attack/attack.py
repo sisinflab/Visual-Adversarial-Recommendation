@@ -7,6 +7,7 @@ import numpy as np
 import torch
 import os
 import logging
+import secml
 
 logging.disable(logging.WARNING)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'

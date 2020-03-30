@@ -12,7 +12,7 @@ import os
 
 # Global Configuration
 result_dir = '../rec_results/'
-dataset_name = 'amazon_women/'
+dataset_name = 'amazon_men/'
 experiment_name = ''
 tp_k_predictions = 1000
 prediction_files_path = result_dir + dataset_name
@@ -28,7 +28,12 @@ def elaborate(class_frequency, user_id, user_positive_items, sorted_item_predict
     k = 0
     for item_index in sorted_item_predictions:
         if item_index not in user_positive_items:
+
             item_original_class = item_classes[item_classes['ImageID'] == item_index]['ClassStr'].values[0]
+
+            if item_original_class == 'sock':
+                print('User: {0} Item: {1} Position: {2}'.format(user_id, item_index, k+1))
+
             class_frequency[item_original_class] += 1
             k += 1
             if k == K:
@@ -51,7 +56,7 @@ if __name__ == '__main__':
 
     prediction_files = os.listdir(prediction_files_path)
 
-    with open('results_aw_amr', 'w') as f:
+    with open('results_test.txt', 'w') as f:
 
         for prediction_file in prediction_files:
             # if not prediction_file.startswith('Top') and not prediction_file.startswith('Plot'):
@@ -76,7 +81,7 @@ if __name__ == '__main__':
 
                 p = mp.Pool(cpu_count()-1)
 
-                for user_id, sorted_item_predictions in enumerate(predictions):
+                for user_id, sorted_item_predictions in enumerate(predictions[:100]):
                     user_positive_items = pos_elements[pos_elements['u'] == user_id]['i'].to_list()
                     p.apply_async(elaborate, args=(class_frequency, user_id, user_positive_items, sorted_item_predictions,),
                                   callback=count_elaborated)

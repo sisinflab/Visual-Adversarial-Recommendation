@@ -4,13 +4,12 @@ from time import time
 import os
 
 
-
 def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
-    parser.add_argument('--gpu', type=int, default=0)
-    parser.add_argument('--dataset', nargs='?', default='amazon_men',
+    parser.add_argument('--gpu', type=int, default=-1)
+    parser.add_argument('--dataset', nargs='?', default='amazon_women',
                         help='dataset path')
-    parser.add_argument('--experiment_name', nargs='?', default='fgsm_806_409_eps16.0_it1_linf_XX_images',
+    parser.add_argument('--experiment_name', nargs='?', default='pgd_638_459_eps16.0_eps_it0.01045751633986928_nb_it10_linf_images',
                         help='original_images, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--model', nargs='?', default='VBPR',
                         help='recommender models: VBPR')
@@ -20,7 +19,8 @@ def parse_args():
     parser.add_argument('--verbose', type=int, default=1000, help='verbose')
     parser.add_argument('--epoch', type=int, default=4000, help='epochs')
     parser.add_argument('--regs', nargs='?', default='[1e-1,1e-3,0]', help='lambdas for regularization')
-    parser.add_argument('--lmd', type=float, default=0.1, help='lambda for balance the common loss and adversarial loss')
+    parser.add_argument('--lmd', type=float, default=0.1,
+                        help='lambda for balance the common loss and adversarial loss')
     parser.add_argument('--keep_prob', type=float, default=0.6, help='keep probability of dropout layers')
     parser.add_argument('--adv', type=int, default=0, help='adversarial training')
     parser.add_argument('--adv_type', nargs='?', default='grad', help='adversarial training type: grad, rand')

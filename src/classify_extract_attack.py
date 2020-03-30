@@ -46,9 +46,9 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
-    parser.add_argument('--origin_class', type=int, default=409)
-    parser.add_argument('--target_class', type=int, default=530)
+    parser.add_argument('--attack_type', nargs='?', type=str, default='cw')
+    parser.add_argument('--origin_class', type=int, default=806)
+    parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path: amazon_men, amazon_women')
@@ -156,12 +156,12 @@ def classify_and_extract_attack():
 
     # TO REVISE Carlini & Wagner and JSMA
     elif args.attack_type == 'cw':
+        # 'n_classes': 1000
         params = {'max_iterations': 50, 'learning_rate': 0.005,
                   'binary_search_steps': 1, 'confidence': 1e6,
                   'abort_early': False, 'initial_const': 0.4,
-                  'n_classes': 1000,
                   'y_target': args.target_class,
-                  'clip_min': None, 'clip_max': None
+                  'clip_min': 0, 'clip_max': 1
                   }
         path_output_images_attack = path_output_images_attack.format(args.dataset,
                                                                      args.attack_type,
@@ -244,7 +244,10 @@ def classify_and_extract_attack():
                          ]))
     model = Model(model=models.resnet50(pretrained=True))
     model.set_out_layer(drop_layers=1)
+    # TODO
+    # Create if for pgd, fgsm parameters to execute tf
     attack = VisualAttack(df_classes=df_origin_classification,
+                          tf_pytorch='tf',
                           origin_class=args.origin_class,
                           target_class=args.target_class,
                           model=model.model,
