@@ -11,6 +11,7 @@ import argparse
 import csv
 import os
 import shutil
+import time
 
 # settare random seed
 
@@ -275,6 +276,7 @@ def classify_and_extract_attack():
             im, name = d
 
             if attack.must_attack(filename=name):
+                start = time.time()
                 # Generate attacked image with chosen attack algorithm
                 adv_perturbed_out = attack.run_attack(image=im[None, ...])
 
@@ -302,7 +304,10 @@ def classify_and_extract_attack():
                 # Save image to memory
                 save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
 
-            if (i + 1) % 1 == 0:
+                print('CW Attack in %.3f' % (time.time() - start))
+                start = time.time()
+
+            if (i + 1) % 100 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
 
             if i == 1000:
