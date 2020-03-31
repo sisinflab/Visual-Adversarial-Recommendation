@@ -157,8 +157,9 @@ class CWL2Std(CWL2):
 
         # the resulting instance, tanh'd to keep bounded from clip_min
         # to clip_max
-        self.newimg = (tf.tanh(modifier + self.timg) + 1) / 2
+        # self.newimg = (tf.tanh(modifier + self.timg) + 1) / 2
         # self.newimg = self.newimg * (clip_max - clip_min) + clip_min
+        self.newimg = modifier + self.timg
 
         # prediction BEFORE-SOFTMAX of the model
         self.output = model.get_logits(self.newimg)
@@ -167,7 +168,8 @@ class CWL2Std(CWL2):
         # self.other = (tf.tanh(self.timg) + 1) / \
         #              2 * (clip_max - clip_min) + clip_min
 
-        self.other = (tf.tanh(self.timg) + 1) / 2
+        # self.other = (tf.tanh(self.timg) + 1) / 2
+        self.other = self.timg
         self.l2dist = reduce_sum(
             tf.square(self.newimg - self.other), list(range(1, len(shape))))
 
@@ -225,15 +227,15 @@ class CWL2Std(CWL2):
 
         # oimgs = np.clip(imgs, self.clip_min, self.clip_max)
 
-        oimgs = imgs
+        oimgs = np.copy(imgs)
 
         # re-scale instances to be within range [0, 1]
         # imgs = (imgs - self.clip_min) / (self.clip_max - self.clip_min)
         # imgs = np.clip(imgs, 0, 1)
         # now convert to [-1, 1]
-        imgs = (imgs * 2) - 1
+        # imgs = (imgs * 2) - 1
         # convert to tanh-space
-        imgs = np.arctanh(imgs * .999999)
+        # imgs = np.arctanh(imgs * .999999)
 
         # set the lower and upper bounds accordingly
         lower_bound = np.zeros(batch_size)
