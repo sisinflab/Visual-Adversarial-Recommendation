@@ -158,7 +158,7 @@ def classify_and_extract_attack():
     elif args.attack_type == 'cw':
         # 'n_classes': 1000
         params = {'max_iterations': 1000, 'learning_rate': 5e-3,
-                  'binary_search_steps': 5, 'confidence': 0,
+                  'binary_search_steps': 2, 'confidence': 0,
                   'abort_early': True, 'initial_const': 1e-2,
                   'y_target': args.target_class
                   # ,      'clip_min': None, 'clip_max': None
@@ -305,7 +305,7 @@ def classify_and_extract_attack():
             if (i + 1) % 1 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
 
-            if i == 1000:
+            if i == 60:
                 break
 
     # Save all extracted features (attacked and non-attacked ones)

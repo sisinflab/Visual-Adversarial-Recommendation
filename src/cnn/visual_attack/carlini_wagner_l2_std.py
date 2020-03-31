@@ -205,6 +205,23 @@ class CWL2Std(CWL2):
 
         self.init = tf.variables_initializer(var_list=[modifier] + new_vars)
 
+    def attack(self, imgs, targets):
+        """
+        Perform the L_2 attack on the given instance for the given targets.
+
+        If self.targeted is true, then the targets represents the target labels
+        If self.targeted is false, then targets are the original class labels
+        """
+
+        r = []
+        for i in range(0, len(imgs), self.batch_size):
+            _logger.debug(
+                ("Running CWL2 attack on instance %s of %s", i, len(imgs)))
+            r.extend(
+                self.attack_batch(imgs[i:i + self.batch_size],
+                                  targets[i:i + self.batch_size]))
+        return np.array(r)
+
     def attack_batch(self, imgs, labs):
         """
         Run the attack on a batch of instance and labels.
