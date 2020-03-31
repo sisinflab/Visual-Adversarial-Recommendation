@@ -7,7 +7,8 @@ import numpy as np
 import torch
 import os
 import logging
-import secml
+
+from cnn.visual_attack.carlini_wagner_l2_std import CarliniWagnerL2Std
 
 logging.disable(logging.WARNING)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -50,7 +51,8 @@ class VisualAttack:
             # self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'cw':
             print("Setting carlini & wagner attack")
-            self.attack_op = CarliniWagnerL2(self.cleverhans_model, sess=self.sess)
+            # self.attack_op = CarliniWagnerL2(self.cleverhans_model, sess=self.sess)
+            self.attack_op = CarliniWagnerL2Std(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'pgd':
             print("Setting pgd attack")
             # self.attack_op = MadryEtAl(self.cleverhans_model, sess=self.sess)
