@@ -103,6 +103,17 @@ class VisualAttack:
             adv_img_out = torch.from_numpy(adv_img)
             return adv_img_out
 
+        elif self.attack_type == 'jsma':
+            self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
+            self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[1], image.shape[2]))
+            self.y_target = tf.cast(tf.convert_to_tensor(self.y_target), tf.float32)
+            self.params["y_target"] = self.y_target
+            self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
+            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
+            adv_img_out = transforms.ToTensor()(adv_img[0])
+            adv_img_out = adv_img_out.permute(1, 2, 0)
+
+            return adv_img_out
         else:
             print("Attack not implemented yet.")
             exit(0)

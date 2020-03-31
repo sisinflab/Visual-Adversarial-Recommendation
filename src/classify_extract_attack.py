@@ -47,7 +47,7 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='cw')
+    parser.add_argument('--attack_type', nargs='?', type=str, default='jsma')
     parser.add_argument('--origin_class', type=int, default=806)
     parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
@@ -193,8 +193,8 @@ def classify_and_extract_attack():
         params = {
             "theta": 1.0,  #
             "gamma": 1.0,  #
-            "clip_min": args.clip_min,
-            "clip_max": args.clip_max,
+            # "clip_min": args.clip_min,
+            # "clip_max": args.clip_max,
             "y_target": None,
             "symbolic_impl": True  #
         }
@@ -245,10 +245,9 @@ def classify_and_extract_attack():
                          ]))
     model = Model(model=models.resnet50(pretrained=True))
     model.set_out_layer(drop_layers=1)
-    # TODO
-    # Create if for pgd, fgsm parameters to execute tf
+
     attack = VisualAttack(df_classes=df_origin_classification,
-                          tf_pytorch='tf',
+                          tf_pytorch='tf' if args.attack_type in ['cw', 'jsma'] else 'pytorch',
                           origin_class=args.origin_class,
                           target_class=args.target_class,
                           model=model.model,
@@ -280,7 +279,7 @@ def classify_and_extract_attack():
                 # Generate attacked image with chosen attack algorithm
                 adv_perturbed_out = attack.run_attack(image=im[None, ...])
 
-                # Classify attacked image with pretrained model and append new classification to csv
+                # Classify attacked image with pre-trained model and append new classification to csv
                 out_class = model.classification(list_classes=imgnet_classes,
                                                  sample=(adv_perturbed_out[0], name))
                 out_class["ClassStrStart"] = df_origin_classification.loc[
@@ -304,7 +303,7 @@ def classify_and_extract_attack():
                 # Save image to memory
                 save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
 
-                print('CW Attack in %.3f' % (time.time() - start))
+                print('Attack in %.3f' % (time.time() - start))
                 start = time.time()
 
             if (i + 1) % 100 == 0:
