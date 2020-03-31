@@ -44,7 +44,6 @@ class VisualAttack:
                 self.params.pop('y_target')
 
             else:
-                self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
                 self.params["y_target"] = self.y_target
 
         else:
@@ -109,6 +108,8 @@ class VisualAttack:
             return adv_img_out
 
         elif self.attack_type == 'jsma':
+            self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
+            self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[2], image.shape[3]))
             self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
             adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
             adv_img_out = torch.from_numpy(adv_img)
