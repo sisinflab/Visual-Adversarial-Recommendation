@@ -9,6 +9,7 @@ import os
 import logging
 
 from cnn.visual_attack.carlini_wagner_l2_std import CarliniWagnerL2Std
+from cnn.visual_attack.zoo_l2 import ZOOL2
 
 logging.disable(logging.WARNING)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -63,6 +64,9 @@ class VisualAttack:
         elif self.attack_type == 'jsma':
             print("Setting jsma attack")
             self.attack_op = SaliencyMapMethod(self.cleverhans_model, sess=self.sess)
+        elif self.attack_type == 'zoo':
+            print("Setting zoo attack")
+            self.attack_op = ZOOL2(model=self.cleverhans_model, sess=self.sess)
 
     def must_attack(self, filename):
         if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
@@ -113,6 +117,17 @@ class VisualAttack:
             self.params['y_target'] = tf.cast(tf.convert_to_tensor(self.y_target), tf.int64)
             self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
             adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
+            adv_img_out = torch.from_numpy(adv_img)
+            return adv_img_out
+
+        elif self.attack_type == 'zoo':
+            self.x_op = tf.placeholder(tf.float32, shape=(1, None, None, 3))
+            self.x_op = tf.reshape(self.x_op, shape=(1, image.shape[2], image.shape[3], 3))
+            self._y_P = tf.placeholder(tf.float32, shape=(1, 1000))
+
+            self.adv_x_op = self.attack_op.generate(self.x_op, y_target=self._y_P)
+
+            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image.permute((0, 2, 3, 1)), self._y_P: self.y_target})
             adv_img_out = torch.from_numpy(adv_img)
             return adv_img_out
 

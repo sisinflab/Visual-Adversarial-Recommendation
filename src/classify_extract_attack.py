@@ -12,9 +12,11 @@ import csv
 import os
 import shutil
 import time
+import random
 
 # settare random seed
 
+random.seed(0)
 np.random.seed(0)
 torch.manual_seed(0)
 
@@ -32,6 +34,9 @@ attacks_params = {
     },
     "jsma": {
         "name": "Jacobian-based Saliency Map Attack (JSMA)"
+    },
+    "zoo": {
+        "name": "Zeroth Order Optimization (ZOO)"
     }
 
 }
@@ -47,7 +52,7 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='jsma')
+    parser.add_argument('--attack_type', nargs='?', type=str, default='zoo')
     parser.add_argument('--origin_class', type=int, default=806)
     parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
@@ -222,6 +227,39 @@ def classify_and_extract_attack():
                                                                          'ga' + str(params["gamma"]),
                                                                          'symb' + str(params["symbolic_impl"]),
                                                                          'XX')
+    elif args.attack_type == 'zoo':
+        params = {
+            "theta": 1.0,  #
+            "gamma": 1.0,  #
+            # "clip_min": args.clip_min,
+            # "clip_max": args.clip_max,
+            "y_target": None,
+            "symbolic_impl": True  #
+        }
+        path_output_images_attack = path_output_images_attack.format(args.dataset,
+                                                                     args.attack_type,
+                                                                     args.origin_class,
+                                                                     args.target_class,
+                                                                     'th' + str(params["theta"]),
+                                                                     'ga' + str(params["gamma"]),
+                                                                     'symb' + str(params["symbolic_impl"]),
+                                                                     'XX')
+        path_output_classes_attack = path_output_classes_attack.format(args.dataset,
+                                                                       args.attack_type,
+                                                                       args.origin_class,
+                                                                       args.target_class,
+                                                                       'th' + str(params["theta"]),
+                                                                       'ga' + str(params["gamma"]),
+                                                                       'symb' + str(params["symbolic_impl"]),
+                                                                       'XX')
+        path_output_features_attack = path_output_features_attack.format(args.dataset,
+                                                                         args.attack_type,
+                                                                         args.origin_class,
+                                                                         args.target_class,
+                                                                         'th' + str(params["theta"]),
+                                                                         'ga' + str(params["gamma"]),
+                                                                         'symb' + str(params["symbolic_impl"]),
+                                                                         'XX')
     else:
         print('Unknown attack type.')
         exit(0)
@@ -247,7 +285,7 @@ def classify_and_extract_attack():
     model.set_out_layer(drop_layers=1)
 
     attack = VisualAttack(df_classes=df_origin_classification,
-                          tf_pytorch='tf' if args.attack_type in ['cw', 'jsma'] else 'pytorch',
+                          tf_pytorch='tf' if args.attack_type in ['cw', 'jsma', 'zoo'] else 'pytorch',
                           origin_class=args.origin_class,
                           target_class=args.target_class,
                           model=model.model,
