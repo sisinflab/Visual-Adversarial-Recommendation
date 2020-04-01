@@ -37,6 +37,9 @@ attacks_params = {
     },
     "zoo": {
         "name": "Zeroth Order Optimization (ZOO)"
+    },
+    "spsa": {
+        "name": "Simultaneous Perturbation Stochastic Approximation (SPSA)"
     }
 
 }
@@ -52,7 +55,7 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='zoo')
+    parser.add_argument('--attack_type', nargs='?', type=str, default='spsa')
     parser.add_argument('--origin_class', type=int, default=806)
     parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
@@ -64,7 +67,7 @@ def parse_args():
     parser.add_argument('--it', type=int, default=1)
     parser.add_argument('--l', type=str, default='inf')
     parser.add_argument('--confidence', type=int, default=0)
-    parser.add_argument('--nb_iter', type=int, default=10)
+    parser.add_argument('--nb_iter', type=int, default=100)
     parser.add_argument('--c', type=float, default=0)
 
     return parser.parse_args()
@@ -160,7 +163,6 @@ def classify_and_extract_attack():
                                                                          'nb_it' + str(params["nb_iter"]),
                                                                          'l' + str(params["ord"]))
 
-    # TO REVISE Carlini & Wagner and JSMA
     elif args.attack_type == 'cw':
         # 'n_classes': 1000
         params = {'max_iterations': 1000, 'learning_rate': 5e-3,
@@ -260,6 +262,39 @@ def classify_and_extract_attack():
                                                                          'ga' + str(params["gamma"]),
                                                                          'symb' + str(params["symbolic_impl"]),
                                                                          'XX')
+
+    elif args.attack_type == 'spsa':
+        params = {
+            "eps": args.eps / 255,
+            "nb_iter": args.nb_iter,
+            "y_target": None
+        }
+
+        path_output_images_attack = path_output_images_attack.format(args.dataset,
+                                                                     args.attack_type,
+                                                                     args.origin_class,
+                                                                     args.target_class,
+                                                                     'eps' + str(params["eps"]),
+                                                                     'delta0.01',
+                                                                     'nb_iter' + str(params["nb_iter"]),
+                                                                     'XX')
+        path_output_classes_attack = path_output_classes_attack.format(args.dataset,
+                                                                       args.attack_type,
+                                                                       args.origin_class,
+                                                                       args.target_class,
+                                                                       'eps' + str(params["eps"]),
+                                                                       'delta0.01',
+                                                                       'nb_iter' + str(params["nb_iter"]),
+                                                                       'XX')
+        path_output_features_attack = path_output_features_attack.format(args.dataset,
+                                                                         args.attack_type,
+                                                                         args.origin_class,
+                                                                         args.target_class,
+                                                                         'eps' + str(params["eps"]),
+                                                                         'delta0.01',
+                                                                         'nb_iter' + str(params["nb_iter"]),
+                                                                         'XX')
+
     else:
         print('Unknown attack type.')
         exit(0)
@@ -285,7 +320,7 @@ def classify_and_extract_attack():
     model.set_out_layer(drop_layers=1)
 
     attack = VisualAttack(df_classes=df_origin_classification,
-                          tf_pytorch='tf' if args.attack_type in ['cw', 'jsma', 'zoo'] else 'pytorch',
+                          tf_pytorch='tf' if args.attack_type in ['cw', 'jsma', 'zoo', 'spsa'] else 'pytorch',
                           origin_class=args.origin_class,
                           target_class=args.target_class,
                           model=model.model,
@@ -347,7 +382,7 @@ def classify_and_extract_attack():
             if (i + 1) % 100 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
 
-            if i == 1000:
+            if i == 200:
                 break
 
     # Save all extracted features (attacked and non-attacked ones)

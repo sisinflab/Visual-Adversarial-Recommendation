@@ -1,4 +1,4 @@
-from cleverhans.attacks import FastGradientMethod, MadryEtAl, CarliniWagnerL2, SaliencyMapMethod
+from cleverhans.attacks import SaliencyMapMethod, SPSA
 from cleverhans.future.torch.attacks import *
 from cleverhans.model import CallableModelWrapper
 from cleverhans.utils_pytorch import convert_pytorch_model_to_tf
@@ -67,6 +67,9 @@ class VisualAttack:
         elif self.attack_type == 'zoo':
             print("Setting zoo attack")
             self.attack_op = ZOOL2(model=self.cleverhans_model, sess=self.sess)
+        elif self.attack_type == 'spsa':
+            print("Setting spsa attack")
+            self.attack_op = SPSA(model=self.cleverhans_model, sess=self.sess)
 
     def must_attack(self, filename):
         if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
@@ -128,6 +131,17 @@ class VisualAttack:
             self.adv_x_op = self.attack_op.generate(self.x_op, y_target=self._y_P)
 
             adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image.permute((0, 2, 3, 1)), self._y_P: self.y_target})
+            adv_img_out = torch.from_numpy(adv_img)
+            return adv_img_out
+
+        elif self.attack_type == 'spsa':
+            self.x_op = tf.placeholder(tf.float32, shape=(1, None, None, 3))
+            self.x_op = tf.reshape(self.x_op, shape=(1, image.shape[2], image.shape[3], 3))
+            self.adv_x_op = self.attack_op.generate(x=self.x_op,
+                                                    y_target=self.params['y_target'],
+                                                    eps=self.params['eps'],
+                                                    nb_iter=self.params['nb_iter'])
+            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
             adv_img_out = torch.from_numpy(adv_img)
             return adv_img_out
 
