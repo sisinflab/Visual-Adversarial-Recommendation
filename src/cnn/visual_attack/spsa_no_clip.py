@@ -35,7 +35,7 @@ class SPSANoClip(SPSA):
                  early_stop_loss_threshold=None,
                  learning_rate=SPSA.DEFAULT_LEARNING_RATE,
                  delta=SPSA.DEFAULT_DELTA,
-                 spsa_samples=SPSA.DEFAULT_SPSA_SAMPLES,
+                 spsa_samples=2,
                  batch_size=None,
                  spsa_iters=SPSA.DEFAULT_SPSA_ITERS,
                  is_debug=False,
