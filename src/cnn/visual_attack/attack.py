@@ -1,4 +1,4 @@
-from cleverhans.attacks import SaliencyMapMethod, SPSA
+from cleverhans.attacks import SaliencyMapMethod
 from cleverhans.future.torch.attacks import *
 from cleverhans.model import CallableModelWrapper
 from cleverhans.utils_pytorch import convert_pytorch_model_to_tf
@@ -10,6 +10,7 @@ import logging
 
 from cnn.visual_attack.carlini_wagner_l2_std import CarliniWagnerL2Std
 from cnn.visual_attack.zoo_l2 import ZOOL2
+from cnn.visual_attack.spsa_no_clip import SPSANoClip
 
 logging.disable(logging.WARNING)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -69,7 +70,7 @@ class VisualAttack:
             self.attack_op = ZOOL2(model=self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'spsa':
             print("Setting spsa attack")
-            self.attack_op = SPSA(model=self.cleverhans_model, sess=self.sess)
+            self.attack_op = SPSANoClip(model=self.cleverhans_model, sess=self.sess)
 
     def must_attack(self, filename):
         if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
