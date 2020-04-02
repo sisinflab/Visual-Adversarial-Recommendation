@@ -55,7 +55,7 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='spsa')
+    parser.add_argument('--attack_type', nargs='?', type=str, default='jsma')
     parser.add_argument('--origin_class', type=int, default=806)
     parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
@@ -296,7 +296,7 @@ def classify_and_extract_attack():
                                                                          'XX')
 
     else:
-        raise Exception('Uknown attack type.')
+        raise NotImplementedError('Uknown attack type.')
 
     imgnet_classes = read_imagenet_classes_txt(path_classes)
 
@@ -386,8 +386,7 @@ def classify_and_extract_attack():
                 # Save image to memory
                 save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
 
-                print('Attack in %.3f' % (time.time() - start))
-                start = time.time()
+                print('Attack in %.3f seconds' % (time.time() - start))
 
             if (i + 1) % 100 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))

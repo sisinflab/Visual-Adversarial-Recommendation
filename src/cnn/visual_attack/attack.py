@@ -1,4 +1,3 @@
-from cleverhans.attacks import SaliencyMapMethod
 from cleverhans.future.torch.attacks import *
 from cleverhans.model import CallableModelWrapper
 from cleverhans.utils_pytorch import convert_pytorch_model_to_tf
@@ -11,6 +10,7 @@ import logging
 from cnn.visual_attack.carlini_wagner_l2_std import CarliniWagnerL2Std
 from cnn.visual_attack.zoo_l2 import ZOOL2
 from cnn.visual_attack.spsa_no_clip import SPSANoClip
+from cnn.visual_attack.saliency_map_method_memory import SaliencyMapMethodMemory
 
 logging.disable(logging.WARNING)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -27,13 +27,13 @@ class VisualAttack:
         self.attack_type = attack_type
         self.device = device
 
+        # CHOOSE BETWEEN TENSORFLOW AND PYTORCH IMPLEMENTATION
         if tf_pytorch == 'pytorch':
             # NEW PYTORCH IMPLEMENTATION
             self.model = model
             self.model.to(self.device)
 
         elif tf_pytorch == 'tf':
-            # OLD TENSORFLOW TO PYTORCH IMPLEMENTATION
             self.tf_model = convert_pytorch_model_to_tf(model)
             self.cleverhans_model = CallableModelWrapper(self.tf_model, output_layer='logits')
             self.sess = tf.Session()
@@ -50,9 +50,9 @@ class VisualAttack:
                 self.params["y_target"] = self.y_target
 
         else:
-            print('Library not recognized')
-            exit(0)
+            raise NotImplementedError('Library not recognized')
 
+        # SET AND INITIALIZE ATTACK TYPE
         if self.attack_type == 'fgsm':
             print("Setting fgsm attack")
             # self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
@@ -65,7 +65,7 @@ class VisualAttack:
             # self.attack_op = MadryEtAl(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'jsma':
             print("Setting jsma attack")
-            self.attack_op = SaliencyMapMethod(self.cleverhans_model, sess=self.sess)
+            self.attack_op = SaliencyMapMethodMemory(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'zoo':
             print("Setting zoo attack")
             self.input_size = tf.placeholder(tf.uint64, shape=(1, None, None, 3))
@@ -76,6 +76,8 @@ class VisualAttack:
         elif self.attack_type == 'spsa':
             print("Setting spsa attack")
             self.attack_op = SPSANoClip(model=self.cleverhans_model, sess=self.sess)
+        else:
+            raise NotImplementedError('Not implemented attack.')
 
     def must_attack(self, filename):
         if self.df_classes.loc[self.df_classes["ImageID"] == int(os.path.splitext(filename)[0]), "ClassNum"].item() == self.origin_class:
@@ -87,6 +89,7 @@ class VisualAttack:
         self.y_target[0, self.target_class] = 1
 
     def run_attack(self, image):
+        # RUN ATTACK DEPENDING ON ATTACK TYPE
         if self.attack_type == 'fgsm':
             return fast_gradient_method(model_fn=self.model,
                                         x=image.to(self.device),
@@ -125,7 +128,7 @@ class VisualAttack:
             self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[2], image.shape[3]))
             self.params['y_target'] = tf.cast(tf.convert_to_tensor(self.y_target), tf.int64)
             self.adv_x_op = self.attack_op.generate(self.x_op, **self.params)
-            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image[None, ...]})
+            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image})
             adv_img_out = torch.from_numpy(adv_img)
             return adv_img_out
 
@@ -153,8 +156,7 @@ class VisualAttack:
             return adv_img_out
 
         else:
-            print("Attack not implemented yet.")
-            exit(0)
+            raise NotImplementedError("Attack not implemented yet.")
 
     # OLD VERSION
     def run_attack_old(self, image):
