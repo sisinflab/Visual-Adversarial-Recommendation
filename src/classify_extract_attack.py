@@ -55,7 +55,7 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='zoo')
+    parser.add_argument('--attack_type', nargs='?', type=str, default='spsa')
     parser.add_argument('--origin_class', type=int, default=806)
     parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
@@ -63,7 +63,7 @@ def parse_args():
                         help='dataset path: amazon_men, amazon_women')
 
     # attacks specific parameters
-    parser.add_argument('--eps', type=float, default=8)
+    parser.add_argument('--eps', type=float, default=32)
     parser.add_argument('--it', type=int, default=1)
     parser.add_argument('--l', type=str, default='inf')
     parser.add_argument('--confidence', type=int, default=0)
