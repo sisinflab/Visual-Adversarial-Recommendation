@@ -143,7 +143,7 @@ def coordinate_Newton_ADAM(losses, indice, grad, hess, batch_size, mt_arr, vt_ar
 
 
 class ZOOL2:
-    def __init__(self, sess, model, batch_size=1, confidence=CONFIDENCE,
+    def __init__(self, sess, model, input_size, num_labels, batch_size=1, confidence=CONFIDENCE,
                  targeted=TARGETED, learning_rate=LEARNING_RATE,
                  binary_search_steps=BINARY_SEARCH_STEPS, max_iterations=MAX_ITERATIONS, print_every=10,
                  early_stop_iters=0,
@@ -181,8 +181,8 @@ class ZOOL2:
         # novel
         self.tf_dtype = np.dtype('float32')
 
-        # image_size, num_channels, num_labels = model.image_size, model.num_channels, model.num_labels
-        image_size_height, image_size_width, num_channels, num_labels = 445, 291, 3, 1000
+        image_size, num_channels = (input_size[1], input_size[2]), input_size[3]
+        # image_size_height, image_size_width, num_channels, num_labels = 445, 291, 3, 1000
 
         self.model = model
         self.sess = sess
@@ -205,8 +205,8 @@ class ZOOL2:
             self.small_x = self.resize_init_size
             self.small_y = self.resize_init_size
         else:
-            self.small_x = image_size_height
-            self.small_y = image_size_width
+            self.small_x = image_size[0]
+            self.small_y = image_size[1]
 
         self.use_tanh = use_tanh
         self.use_resize = use_resize
@@ -218,8 +218,8 @@ class ZOOL2:
 
         # each batch has a different modifier value (see below) to evaluate
         # small_shape = (None,self.small_x,self.small_y,num_channels)
-        shape = (None,image_size_height, image_size_width, num_channels)
-        single_shape = (image_size_height, image_size_width, num_channels)
+        shape = (None, image_size[0], image_size[1], num_channels)
+        single_shape = (image_size[0], image_size[1], num_channels)
         small_single_shape = (self.small_x, self.small_y, num_channels)
 
         # the variable we're going to optimize over
@@ -229,7 +229,7 @@ class ZOOL2:
         # images: 4-D Tensor of shape [batch, height, width, channels] or 3-D Tensor of shape [height, width, channels].
         if self.use_resize:
 
-            self.scaled_modifier = tf.image.resize(self.modifier, [image_size_height, image_size_width])
+            self.scaled_modifier = tf.image.resize(self.modifier, [image_size[0], image_size[1]])
 
             self.resize_size_height = tf.placeholder(tf.int32)
             self.resize_size_width = tf.placeholder(tf.int32)

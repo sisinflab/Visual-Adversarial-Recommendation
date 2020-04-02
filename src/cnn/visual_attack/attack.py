@@ -68,7 +68,11 @@ class VisualAttack:
             self.attack_op = SaliencyMapMethod(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'zoo':
             print("Setting zoo attack")
-            self.attack_op = ZOOL2(model=self.cleverhans_model, sess=self.sess)
+            self.input_size = tf.placeholder(tf.uint64, shape=(1, None, None, 3))
+            self.attack_op = ZOOL2(model=self.cleverhans_model,
+                                   sess=self.sess,
+                                   input_size=self.input_size,
+                                   num_labels=self.num_classes)
         elif self.attack_type == 'spsa':
             print("Setting spsa attack")
             self.attack_op = SPSANoClip(model=self.cleverhans_model, sess=self.sess)
@@ -128,6 +132,7 @@ class VisualAttack:
         elif self.attack_type == 'zoo':
             self.x_op = tf.placeholder(tf.float32, shape=(1, None, None, 3))
             self.x_op = tf.reshape(self.x_op, shape=(1, image.shape[2], image.shape[3], 3))
+            self.input_size = tf.reshape(self.input_size, shape=(1, image.shape[2], image.shape[3], 3))
             self._y_P = tf.placeholder(tf.float32, shape=(1, 1000))
 
             self.adv_x_op = self.attack_op.generate(self.x_op, y_target=self._y_P)
@@ -137,13 +142,14 @@ class VisualAttack:
             return adv_img_out
 
         elif self.attack_type == 'spsa':
-            self.x_op = tf.placeholder(tf.float32, shape=(1, 3, None, None))
-            self.x_op = tf.reshape(self.x_op, shape=(1, 3, image.shape[2], image.shape[3]))
+            self.x_op = tf.placeholder(tf.float32, shape=(1, None, None, 3))
+            self.x_op = tf.reshape(self.x_op, shape=(1, image.shape[2], image.shape[3], 3))
             self.adv_x_op = self.attack_op.generate(x=self.x_op,
                                                     y_target=self.y_target_tf,
                                                     eps=self.params['eps'],
                                                     nb_iter=self.params['nb_iter'])
-            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image, self.y_target_tf: self.target_class})
+            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image.permute((0, 2, 3, 1)),
+                                                              self.y_target_tf: self.target_class})
             adv_img_out = torch.from_numpy(adv_img)
             return adv_img_out
 
