@@ -310,8 +310,9 @@ def classify_and_extract_attack():
 
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
+                         reshape=True,
+                         scale=3,
                          transform=transforms.Compose([
-                             transforms.CenterCrop(64),
                              transforms.ToTensor(),
                              transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                   std=[0.229, 0.224, 0.225])

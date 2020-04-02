@@ -19,7 +19,7 @@ class CustomDataset(Dataset):
         transform: pre processing operations to perform on dataset
     """
 
-    def __init__(self, root_dir, transform=None):
+    def __init__(self, root_dir, scale=2, reshape=False, transform=None):
         """
         Args:
             root_dir (str): dataset path
@@ -29,6 +29,8 @@ class CustomDataset(Dataset):
         self.filenames = os.listdir(self.root_dir)
         self.filenames.sort(key=lambda x: int(x.split(".")[0]))
         self.num_samples = len(self.filenames)
+        self.scale = scale
+        self.reshape = reshape
 
     def __len__(self):
         return self.num_samples
@@ -43,6 +45,9 @@ class CustomDataset(Dataset):
 
         if sample.mode != 'RGB':
             sample = sample.convert(mode='RGB')
+
+        if self.reshape:
+            sample = sample.resize(size=(sample.size[0] // self.scale, sample.size[1] // self.scale), resample=Image.LANCZOS)
 
         if self.transform:
             # to_tensor = transforms.ToTensor()
