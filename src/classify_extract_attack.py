@@ -311,6 +311,7 @@ def classify_and_extract_attack():
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
                          transform=transforms.Compose([
+                             transforms.CenterCrop(64),
                              transforms.ToTensor(),
                              transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                   std=[0.229, 0.224, 0.225])
@@ -354,12 +355,21 @@ def classify_and_extract_attack():
                 # Classify attacked image with pre-trained model and append new classification to csv
                 out_class = model.classification(list_classes=imgnet_classes,
                                                  sample=(adv_perturbed_out[0], name))
-                out_class["ClassStrStart"] = df_origin_classification.loc[
-                    df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
-                out_class["ClassNumStart"] = df_origin_classification.loc[
-                    df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassNum"].item()
-                out_class["ProbStart"] = df_origin_classification.loc[
-                    df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "Prob"].item()
+
+                out_class_old = model.classification(list_classes=imgnet_classes,
+                                                     sample=(im, name))
+
+                # out_class["ClassStrStart"] = df_origin_classification.loc[
+                #     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassStr"].item()
+                # out_class["ClassNumStart"] = df_origin_classification.loc[
+                #     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassNum"].item()
+                # out_class["ProbStart"] = df_origin_classification.loc[
+                #     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "Prob"].item()
+
+                out_class["ClassStrStart"] = out_class_old["ClassStr"]
+                out_class["ClassNumStart"] = out_class_old["ClassNum"]
+                out_class["ProbStart"] = out_class_old["Prob"]
+
                 writer.writerow(out_class)
 
                 # Extract features using pretrained model
