@@ -55,7 +55,7 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='spsa')
+    parser.add_argument('--attack_type', nargs='?', type=str, default='jsma')
     parser.add_argument('--origin_class', type=int, default=806)
     parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
@@ -392,7 +392,7 @@ def classify_and_extract_attack():
             if (i + 1) % 100 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
 
-            if i == 50:
+            if i == 500:
                 break
 
     # Save all extracted features (attacked and non-attacked ones)
