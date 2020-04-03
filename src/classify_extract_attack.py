@@ -55,7 +55,7 @@ def parse_ord(ord_str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='spsa')
+    parser.add_argument('--attack_type', nargs='?', type=str, default='zoo')
     parser.add_argument('--origin_class', type=int, default=806)
     parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
@@ -310,8 +310,8 @@ def classify_and_extract_attack():
 
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
-                         reshape=True,
-                         scale=4,
+                         # reshape=True,
+                         # scale=4,
                          transform=transforms.Compose([
                              transforms.ToTensor(),
                              transforms.Normalize(mean=[0.485, 0.456, 0.406],
