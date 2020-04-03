@@ -68,10 +68,11 @@ class VisualAttack:
             self.attack_op = SaliencyMapMethodMemory(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'zoo':
             print("Setting zoo attack")
-            self.x_op = tf.placeholder(tf.float32, shape=(1, None, None, 3))
+            height = tf.placeholder(tf.int32)
+            width = tf.placeholder(tf.int32)
             self.attack_op = ZOOL2(model=self.cleverhans_model,
                                    sess=self.sess,
-                                   input_size=self.x_op.shape,
+                                   input_size=(height, width),
                                    num_labels=self.num_classes)
         elif self.attack_type == 'spsa':
             print("Setting spsa attack")

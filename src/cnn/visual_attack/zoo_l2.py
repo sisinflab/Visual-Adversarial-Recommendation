@@ -181,7 +181,7 @@ class ZOOL2:
         # novel
         self.tf_dtype = np.dtype('float32')
 
-        image_size, num_channels = (input_size[1], input_size[2]), input_size[3]
+        image_size_height, image_size_width, num_channels = input_size[0], input_size[1], 3
         # image_size_height, image_size_width, num_channels, num_labels = 445, 291, 3, 1000
 
         self.model = model
@@ -205,8 +205,8 @@ class ZOOL2:
             self.small_x = self.resize_init_size
             self.small_y = self.resize_init_size
         else:
-            self.small_x = image_size[0]
-            self.small_y = image_size[1]
+            self.small_x = image_size_height
+            self.small_y = image_size_width
 
         self.use_tanh = use_tanh
         self.use_resize = use_resize
@@ -218,8 +218,8 @@ class ZOOL2:
 
         # each batch has a different modifier value (see below) to evaluate
         # small_shape = (None,self.small_x,self.small_y,num_channels)
-        shape = (None, image_size[0], image_size[1], num_channels)
-        single_shape = (image_size[0], image_size[1], num_channels)
+        shape = (None, image_size_height, image_size_width, num_channels)
+        single_shape = (image_size_height, image_size_width, num_channels)
         small_single_shape = (self.small_x, self.small_y, num_channels)
 
         # the variable we're going to optimize over
@@ -229,7 +229,7 @@ class ZOOL2:
         # images: 4-D Tensor of shape [batch, height, width, channels] or 3-D Tensor of shape [height, width, channels].
         if self.use_resize:
 
-            self.scaled_modifier = tf.image.resize(self.modifier, [image_size[0], image_size[1]])
+            self.scaled_modifier = tf.image.resize(self.modifier, [image_size_height, image_size_width])
 
             self.resize_size_height = tf.placeholder(tf.int32)
             self.resize_size_width = tf.placeholder(tf.int32)
