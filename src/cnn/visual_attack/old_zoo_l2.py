@@ -496,6 +496,7 @@ class ZOOL2:
         Return a tensor that constructs adversarial examples for the given
         input. Generate uses tf.py_func in order to operate over tensors.
 
+        :param y_target:
         :param x: A tensor with the inputs.
         :param kwargs: See `parse_params`
         """
