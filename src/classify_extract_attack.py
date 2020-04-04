@@ -14,6 +14,7 @@ import shutil
 import time
 import random
 from utils.sendmail import sendmail
+
 # settare random seed
 
 random.seed(0)
@@ -77,14 +78,14 @@ def classify_and_extract_attack():
     args = parse_args()
 
     path_images, path_input_classes, path_input_features, path_classes, \
-        path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
-            sections_fields=[('PATHS', 'InputImages'),
-                             ('PATHS', 'OutputClasses'),
-                             ('PATHS', 'OutputFeatures'),
-                             ('PATHS', 'ImagenetClasses'),
-                             ('PATHS', 'OutputImagesAttack'),
-                             ('PATHS', 'OutputFeaturesAttack'),
-                             ('PATHS', 'OutputClassesAttack')])
+    path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
+        sections_fields=[('PATHS', 'InputImages'),
+                         ('PATHS', 'OutputClasses'),
+                         ('PATHS', 'OutputFeatures'),
+                         ('PATHS', 'ImagenetClasses'),
+                         ('PATHS', 'OutputImagesAttack'),
+                         ('PATHS', 'OutputFeaturesAttack'),
+                         ('PATHS', 'OutputClassesAttack')])
 
     path_images, path_input_classes, path_input_features = path_images.format(args.dataset), path_input_classes.format(
         args.dataset), path_input_features.format(args.dataset)
@@ -393,11 +394,12 @@ def classify_and_extract_attack():
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
 
             if i == 500:
-                sendmail('End - {0}'.format(args.attack_type), '{0} in {1} seconds'.format(path_output_features_attack, time.time() - start_data))
                 break
 
     # Save all extracted features (attacked and non-attacked ones)
     save_np(npy=features, filename=path_output_features_attack)
+    sendmail('End - {0}'.format(args.attack_type),
+             '{0} in {1} seconds'.format(path_output_features_attack, time.time() - start_data))
 
 
 if __name__ == '__main__':
