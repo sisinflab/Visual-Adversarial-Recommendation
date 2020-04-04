@@ -1,4 +1,5 @@
 from cnn.visual_attack.l2_attack_black import *
+from skimage.transform import rescale
 
 np_dtype = np.dtype('float32')
 tf_dtype = tf.as_dtype('float32')
@@ -54,7 +55,7 @@ class ZOOL2(BlackBoxL2):
             image = np.abs(prev_modifier[:, :, i])
             image_pool = self.max_pooling(image, old_shape[0] // 8)
             if gen_double:
-                prob[:, :, i] = scipy.misc.imresize(image_pool, 2.0, 'nearest', mode='F')
+                prob[:, :, i] = rescale(image=image_pool, scale=2.0, order=0)
             else:
                 prob[:, :, i] = image_pool
         prob /= np.sum(prob)
