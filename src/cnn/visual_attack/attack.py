@@ -133,7 +133,7 @@ class VisualAttack:
             self.x_op = tf.placeholder(tf.float32, shape=(1, None, None, 3))
             self.x_op = tf.reshape(self.x_op, shape=(1, image.shape[2], image.shape[3], 3))
             self._y_P = tf.placeholder(tf.float32, shape=(1, 1000))
-
+            # We need to create a novel object for each attack
             attack_op = ZOOL2(self.sess, self.cleverhans_model, height=image.shape[2], width=image.shape[3])
             self.adv_x_op = attack_op.generate(self.x_op, y_target=self._y_P)
             del attack_op

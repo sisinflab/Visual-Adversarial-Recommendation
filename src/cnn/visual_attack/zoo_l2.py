@@ -22,16 +22,16 @@ class ZOOL2(BlackBoxL2):
         confidence: Confidence of adversarial examples: higher produces examples
           that are farther away, but more strongly classified as adversarial.
         batch_size: Number of gradient evaluations to run simultaneously.
-        targeted: True if we should perform a targetted attack, False otherwise.
+        targeted: True if we should perform a targeted attack, False otherwise.
         learning_rate: The learning rate for the attack algorithm. Smaller values
           produce better results but are slower to converge.
         binary_search_steps: The number of times we perform binary search to
-          find the optimal tradeoff-constant between distance and confidence.
+          find the optimal trade-off-constant between distance and confidence.
         max_iterations: The maximum number of iterations. Larger values are more
           accurate; setting too small will require a large learning rate and will
           produce poor results.
         abort_early: If true, allows early aborts if gradient descent gets stuck.
-        initial_const: The initial tradeoff-constant to use to tune the relative
+        initial_const: The initial trade-off-constant to use to tune the relative
           importance of distance and confidence. If binary_search_steps is large,
           the initial constant is not important.
         """
@@ -49,7 +49,6 @@ class ZOOL2(BlackBoxL2):
 
         :param y_target:
         :param x: A tensor with the inputs.
-        :param kwargs: See `parse_params`
         """
         assert self.sess is not None, \
             'Cannot use `generate` when no `sess` was provided'
