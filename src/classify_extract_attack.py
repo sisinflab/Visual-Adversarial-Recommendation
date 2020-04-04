@@ -387,6 +387,7 @@ def classify_and_extract_attack():
                 save_image(image=adv_perturbed_out, filename=path_output_images_attack + name)
 
                 print('Attack in %.3f seconds' % (time.time() - start))
+                break
 
             if (i + 1) % 100 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
