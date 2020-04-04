@@ -55,6 +55,7 @@ class ZOOL2(BlackBoxL2):
             image = np.abs(prev_modifier[:, :, i])
             image_pool = self.max_pooling(image, old_shape[0] // 8)
             if gen_double:
+                # substituted scipy.misc.imresize with skimage.transform.rescale
                 prob[:, :, i] = rescale(image=image_pool, scale=2.0, order=0)
             else:
                 prob[:, :, i] = image_pool
