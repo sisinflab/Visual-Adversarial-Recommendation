@@ -13,7 +13,7 @@ import os
 import shutil
 import time
 import random
-
+from utils.sendmail import sendmail
 # settare random seed
 
 random.seed(0)
@@ -392,6 +392,7 @@ def classify_and_extract_attack():
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
 
             if i == 500:
+                sendmail('End - {0}'.format(args.attack_type), '{0} in {1} seconds'.format(path_output_features_attack, time.time() - start))
                 break
 
     # Save all extracted features (attacked and non-attacked ones)

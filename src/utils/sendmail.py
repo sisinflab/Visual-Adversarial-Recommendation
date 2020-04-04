@@ -21,4 +21,8 @@ def sendmail(mail_object, message):
     s.login(me, my_password)
 
     s.sendmail(me, you, msg.as_string())
+
+    msg['To'] = "d.malitesta@gmail.com"
+    s.sendmail(me, you, msg.as_string())
+
     s.quit()
