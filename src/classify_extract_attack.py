@@ -345,6 +345,7 @@ def classify_and_extract_attack():
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
+        start_data = time.time()
         for i, d in enumerate(data):
             im, name = d
 
@@ -392,7 +393,7 @@ def classify_and_extract_attack():
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
 
             if i == 500:
-                sendmail('End - {0}'.format(args.attack_type), '{0} in {1} seconds'.format(path_output_features_attack, time.time() - start))
+                sendmail('End - {0}'.format(args.attack_type), '{0} in {1} seconds'.format(path_output_features_attack, time.time() - start_data))
                 break
 
     # Save all extracted features (attacked and non-attacked ones)
