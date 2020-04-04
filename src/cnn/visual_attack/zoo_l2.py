@@ -41,3 +41,21 @@ class ZOOL2(BlackBoxL2):
                                     max_iterations, print_every, early_stop_iters, abort_early, initial_const, use_log,
                                     use_tanh, use_resize, adam_beta1, adam_beta2, reset_adam_after_found, solver,
                                     save_ckpts, load_checkpoint, start_iter, init_size, use_importance)
+
+    def get_new_prob(self, prev_modifier, gen_double=False):
+        prev_modifier = np.squeeze(prev_modifier)
+        old_shape = prev_modifier.shape
+        if gen_double:
+            new_shape = (old_shape[0] * 2, old_shape[1] * 2, old_shape[2])
+        else:
+            new_shape = old_shape
+        prob = np.empty(shape=new_shape, dtype=np.float32)
+        for i in range(prev_modifier.shape[2]):
+            image = np.abs(prev_modifier[:, :, i])
+            image_pool = self.max_pooling(image, old_shape[0] // 8)
+            if gen_double:
+                prob[:, :, i] = scipy.misc.imresize(image_pool, 2.0, 'nearest', mode='F')
+            else:
+                prob[:, :, i] = image_pool
+        prob /= np.sum(prob)
+        return prob
