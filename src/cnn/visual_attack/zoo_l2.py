@@ -41,25 +41,3 @@ class ZOOL2(BlackBoxL2):
                                     max_iterations, print_every, early_stop_iters, abort_early, initial_const, use_log,
                                     use_tanh, use_resize, adam_beta1, adam_beta2, reset_adam_after_found, solver,
                                     save_ckpts, load_checkpoint, start_iter, init_size, use_importance)
-
-    def generate(self, x, y_target):
-        """
-        Return a tensor that constructs adversarial examples for the given
-        input. Generate uses tf.py_func in order to operate over tensors.
-
-        :param y_target:
-        :param x: A tensor with the inputs.
-        """
-        assert self.sess is not None, \
-            'Cannot use `generate` when no `sess` was provided'
-        # self.parse_params(**kwargs)
-
-        labels = y_target
-
-        def cw_wrap(x_val, y_val):
-            return np.array(self.attack(x_val, y_val), dtype=np_dtype)
-
-        wrap = tf.py_func(cw_wrap, [x, labels], tf_dtype)
-        wrap.set_shape(x.get_shape())
-
-        return wrap

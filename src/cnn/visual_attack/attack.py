@@ -130,16 +130,10 @@ class VisualAttack:
             return adv_img_out
 
         elif self.attack_type == 'zoo':
-            self.x_op = tf.placeholder(tf.float32, shape=(1, None, None, 3))
-            self.x_op = tf.reshape(self.x_op, shape=(1, image.shape[2], image.shape[3], 3))
-            self._y_P = tf.placeholder(tf.float32, shape=(1, 1000))
-            # We need to create a novel object for each attack
             attack_op = ZOOL2(self.sess, self.cleverhans_model, height=image.shape[2], width=image.shape[3])
-            self.adv_x_op = attack_op.generate(self.x_op, y_target=self._y_P)
+            adv_img, adv_const = attack_op.attack(image.permute(0, 2, 3, 1).cpu().detach().numpy(), self.y_target)
             del attack_op
-
-            adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image.permute(0, 2, 3, 1), self._y_P: self.y_target})
-            adv_img_out = torch.from_numpy(adv_img)
+            adv_img_out = torch.from_numpy(adv_img.reshape((1, image.shape[2], image.shape[3], 3))).permute(0, 3, 1, 2)
             return adv_img_out
 
         elif self.attack_type == 'spsa':
