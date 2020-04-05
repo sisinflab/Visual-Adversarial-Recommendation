@@ -395,7 +395,7 @@ def classify_and_extract_attack():
             if (i + 1) % 100 == 0:
                 print('%d/%d samples completed' % (i + 1, data.num_samples))
 
-            if i == 500:
+            if i == 50:
                 break
 
     # Save all extracted features (attacked and non-attacked ones)
