@@ -354,7 +354,7 @@ def classify_and_extract_attack():
             if attack.must_attack(filename=name):
                 start = time.time()
                 # Generate attacked image with chosen attack algorithm
-                adv_perturbed_out = attack.run_attack(image=im[None, ...])
+                adv_perturbed_out = attack.run_attack(image=im[None, ...] - 0.5)
 
                 # Classify attacked image with pre-trained model and append new classification to csv
                 out_class = model.classification(list_classes=imgnet_classes,
