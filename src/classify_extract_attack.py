@@ -315,8 +315,8 @@ def classify_and_extract_attack():
                          # scale=4,
                          transform=transforms.Compose([
                              transforms.ToTensor()
-                             # , transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             #                      std=[0.229, 0.224, 0.225])
+                             , transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                                    std=[0.229, 0.224, 0.225])
                          ])
                          )
     model = Model(model=models.resnet50(pretrained=True))
@@ -354,7 +354,7 @@ def classify_and_extract_attack():
             if attack.must_attack(filename=name):
                 start = time.time()
                 # Generate attacked image with chosen attack algorithm
-                adv_perturbed_out = attack.run_attack(image=im[None, ...] - 0.5)
+                adv_perturbed_out = attack.run_attack(image=im[None, ...])
 
                 # Classify attacked image with pre-trained model and append new classification to csv
                 out_class = model.classification(list_classes=imgnet_classes,
