@@ -131,9 +131,9 @@ class VisualAttack:
 
         elif self.attack_type == 'zoo':
             attack_op = ZOOL2(self.sess, self.cleverhans_model, height=image.shape[2], width=image.shape[3])
-            adv_img, adv_const = attack_op.attack(image, self.y_target)
+            adv_img = attack_op.attack(image, self.y_target)
             del attack_op
-            adv_img_out = torch.from_numpy(adv_img.reshape((1, image.shape[2], image.shape[3], 3))).permute(0, 3, 1, 2)
+            adv_img_out = torch.from_numpy(adv_img).permute(0, 3, 1, 2)
             return adv_img_out
 
         elif self.attack_type == 'spsa':

@@ -505,29 +505,29 @@ class ZOOL2:
         If self.targeted is true, then the targets represents the target labels.
         If self.targeted is false, then targets are the original class labels.
         """
-        ######################################################################################################
         # denormalize image and subtract -0.5 as required by Inception on ImageNet dataset
-        ######################################################################################################
+
         imgs = imgs.permute(0, 2, 3, 1).cpu().detach().numpy()
         imgs[0] = np.divide(imgs[0] - np.array([-0.485 / 0.229, -0.456 / 0.224, -0.406 / 0.225]),
                             np.array([1 / 0.229, 1 / 0.224, 1 / 0.225]))
 
         imgs[0] = imgs[0] - 0.5
-        ######################################################################################################
+
         r = []
         print('go up to', len(imgs))
+
         # we can only run 1 image at a time, minibatches are used for gradient evaluation
         for i in range(0, len(imgs)):
             print('tick', i)
             adv_img, adv_const = self.attack_batch(imgs[i], targets[i])
-            ######################################################################################################
+
             # we standardize the input image with ImageNet mean and std because we are attacking PyTorch ResNet50
-            ######################################################################################################
             adv_img = adv_img + 0.5
             adv_img = np.divide(adv_img - np.array([0.485, 0.456, 0.406], dtype=np.float32),
                                 np.array([0.229, 0.224, 0.225], dtype=np.float32))
-            ######################################################################################################
-            r.extend(self.attack_batch(imgs[i], targets[i]))
+            adv_img = adv_img.reshape((1, adv_img.shape[2], adv_img.shape[3], 3))
+            r.extend(adv_img)
+
         return np.array(r)
 
     # only accepts 1 image at a time. Batch is used for gradient evaluations at different points
