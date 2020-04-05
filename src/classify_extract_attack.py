@@ -311,8 +311,8 @@ def classify_and_extract_attack():
 
     df_origin_classification = read_csv(path_input_classes)
     data = CustomDataset(root_dir=path_images,
-                         # reshape=True,
-                         # scale=4,
+                         reshape=True,
+                         scale=4,
                          transform=transforms.Compose([
                              transforms.ToTensor(),
                              transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -374,6 +374,7 @@ def classify_and_extract_attack():
                 out_class["ClassNumStart"] = out_class_old["ClassNum"]
                 out_class["ProbStart"] = out_class_old["Prob"]
 
+                print(out_class)
                 writer.writerow(out_class)
 
                 # Extract features using pretrained model
