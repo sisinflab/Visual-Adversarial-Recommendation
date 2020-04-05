@@ -525,7 +525,7 @@ class ZOOL2:
             adv_img = adv_img + 0.5
             adv_img = np.divide(adv_img - np.array([0.485, 0.456, 0.406], dtype=np.float32),
                                 np.array([0.229, 0.224, 0.225], dtype=np.float32))
-            adv_img = adv_img.reshape((1, adv_img.shape[2], adv_img.shape[3], 3))
+            adv_img = adv_img.reshape((adv_img.shape[1], adv_img.shape[2], 3))
             r.extend(adv_img)
 
         return np.array(r)
