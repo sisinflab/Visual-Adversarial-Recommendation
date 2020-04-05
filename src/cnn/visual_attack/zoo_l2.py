@@ -6,7 +6,7 @@ tf_dtype = tf.as_dtype('float32')
 
 
 class ZOOL2(BlackBoxL2):
-    def __init__(self, sess, model, height=224, width=224, batch_size=128, num_channels=3, num_labels=1000,
+    def __init__(self, sess, model, height=224, width=224, batch_size=16, num_channels=3, num_labels=1000,
                  confidence=CONFIDENCE, targeted=False, learning_rate=LEARNING_RATE,
                  binary_search_steps=BINARY_SEARCH_STEPS, max_iterations=20000, print_every=100,
                  early_stop_iters=0, abort_early=ABORT_EARLY, initial_const=10.0, use_log=False, use_tanh=False,
