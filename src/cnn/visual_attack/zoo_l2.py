@@ -142,7 +142,7 @@ def coordinate_Newton_ADAM(losses, indice, grad, hess, batch_size, mt_arr, vt_ar
 class ZOOL2:
     def __init__(self, sess, model, height=224, width=224, batch_size=128, num_channels=3, num_labels=1000,
                  confidence=CONFIDENCE, targeted=True, learning_rate=LEARNING_RATE,
-                 binary_search_steps=BINARY_SEARCH_STEPS, max_iterations=10000, print_every=5,
+                 binary_search_steps=BINARY_SEARCH_STEPS, max_iterations=10000, print_every=100,
                  early_stop_iters=0, abort_early=ABORT_EARLY, initial_const=10.0, use_log=False, use_tanh=True,
                  use_resize=True, adam_beta1=0.9, adam_beta2=0.999, reset_adam_after_found=True, solver="adam",
                  save_ckpts="", load_checkpoint="", start_iter=0, init_size=32, use_importance=True):
@@ -525,8 +525,8 @@ class ZOOL2:
             adv_img = adv_img + 0.5
             adv_img = np.divide(adv_img - np.array([0.485, 0.456, 0.406], dtype=np.float32),
                                 np.array([0.229, 0.224, 0.225], dtype=np.float32))
-            adv_img = adv_img.reshape((adv_img.shape[1], adv_img.shape[2], 3))
-            r.extend(adv_img)
+            #adv_img = adv_img.reshape((adv_img.shape[1], adv_img.shape[2], 3))
+            r.append(adv_img)
 
         return np.array(r)
 
