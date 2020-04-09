@@ -16,9 +16,9 @@ def parse_args():
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path: amazon_men, amazon_women')
-    parser.add_argument('--defense', type=int, default=1)  # 0 --> no defense mode, 1 --> defense mode
-    parser.add_argument('--model_dir', type=str, default='madrylab')
-    parser.add_argument('--model_file', type=str, default='imagenet_linf_8.pt')
+    parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
+    parser.add_argument('--model_dir', type=str, default=None)
+    parser.add_argument('--model_file', type=str, default=None)
 
     return parser.parse_args()
 
