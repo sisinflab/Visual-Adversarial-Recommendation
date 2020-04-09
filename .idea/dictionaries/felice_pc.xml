@@ -8,7 +8,9 @@
       <w>imgnet</w>
       <w>jsma</w>
       <w>minibatches</w>
+      <w>preprocessing</w>
       <w>pytorch</w>
+      <w>trainingset</w>
     </words>
   </dictionary>
 </component>

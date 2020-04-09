@@ -129,14 +129,25 @@ class Solver:
         emb_P = self.sess.run(self.model.emb_P)*-1
         temp_emb_Q = self.sess.run(self.model.temp_emb_Q)
         predictions = np.matmul(emb_P, temp_emb_Q.transpose())
-        predictions = predictions.argsort(axis=1)
-        predictions = [predictions[i][:self.tp_k_predictions] for i in range(predictions.shape[0])]
-        prediction_name = self.result_dir + self.experiment_name + 'top{0}_predictions_epoch{1}'.format(
+        # Store Prediction Positions
+        position_predictions = predictions.argsort(axis=1)
+        position_predictions = [position_predictions[i][:self.tp_k_predictions] for i in range(position_predictions.shape[0])]
+        prediction_name = self.result_dir + self.experiment_name + 'top{0}_item_predictions_epoch{1}'.format(
             self.tp_k_predictions, epoch)
         if self.adv:
             prediction_name = prediction_name + '_AMR'
 
-        write.save_obj(predictions, prediction_name)
+        write.save_obj(position_predictions, prediction_name)
+
+        # Store Prediction Scores
+        score_predictions = predictions.argsort(axis=1)
+        score_predictions = [score_predictions[i][:self.tp_k_predictions] for i in range(score_predictions.shape[0])]
+        prediction_name = self.result_dir + self.experiment_name + 'top{0}_score_predictions_epoch{1}'.format(
+            self.tp_k_predictions, epoch)
+        if self.adv:
+            prediction_name = prediction_name + '_AMR'
+
+        write.save_obj(score_predictions, prediction_name)
 
         print('End Store Predictions {0}'.format(time.time() - start))
 

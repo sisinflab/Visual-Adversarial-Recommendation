@@ -23,6 +23,6 @@ def sendmail(mail_object, message):
     s.sendmail(me, you, msg.as_string())
 
     msg['To'] = "d.malitesta@gmail.com"
-    s.sendmail(me, you, msg.as_string())
+    s.sendmail(me, "d.malitesta@gmail.com", msg.as_string())
 
     s.quit()
