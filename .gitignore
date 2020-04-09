@@ -21,3 +21,4 @@ rec_model_weights/*
 data/amazon_men/*
 data/pdf_images
 /rec_results/*
+cnn_models/*

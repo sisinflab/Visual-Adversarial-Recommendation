@@ -1,6 +1,18 @@
 import torch
 import numpy as np
 import os
+import collections
+
+pre_trained_models = {
+    'free_adv': {
+        'name': 'state_dict',
+        'multi_gpu': True
+    },
+    'madrylab': {
+        'name': 'model',
+        'multi_gpu': True
+    }
+}
 
 
 class Model:
@@ -14,7 +26,7 @@ class Model:
         model_path (str): model path (when it is loaded from memory, e.g. your custom trained model
     """
 
-    def __init__(self, model=None, do_eval=True, gpu=0, model_path=None):
+    def __init__(self, model=None, do_eval=True, gpu=0, model_path=None, model_name='ResNet50', pretrained_name=None):
         """
         Args:
             model: pytorch-like model (e.g. resnet50)
@@ -22,7 +34,6 @@ class Model:
             gpu (int): index of gpu to use (-1 for cpu)
             model_path (str): model path (when it is loaded from memory, e.g. your custom trained model
         """
-        self.model = model
         self.eval = do_eval
         self.gpu = gpu
         self.model_path = model_path
@@ -31,12 +42,56 @@ class Model:
         if self.gpu != -1:
             use_cuda = torch.cuda.is_available()
             self.device = torch.device("cuda:" + str(self.gpu) if use_cuda else "cpu")
-            self.model.to(self.device)
         else:
             self.device = torch.device("cpu")
-            self.model.to(self.device)
 
-        print(self.device)
+        # if model is loaded from path
+        if self.model_path:
+            try:
+                pretrained_model = torch.load(self.model_path, map_location=self.device).get(
+                    pre_trained_models[pretrained_name]['name'])
+
+                # if the model has been pretrained on multi gpu
+                if pre_trained_models[pretrained_name]['multi_gpu']:
+                    keys = pretrained_model.keys()
+                    values = pretrained_model.values()
+
+                    new_state_keys = []
+                    for key in keys:
+                        new_state_keys.append(key[7:])
+
+                    new_dict = collections.OrderedDict(list(zip(new_state_keys, values)))
+                    model.load_state_dict(new_dict)
+
+                # otherwise, the model has not been pretrained on multi gpu
+                else:
+                    model.load_state_dict(pretrained_model)
+
+                self.model = model
+                print('Loaded model from %s on %s' % (self.model_path, self.device))
+
+            except FileNotFoundError:
+                raise FileNotFoundError('Model file not found!')
+
+        # otherwise, use pytorch pre-trained model
+        else:
+            self.model = model
+            self.model.to(self.device)
+            self.model_name = model_name
+            print('Loaded PyTorch pre-trained %s on %s' % (self.model_name, self.device))
+
+        #####################################################################################
+        # OLD MODEL LOADING WITHOUT THE POSSIBILITY OF LOADING FROM MEMORY
+        # if self.gpu != -1:
+        #     use_cuda = torch.cuda.is_available()
+        #     self.device = torch.device("cuda:" + str(self.gpu) if use_cuda else "cpu")
+        #     self.model.to(self.device)
+        # else:
+        #     self.device = torch.device("cpu")
+        #     self.model.to(self.device)
+
+        # print(self.device)
+        #####################################################################################
 
         if self.eval:
             self.model.eval()
