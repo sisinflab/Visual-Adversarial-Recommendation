@@ -80,6 +80,7 @@ class Model:
                     model.load_state_dict(pretrained_model)
 
                 self.model = model
+                self.model.to(self.device)
                 print('Loaded model from %s on %s' % (self.model_path, self.device))
 
             except FileNotFoundError:
