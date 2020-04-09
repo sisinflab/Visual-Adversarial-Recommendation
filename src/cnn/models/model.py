@@ -57,10 +57,22 @@ class Model:
                     values = pretrained_model.values()
 
                     new_state_keys = []
-                    for key in keys:
-                        new_state_keys.append(key[7:])
+                    new_values = []
+                    for key, value in zip(keys, values):
 
-                    new_dict = collections.OrderedDict(list(zip(new_state_keys, values)))
+                        # this is to make madrylab pre-trained model conformable to ResNet50 architecture from PyTorch
+                        # as a matter of facts, in our configuration, we don't need any "attacker" and/or pre-processing
+                        # "normalizer", we just want to load the pre-trained weights for the defense
+                        if pretrained_name == 'madrylab':
+                            if 'normalizer' not in key and 'attacker' not in key:
+                                new_state_keys.append(key[len('module.model.'):])
+                                new_values.append(value)
+
+                        else:
+                            new_state_keys.append(key[len('module.'):])
+                            new_values = values
+
+                    new_dict = collections.OrderedDict(list(zip(new_state_keys, new_values)))
                     model.load_state_dict(new_dict)
 
                 # otherwise, the model has not been pretrained on multi gpu
