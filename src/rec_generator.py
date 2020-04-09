@@ -9,7 +9,8 @@ def parse_args():
     parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--dataset', nargs='?', default='amazon_women',
                         help='dataset path')
-    parser.add_argument('--experiment_name', nargs='?', default='pgd_638_459_eps16.0_eps_it0.01045751633986928_nb_it10_linf_images',
+    parser.add_argument('--experiment_name', nargs='?',
+                        default='pgd_638_459_eps16.0_eps_it0.01045751633986928_nb_it10_linf_images',
                         help='original_images, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--model', nargs='?', default='VBPR',
                         help='recommender models: VBPR')
@@ -37,7 +38,6 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-
 
     os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
     print('Device gpu: {0}'.format(os.environ['CUDA_VISIBLE_DEVICES']))
