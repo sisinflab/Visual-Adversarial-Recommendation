@@ -2,20 +2,21 @@ import pandas as pd
 import os
 import write
 
-dataset = 'amazon_women'
-ratings = pd.read_csv('{0}/dataset_preprocessing/{1}/filtered_ratings.txt'.format(os.getcwd(), dataset), sep='\t')
+dataset = 'amazon_beauty'
+ratings = pd.read_csv('{0}/dataset_preprocessing/{1}/filtered_ratings.txt'.format(os.getcwd(), dataset), sep='\t', header=None)
+ratings.columns = ['item','user','rating']
 counts = ratings.groupby(['user'])['user'].agg('count').to_frame('count').reset_index()
 
 # Filter rating value to have implicit
 # ratings = ratings[ratings['rating'] > 3.0]
 
 # Filter by 5 ratings
-ratings = ratings[ratings['user'].isin(counts[counts['count'] >= 5]['user'])]
+ratings = ratings[ratings['user'].isin(counts[counts['count'] >= 3]['user'])]
 
 counts = ratings.groupby(['item'])['item'].agg('count').to_frame('count').reset_index()
-ratings = ratings[ratings['item'].isin(counts[counts['count'] >= 5]['item'])]
+ratings = ratings[ratings['item'].isin(counts[counts['count'] >= 3]['item'])]
 
-ratings = ratings.sort_values(['timestamp'])
+#ratings = ratings.sort_values(['timestamp'])
 
 # Indexing
 n_users = ratings['user'].nunique()
@@ -87,6 +88,7 @@ for moving_item in test_dataset_items_only_in_test['item'].unique():
 
 train_dataset = train_dataset.sort_values(by=['user'])
 train_dataset[['user', 'item']].to_csv('{0}/dataset_preprocessing/{1}/trainingset.tsv'.format(os.getcwd(), dataset), sep='\t', header=None, index=None)
+test_dataset = test_dataset.sort_values(by=['user'])
 test_dataset[['user', 'item']].to_csv('{0}/dataset_preprocessing/{1}/testset.tsv'.format(os.getcwd(), dataset), sep='\t', header=None, index=None)
 
 write.save_obj(items_index, '{0}/dataset_preprocessing/{1}/item_indices'.format(os.getcwd(), dataset))
