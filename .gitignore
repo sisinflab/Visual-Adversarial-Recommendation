@@ -22,3 +22,5 @@ data/old_amazon_men/*
 data/pdf_images
 /rec_results/*
 cnn_models/*
+
+/src/dataset_preprocessing/*
