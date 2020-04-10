@@ -50,8 +50,6 @@ class CustomDataset(Dataset):
             sample = sample.resize(size=(sample.size[0] // self.scale, sample.size[1] // self.scale), resample=Image.LANCZOS)
 
         if self.transform:
-            # to_tensor = transforms.ToTensor()
-            # sample = to_tensor(sample)
             sample = self.transform(sample)
 
         return sample, self.filenames[idx]

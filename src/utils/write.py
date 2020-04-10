@@ -1,4 +1,4 @@
-import torchvision
+from PIL import Image
 import numpy as np
 import pickle
 import os
@@ -42,18 +42,15 @@ def save_np(npy, filename):
     np.save(filename, npy)
 
 
-def save_image(image, filename, mode='lossy'):
+def save_image(image, filename):
     """
     Store an image to hard disk
     Args:
         image (pytorch tensor): image to save
         filename (str): filename
-        mode (str): either lossless or lossy
     """
     if not os.path.exists(os.path.dirname(filename)):
         os.makedirs(os.path.dirname(filename))
 
-    if mode == 'lossy':
-        torchvision.utils.save_image(image, filename)
-    elif mode == 'lossless':
-        save_np(npy=image, filename=filename)
+    im = Image.fromarray(image)
+    im.save(filename)

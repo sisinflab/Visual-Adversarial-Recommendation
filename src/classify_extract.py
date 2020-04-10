@@ -28,6 +28,7 @@ def classify_and_extract():
 
     #########################################################################################################
     # MODEL SETTING
+
     if args.defense:
         path_images, path_output_classes, path_output_features, path_classes, model_path = read_config(
             sections_fields=[('ORIGINAL', 'Images'),
@@ -59,6 +60,7 @@ def classify_and_extract():
 
     #########################################################################################################
     # DATASET SETTING
+
     path_images = path_images.format(args.dataset)
 
     data = CustomDataset(root_dir=path_images,
@@ -69,7 +71,6 @@ def classify_and_extract():
                          ]))
 
     print('Loaded dataset from %s' % path_images)
-
     #########################################################################################################
 
     #########################################################################################################
@@ -100,7 +101,9 @@ def classify_and_extract():
     write_csv(df=df, filename=path_output_classes)
     save_np(npy=features, filename=path_output_features)
 
-    print('\n\nClassification and feature extraction completed in %f seconds.' % (time.time() - start))
+    end = time.time()
+
+    print('\n\nClassification and feature extraction completed in %f seconds.' % (end - start))
     print('Saved features numpy in ==> %s' % path_output_features)
     print('Saved classification file in ==> %s' % path_output_classes)
     #########################################################################################################

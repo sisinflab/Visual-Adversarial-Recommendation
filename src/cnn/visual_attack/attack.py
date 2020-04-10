@@ -54,24 +54,24 @@ class VisualAttack:
 
         # SET AND INITIALIZE ATTACK TYPE
         if self.attack_type == 'fgsm':
-            print("Setting fgsm attack")
+            print("\nSetting fgsm attack")
             # self.attack_op = FastGradientMethod(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'cw':
-            print("Setting carlini & wagner attack")
+            print("\nSetting carlini & wagner attack")
             # self.attack_op = CarliniWagnerL2(self.cleverhans_model, sess=self.sess)
             self.attack_op = CarliniWagnerL2Std(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'pgd':
-            print("Setting pgd attack")
+            print("\nSetting pgd attack")
             # self.attack_op = MadryEtAl(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'jsma':
-            print("Setting jsma attack")
+            print("\nSetting jsma attack")
             self.attack_op = SaliencyMapMethodMemory(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'zoo':
-            print("Setting zoo attack")
+            print("\nSetting zoo attack")
             # self.attack_op = ZOOL2(model=self.tf_model,
             #                        sess=self.sess)
         elif self.attack_type == 'spsa':
-            print("Setting spsa attack")
+            print("\nSetting spsa attack")
             self.attack_op = SPSANoClip(model=self.cleverhans_model, sess=self.sess)
         else:
             raise NotImplementedError('Not implemented attack.')

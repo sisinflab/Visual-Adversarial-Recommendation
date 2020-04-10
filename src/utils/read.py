@@ -2,6 +2,7 @@ import pandas as pd
 import configparser
 import pickle
 import numpy as np
+from PIL import Image
 
 
 def read_csv(filename):
@@ -54,6 +55,10 @@ def read_config(sections_fields):
     for s, f in sections_fields:
         configs.append(config[s][f])
     return configs
+
+
+def read_image(filename):
+    return Image.open(filename)
 
 
 def load_obj(name):
