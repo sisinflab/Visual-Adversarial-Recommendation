@@ -10,14 +10,14 @@ def parse_args():
     parser.add_argument('--dataset', nargs='?', default='amazon_women',
                         help='dataset path')
     parser.add_argument('--experiment_name', nargs='?',
-                        default='pgd_638_459_eps16.0_eps_it0.01045751633986928_nb_it10_linf_images',
-                        help='original_images, fgsm_***, cw_***, pgd_***')
+                        default='original',
+                        help='original, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--model', nargs='?', default='VBPR',
                         help='recommender models: VBPR')
     parser.add_argument('--emb1_K', type=int, default=64, help='size of embeddings')
     parser.add_argument('--batch_size', type=int, default=512, help='batch size')
     parser.add_argument('--lr', nargs='?', default='[0.01,1e-4,1e-3]', help='learning rate')
-    parser.add_argument('--verbose', type=int, default=1000, help='verbose')
+    parser.add_argument('--verbose', type=int, default=1000, help='vebrosity and Checkpoint epoch')
     parser.add_argument('--epoch', type=int, default=4000, help='epochs')
     parser.add_argument('--regs', nargs='?', default='[1e-1,1e-3,0]', help='lambdas for regularization')
     parser.add_argument('--lmd', type=float, default=0.1,
@@ -30,7 +30,7 @@ def parse_args():
     parser.add_argument('--weight_dir', nargs='?', default='rec_model_weights', help='directory to store the weights')
     parser.add_argument('--result_dir', nargs='?', default='rec_results', help='directory to store the predictions')
 
-    parser.add_argument('--tp_k_predictions', type=int, default=1000,
+    parser.add_argument('--tp_k_predictions', type=int, default=150,
                         help='top k predictions to store before the evaluation')
 
     return parser.parse_args()

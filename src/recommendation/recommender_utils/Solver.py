@@ -36,9 +36,9 @@ class Solver:
         self.weight_dir = '../' + args.weight_dir + '/'
         self.result_dir = '../' + args.result_dir + '/'
 
-        if self.experiment_name in ['original_images', 'madrylab_original_images', 'free_adv_original_images']:
+        if self.experiment_name in ['original', 'madry_original', 'free_adv_original']:
             self.defense_type = ''
-            self.attack_type = 'original_images'
+            self.attack_type = 'original'
             self.attacked_categories = ''
             self.eps_cnn = ''
             self.iteration_attack_type = ''
@@ -133,20 +133,24 @@ class Solver:
         # Store Prediction Positions
         position_predictions = predictions.argsort(axis=1)
         position_predictions = [position_predictions[i][:self.tp_k_predictions] for i in range(position_predictions.shape[0])]
-        prediction_name = self.result_dir + self.experiment_name + 'top{0}_item_predictions_epoch{1}'.format(
+        prediction_name = self.result_dir + self.experiment_name + '_top{0}_pred_ep{1}'.format(
             self.tp_k_predictions, epoch)
         if self.adv:
             prediction_name = prediction_name + '_AMR'
+        else:
+            prediction_name = prediction_name + '_VBPR'
 
         write.save_obj(position_predictions, prediction_name)
 
         # Store Prediction Scores
         score_predictions = predictions.argsort(axis=1)
         score_predictions = [score_predictions[i][:self.tp_k_predictions] for i in range(score_predictions.shape[0])]
-        prediction_name = self.result_dir + self.experiment_name + 'top{0}_score_predictions_epoch{1}'.format(
+        prediction_name = self.result_dir + self.experiment_name + '_top{0}_score_ep{1}'.format(
             self.tp_k_predictions, epoch)
         if self.adv:
             prediction_name = prediction_name + '_AMR'
+        else:
+            prediction_name = prediction_name + '_VBPR'
 
         write.save_obj(score_predictions, prediction_name)
 
@@ -166,5 +170,7 @@ class Solver:
         store_model_path = self.weight_dir + self.experiment_name + 'step{0}'.format(step)
         if self.adv:
             store_model_path = store_model_path + '_AMR'
+        else:
+            store_model_path = store_model_path + '_VBPR'
 
         np.save(store_model_path + '.npy', params)
