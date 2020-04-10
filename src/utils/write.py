@@ -11,7 +11,7 @@ def write_csv(df, filename):
         filename (str): path to store the dataframe
     """
     if not os.path.exists(os.path.dirname(filename)):
-        print('Directory path %s does not exist. Creating it...' % filename)
+        print('\n\nDirectory path %s does not exist. Creating it...' % filename)
         os.makedirs(os.path.dirname(filename))
 
     df.to_csv(filename, index=False)
@@ -36,7 +36,7 @@ def save_np(npy, filename):
         filename (str): filename
     """
     if not os.path.exists(os.path.dirname(filename)):
-        print('Directory path %s does not exist. Creating it...' % filename)
+        print('\n\nDirectory path %s does not exist. Creating it...' % filename)
         os.makedirs(os.path.dirname(filename))
 
     np.save(filename, npy)
