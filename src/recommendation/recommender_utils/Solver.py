@@ -36,7 +36,7 @@ class Solver:
         self.weight_dir = '../' + args.weight_dir + '/'
         self.result_dir = '../' + args.result_dir + '/'
 
-        if self.experiment_name == 'original_images':
+        if self.experiment_name in ['original_images', 'madry_original_images', 'free_adv_original_images']:
             self.defense_type = ''
             self.attack_type = 'original_images'
             self.attacked_categories = ''
