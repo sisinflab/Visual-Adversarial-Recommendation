@@ -36,7 +36,7 @@ class Solver:
         self.weight_dir = '../' + args.weight_dir + '/'
         self.result_dir = '../' + args.result_dir + '/'
 
-        if self.experiment_name in ['original_images', 'madry_original_images', 'free_adv_original_images']:
+        if self.experiment_name in ['original_images', 'madrylab_original_images', 'free_adv_original_images']:
             self.defense_type = ''
             self.attack_type = 'original_images'
             self.attacked_categories = ''
@@ -46,8 +46,7 @@ class Solver:
         else:
             self.defense_type = self.experiment_name.split('_')[0]
             self.attack_type = self.experiment_name.split('_')[1]
-            self.attacked_categories = '_' + self.experiment_name.split('_')[2] + '_' + self.experiment_name.split('_')[
-                3]
+            self.attacked_categories = '_' + self.experiment_name.split('_')[2] + '_' + self.experiment_name.split('_')[3]
             self.eps_cnn = '_' + self.experiment_name.split('_')[4]
             self.iteration_attack_type = '_' + self.experiment_name.split('_')[5]
             self.norm = '_' + self.experiment_name.split('_')[6]
