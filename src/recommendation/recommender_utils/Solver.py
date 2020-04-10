@@ -37,18 +37,20 @@ class Solver:
         self.result_dir = '../' + args.result_dir + '/'
 
         if self.experiment_name == 'original_images':
+            self.defense_type = ''
             self.attack_type = 'original_images'
             self.attacked_categories = ''
             self.eps_cnn = ''
             self.iteration_attack_type = ''
             self.norm = ''
         else:
-            self.attack_type = self.experiment_name.split('_')[0]
-            self.attacked_categories = '_' + self.experiment_name.split('_')[1] + '_' + self.experiment_name.split('_')[
-                2]
-            self.eps_cnn = '_' + self.experiment_name.split('_')[3]
-            self.iteration_attack_type = '_' + self.experiment_name.split('_')[4]
-            self.norm = '_' + self.experiment_name.split('_')[5]
+            self.defense_type = self.experiment_name.split('_')[0]
+            self.attack_type = self.experiment_name.split('_')[1]
+            self.attacked_categories = '_' + self.experiment_name.split('_')[2] + '_' + self.experiment_name.split('_')[
+                3]
+            self.eps_cnn = '_' + self.experiment_name.split('_')[4]
+            self.iteration_attack_type = '_' + self.experiment_name.split('_')[5]
+            self.norm = '_' + self.experiment_name.split('_')[6]
 
         self.experiment_name = '{0}/{1}'.format(self.dataset_name, self.experiment_name)
 
