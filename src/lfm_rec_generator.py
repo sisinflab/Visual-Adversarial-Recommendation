@@ -73,7 +73,7 @@ if __name__ == '__main__':
     print('Training...')
     start = time()
     model = LightFM(no_components=args.emb1_K, loss=args.loss, learning_rate=args.lr, random_state=0)
-    model.fit(train_interactions, item_features=item_features, epochs=args.epochs, num_threads=args.num_threads, verbose=True)
+    model.fit(train_interactions, item_features=item_features, epochs=args.epoch, num_threads=args.num_threads, verbose=True)
     print('End Training in {0}.'.format(time() - start))
 
     # # Evaluation
