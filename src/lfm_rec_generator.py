@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--dataset', nargs='?', default='amazon_women', help='dataset path')
     parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
-    parser.add_argument('--emb1_K', type=int, default=64, help='size of embeddings')
+    parser.add_argument('--emb_K', type=int, default=64, help='size of embeddings')
     parser.add_argument('--loss', nargs='?', default='bpr', help='loss of FM model: logistic, bpr, warp, warp-kos')
     parser.add_argument('--lr', type=float, default=0.05, help='learning rate')
     parser.add_argument('--epoch', type=int, default=100, help='epochs')
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # Train the Model
     print('Training...')
     start = time()
-    model = LightFM(no_components=args.emb1_K, loss=args.loss, learning_rate=args.lr, random_state=0)
+    model = LightFM(no_components=args.emb_K, loss=args.loss, learning_rate=args.lr, random_state=0)
     model.fit(train_interactions, item_features=item_features, epochs=args.epoch, num_threads=args.num_threads, verbose=True)
     print('End Training in {0}.'.format(time() - start))
 
