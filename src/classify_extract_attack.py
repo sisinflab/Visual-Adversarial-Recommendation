@@ -13,6 +13,7 @@ import argparse
 import csv
 import os
 import time
+import shutil
 import random
 import sys
 
@@ -53,8 +54,8 @@ def parse_args():
     parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
-                        help='dataset path: amazon_men, amazon_women')
-    parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
+                        help='dataset path: amazon_men, amazon_women, amazon_beauty')
+    parser.add_argument('--defense', type=int, default=1)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
     parser.add_argument('--model_file', type=str, default='model_best.pth.tar')
 
@@ -79,8 +80,8 @@ def classify_and_extract_attack():
         path_images, path_input_classes, path_input_features, path_classes, model_path, \
             path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
                 sections_fields=[('ORIGINAL', 'Images'),
-                                 ('DEFENSE', 'Classes'),
-                                 ('DEFENSE', 'Features'),
+                                 ('ORIGINAL', 'Classes'),
+                                 ('ORIGINAL', 'Features'),
                                  ('ALL', 'ImagenetClasses'),
                                  ('ALL', 'ModelPath'),
                                  ('DEFENSE', 'ImagesAttack'),
@@ -105,8 +106,7 @@ def classify_and_extract_attack():
                                  ('ATTACK', 'Features'),
                                  ('ATTACK', 'Classes')])
 
-        path_images, path_input_classes, path_input_features = path_images.format(
-            args.dataset), path_input_classes.format(
+        path_input_classes, path_input_features = path_input_classes.format(
             args.dataset), path_input_features.format(args.dataset)
 
         model = Model(model=models.resnet50(pretrained=True), gpu=args.gpu, model_name='ResNet50')
@@ -185,6 +185,9 @@ def classify_and_extract_attack():
 
     if not os.path.exists(os.path.dirname(path_output_classes_attack)):
         os.makedirs(os.path.dirname(path_output_classes_attack))
+    else:
+        shutil.rmtree(os.path.dirname(path_output_classes_attack))
+        os.makedirs(os.path.dirname(path_output_classes_attack))
 
     with open(path_output_classes_attack, 'w') as f:
         fieldnames = ['ImageID', 'ClassNum', 'ClassStr', 'Prob', 'ClassNumStart', 'ClassStrStart', 'ProbStart']
@@ -210,7 +213,7 @@ def classify_and_extract_attack():
                 adv_perturbed_out[adv_perturbed_out > 1.0] = 1.0
 
                 # Transform into numpy, permute and multiply by 255 (uint8)
-                adv_perturbed_out = (adv_perturbed_out.permute(1, 2, 0).detach().numpy() * 255).astype('uint8')
+                adv_perturbed_out = (adv_perturbed_out.permute(1, 2, 0).detach().cpu().numpy() * 255).astype('uint8')
 
                 # Save image as tiff (lossless compression)
                 save_image(image=adv_perturbed_out,

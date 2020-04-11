@@ -8,7 +8,7 @@ pre_trained_models = {
         'name': 'state_dict',
         'multi_gpu': True
     },
-    'madrylab': {
+    'madry': {
         'name': 'model',
         'multi_gpu': True
     }
@@ -63,7 +63,7 @@ class Model:
                         # this is to make madrylab pre-trained model conformable to ResNet50 architecture from PyTorch
                         # as a matter of facts, in our configuration, we don't need any "attacker" and/or pre-processing
                         # "normalizer", we just want to load the pre-trained weights for the defense
-                        if pretrained_name == 'madrylab':
+                        if pretrained_name == 'madry':
                             if 'normalizer' not in key and 'attacker' not in key:
                                 new_state_keys.append(key[len('module.model.'):])
                                 new_values.append(value)
