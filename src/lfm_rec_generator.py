@@ -32,7 +32,7 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-
+    ex = time()
     print("raining of Light FM on DATASET {0}".format(args.dataset))
     print("- PARAMETERS:")
     for arg in vars(args):
@@ -44,8 +44,8 @@ if __name__ == '__main__':
     result_directory = '../rec_results/{0}/{1}'.format(args.dataset, args.experiment_name)
 
     # Read Dataset
-    df_train = pd.read_csv(dataset_directory+'/trainingset.tsv', header=None, sep='\t')
-    df_test = pd.read_csv(dataset_directory+'/testset.tsv', header=None, sep='\t')
+    df_train = pd.read_csv(dataset_directory + '/trainingset.tsv', header=None, sep='\t')
+    df_test = pd.read_csv(dataset_directory + '/testset.tsv', header=None, sep='\t')
     features = read_np('{0}/{1}/features.npy'.format(dataset_directory, args.experiment_name))
 
     train = Dataset()
@@ -71,11 +71,12 @@ if __name__ == '__main__':
     print('Training...')
     start = time()
     model = LightFM(no_components=args.emb_K, loss=args.loss, learning_rate=args.lr, random_state=0)
-    model.fit(train_interactions, item_features=item_features, epochs=args.epoch, num_threads=args.num_threads, verbose=True)
+    model.fit(train_interactions, item_features=item_features, epochs=args.epoch, num_threads=args.num_threads,
+              verbose=True)
     print('End Training in {0}.'.format(time() - start))
 
     # # Evaluation
-    print("Start")
+    print("Evaluation...")
     full_users = []
     full_items = []
     for user_id in range(df_train[0].nunique()):
@@ -83,8 +84,10 @@ if __name__ == '__main__':
         full_items += range(df_train[1].nunique())
     full_users = np.array(full_users, dtype=np.int32)
     full_predictions = model.predict(full_users, full_items, item_features=item_features, num_threads=args.num_threads)
+    print("End Evaluation")
 
     # Store Prediction Lists (.tsv)
+    print("Storing results...")
     with open(result_directory + '_top{0}_ep{1}_LFM.tsv'.format(args.topk, args.epoch), 'w') as out:
         num_items = df_train[1].nunique()
         num_users = df_train[0].nunique()
@@ -99,9 +102,10 @@ if __name__ == '__main__':
             scores.append(np.array(top_k_score))
             for i, value in enumerate(top_k_id):
                 out.write(str(u) + '\t' + str(value) + '\t' + str(top_k_score[i]) + '\n')
-                if u % 100 == 0:
-                    print("\t Pred. computed for {0}/{1}".format(u + 1, num_users))
 
         write.save_obj(positions, result_directory + '_top{0}_pos_ep{1}_LFM'.format(args.topk, args.epoch))
         write.save_obj(scores, result_directory + '_top{0}_score_ep{1}_LFM'.format(args.topk, args.epoch))
+    print("End Store.")
+
+    print("*** COMPLETED in {0} ***".format(time() - ex))
 
