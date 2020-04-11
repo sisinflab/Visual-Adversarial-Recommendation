@@ -13,6 +13,7 @@ import argparse
 import csv
 import os
 import time
+import shutil
 import random
 import sys
 
@@ -183,6 +184,9 @@ def classify_and_extract_attack():
     total_attack_time = 0.0
 
     if not os.path.exists(os.path.dirname(path_output_classes_attack)):
+        os.makedirs(os.path.dirname(path_output_classes_attack))
+    else:
+        shutil.rmtree(os.path.dirname(path_output_classes_attack))
         os.makedirs(os.path.dirname(path_output_classes_attack))
 
     with open(path_output_classes_attack, 'w') as f:
