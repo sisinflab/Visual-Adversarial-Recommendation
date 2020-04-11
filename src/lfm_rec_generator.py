@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     topk = args.topk
     dataset_directory = '../data/' + args.dataset
-    result_directory = '../rec_results/{0}/{1}/'.format(args.dataset, args.experiment_name)
+    result_directory = '../rec_results/{0}/{1}'.format(args.dataset, args.experiment_name)
 
     # Read Dataset
     df_train = pd.read_csv(dataset_directory+'/trainingset.tsv', header=None, sep='\t')
