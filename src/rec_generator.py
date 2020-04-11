@@ -30,7 +30,7 @@ def parse_args():
     parser.add_argument('--weight_dir', nargs='?', default='rec_model_weights', help='directory to store the weights')
     parser.add_argument('--result_dir', nargs='?', default='rec_results', help='directory to store the predictions')
 
-    parser.add_argument('--tp_k_predictions', type=int, default=150,
+    parser.add_argument('--topk', type=int, default=150,
                         help='top k predictions to store before the evaluation')
 
     return parser.parse_args()

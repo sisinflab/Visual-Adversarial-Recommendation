@@ -32,7 +32,7 @@ class Solver:
         self.saver = tf.compat.v1.train.Saver(tf.compat.v1.trainable_variables(), max_to_keep=0)
         self.sess.run(self.model.assign_image, feed_dict={self.model.init_image: self.dataset.emb_image})
 
-        self.tp_k_predictions = args.tp_k_predictions
+        self.topk = args.topk
         self.weight_dir = '../' + args.weight_dir + '/'
         self.result_dir = '../' + args.result_dir + '/'
 
@@ -46,7 +46,8 @@ class Solver:
         else:
             self.defense_type = self.experiment_name.split('_')[0]
             self.attack_type = self.experiment_name.split('_')[1]
-            self.attacked_categories = '_' + self.experiment_name.split('_')[2] + '_' + self.experiment_name.split('_')[3]
+            self.attacked_categories = '_' + self.experiment_name.split('_')[2] + '_' + self.experiment_name.split('_')[
+                3]
             self.eps_cnn = '_' + self.experiment_name.split('_')[4]
             self.iteration_attack_type = '_' + self.experiment_name.split('_')[5]
             self.norm = '_' + self.experiment_name.split('_')[6]
@@ -77,7 +78,6 @@ class Solver:
             if i % self.verbose == 0:
                 self.save(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
-
 
         self.store_predictions(i)
         self.save(i)
@@ -127,14 +127,15 @@ class Solver:
         print('Start Store Predictions at epoch {0}'.format(epoch))
         start = time.time()
         # predictions = self.sess.run(self.model.predictions)
-        emb_P = self.sess.run(self.model.emb_P)*-1
+        emb_P = self.sess.run(self.model.emb_P) * -1
         temp_emb_Q = self.sess.run(self.model.temp_emb_Q)
         predictions = np.matmul(emb_P, temp_emb_Q.transpose())
         # Store Prediction Positions
         position_predictions = predictions.argsort(axis=1)
-        position_predictions = [position_predictions[i][:self.tp_k_predictions] for i in range(position_predictions.shape[0])]
-        prediction_name = self.result_dir + self.experiment_name + '_top{0}_pred_ep{1}'.format(
-            self.tp_k_predictions, epoch)
+        position_predictions = [position_predictions[i][:self.topk] for i in
+                                range(position_predictions.shape[0])]
+        prediction_name = self.result_dir + self.experiment_name + '_top{0}_pos_ep{1}'.format(
+            self.topk, epoch)
         if self.adv:
             prediction_name = prediction_name + '_AMR'
         else:
@@ -144,9 +145,9 @@ class Solver:
 
         # Store Prediction Scores
         score_predictions = predictions.argsort(axis=1)
-        score_predictions = [score_predictions[i][:self.tp_k_predictions] for i in range(score_predictions.shape[0])]
+        score_predictions = [score_predictions[i][:self.topk] for i in range(score_predictions.shape[0])]
         prediction_name = self.result_dir + self.experiment_name + '_top{0}_score_ep{1}'.format(
-            self.tp_k_predictions, epoch)
+            self.topk, epoch)
         if self.adv:
             prediction_name = prediction_name + '_AMR'
         else:
@@ -158,7 +159,8 @@ class Solver:
 
     def load(self):
         try:
-            params = np.load(self.weight_dir + self.experiment_name + 'step{0}.npy'.format(self.epoch//2), allow_pickle=True)
+            params = np.load(self.weight_dir + self.experiment_name + 'step{0}.npy'.format(self.epoch // 2),
+                             allow_pickle=True)
             self.sess.run([self.model.assign_P, self.model.assign_Q, self.model.phi.assign(params[2])],
                           {self.model.init_emb_P: params[0], self.model.init_emb_Q: params[1]})
             print('Load parameters from {0}'.format(self.weight_dir + self.experiment_name + 'step2000.npy'))

@@ -12,9 +12,9 @@ import os
 
 # Global Configuration
 result_dir = '../rec_results/'
-dataset_name = 'amazon_men/'
+dataset_name = 'old_amazon_men/'
 experiment_name = ''
-tp_k_predictions = 1000
+topk = 1000
 prediction_files_path = result_dir + dataset_name
 
 K = 100
@@ -64,7 +64,7 @@ if __name__ == '__main__':
                 print(prediction_file)
                 predictions = read.load_obj(prediction_files_path + prediction_file)
 
-                pos_elements = pd.read_csv('../data/{0}/pos.txt'.format(dataset_name), sep='\t', header=None)
+                pos_elements = pd.read_csv('../data/{0}/trainingset.txt'.format(dataset_name), sep='\t', header=None)
                 pos_elements.columns = ['u', 'i']
                 pos_elements.u = pos_elements.u.astype(int)
                 pos_elements.i = pos_elements.i.astype(int)
