@@ -209,7 +209,7 @@ def classify_and_extract_attack():
                 adv_perturbed_out[adv_perturbed_out > 1.0] = 1.0
 
                 # Transform into numpy, permute and multiply by 255 (uint8)
-                adv_perturbed_out = (adv_perturbed_out.permute(1, 2, 0).detach().numpy() * 255).astype('uint8')
+                adv_perturbed_out = (adv_perturbed_out.permute(1, 2, 0).detach().cpu().numpy() * 255).astype('uint8')
 
                 # Save image as tiff (lossless compression)
                 save_image(image=adv_perturbed_out,
