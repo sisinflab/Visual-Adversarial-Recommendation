@@ -159,7 +159,7 @@ class Solver:
 
     def load(self):
         try:
-            params = np.load(self.weight_dir + self.experiment_name + 'step{0}.npy'.format(self.epoch // 2),
+            params = np.load(self.weight_dir + self.experiment_name + '_step{0}.npy'.format(self.epoch // 2),
                              allow_pickle=True)
             self.sess.run([self.model.assign_P, self.model.assign_Q, self.model.phi.assign(params[2])],
                           {self.model.init_emb_P: params[0], self.model.init_emb_Q: params[1]})
@@ -169,7 +169,7 @@ class Solver:
 
     def save(self, step):
         params = self.sess.run(tf.compat.v1.trainable_variables())
-        store_model_path = self.weight_dir + self.experiment_name + 'step{0}'.format(step)
+        store_model_path = self.weight_dir + self.experiment_name + '_step{0}'.format(step)
         if self.adv:
             store_model_path = store_model_path + '_AMR'
         else:

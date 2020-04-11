@@ -1,27 +1,23 @@
 from builtins import enumerate
-
 import pandas as pd
 from lightfm.data import Dataset
-
 import utils.write as write
 from utils.read import read_np
 from lightfm import LightFM
-from lightfm.evaluation import recall_at_k
 from time import time
 import numpy as np
 import argparse
-
+import pickle
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
-    parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--dataset', nargs='?', default='amazon_women', help='dataset path')
     parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--emb_K', type=int, default=64, help='size of embeddings')
     parser.add_argument('--loss', nargs='?', default='bpr', help='loss of FM model: logistic, bpr, warp, warp-kos')
     parser.add_argument('--lr', type=float, default=0.05, help='learning rate')
     parser.add_argument('--epoch', type=int, default=100, help='epochs')
-    parser.add_argument('--cnn', nargs='?', default='resnet', help='cnn type: resnet50')
+    parser.add_argument('--cnn', nargs='?', default='resnet50', help='cnn type: resnet50')
     parser.add_argument('--weight_dir', nargs='?', default='rec_model_weights', help='directory to store the weights')
     parser.add_argument('--result_dir', nargs='?', default='rec_results', help='directory to store the predictions')
     parser.add_argument('--topk', type=int, default=150,
@@ -42,6 +38,7 @@ if __name__ == '__main__':
     topk = args.topk
     dataset_directory = '../data/' + args.dataset
     result_directory = '../rec_results/{0}/{1}'.format(args.dataset, args.experiment_name)
+    weight_directory = '../rec_model_weights/{0}/{1}'.format(args.dataset, args.experiment_name)
 
     # Read Dataset
     df_train = pd.read_csv(dataset_directory + '/trainingset.tsv', header=None, sep='\t')
@@ -74,6 +71,9 @@ if __name__ == '__main__':
     model.fit(train_interactions, item_features=item_features, epochs=args.epoch, num_threads=args.num_threads,
               verbose=True)
     print('End Training in {0}.'.format(time() - start))
+
+    with open(weight_directory + '_step{0}_LFM.pickle'.format(args.epoch), 'wb') as dump:
+        pickle.dump(model, dump, protocol=pickle.HIGHEST_PROTOCOL)
 
     # # Evaluation
     print("Evaluation...")
