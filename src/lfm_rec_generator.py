@@ -9,6 +9,7 @@ import numpy as np
 import argparse
 import pickle
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
     parser.add_argument('--dataset', nargs='?', default='amazon_women', help='dataset path')
@@ -91,21 +92,20 @@ if __name__ == '__main__':
     with open(result_directory + '_top{0}_ep{1}_LFM.tsv'.format(args.topk, args.epoch), 'w') as out:
         num_items = df_train[1].nunique()
         num_users = df_train[0].nunique()
-        positions = []
-        scores = []
+        # positions = []
+        # scores = []
         for u in range(num_users):
             u_predictions = full_predictions[u * num_items:u * num_items + num_items]
             u_predictions[df_train[df_train[0] == u][1].to_list()] = -np.inf
             top_k_id = u_predictions.argsort()[-topk:][::-1]
-            positions.append(np.array(top_k_id))
+            # positions.append(np.array(top_k_id))
             top_k_score = u_predictions[top_k_id]
-            scores.append(np.array(top_k_score))
+            # scores.append(np.array(top_k_score))
             for i, value in enumerate(top_k_id):
                 out.write(str(u) + '\t' + str(value) + '\t' + str(top_k_score[i]) + '\n')
 
-        write.save_obj(positions, result_directory + '_top{0}_pos_ep{1}_LFM'.format(args.topk, args.epoch))
-        write.save_obj(scores, result_directory + '_top{0}_score_ep{1}_LFM'.format(args.topk, args.epoch))
+        # write.save_obj(positions, result_directory + '_top{0}_pos_ep{1}_LFM'.format(args.topk, args.epoch))
+        # write.save_obj(scores, result_directory + '_top{0}_score_ep{1}_LFM'.format(args.topk, args.epoch))
     print("End Store.")
 
     print("*** COMPLETED in {0} ***".format(time() - ex))
-

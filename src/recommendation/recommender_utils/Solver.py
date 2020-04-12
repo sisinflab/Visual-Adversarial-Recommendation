@@ -2,7 +2,7 @@ import math
 import time
 import utils.read as read
 import utils.write as write
-
+import pandas as pd
 import numpy as np
 import tensorflow as tf
 import os
@@ -79,7 +79,7 @@ class Solver:
                 self.save(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
 
-        self.store_predictions(i)
+        self.new_store_predictions(i)
         self.save(i)
 
     def evaluate_rec_metrics(self, para):
@@ -154,6 +154,28 @@ class Solver:
             prediction_name = prediction_name + '_VBPR'
 
         write.save_obj(score_predictions, prediction_name)
+
+        print('End Store Predictions {0}'.format(time.time() - start))
+
+    def new_store_predictions(self, epoch):
+        # We multiply the users embeddings by -1 to have the np sorting operation in the correct order
+
+        print('Start Store Predictions at epoch {0}'.format(epoch))
+        start = time.time()
+        # predictions = self.sess.run(self.model.predictions)
+        emb_P = self.sess.run(self.model.emb_P) * -1
+        temp_emb_Q = self.sess.run(self.model.temp_emb_Q)
+        predictions = np.matmul(emb_P, temp_emb_Q.transpose())
+
+        print("Storing results...")
+
+        with open(self.result_dir + self.experiment_name + '_top{0}_ep{1}_{2}.tsv'.format(self.topk, epoch, 'AMR' if self.adv else 'VBPR'), 'w') as out:
+            for user_id, u_predictions in enumerate(predictions):
+                u_predictions[self.dataset.df_train[self.dataset.df_train[0] == user_id][1].to_list()] = -np.inf
+                top_k_id = u_predictions.argsort()[-self.topk:][::-1]
+                top_k_score = u_predictions[top_k_id]
+                for i, item_id in enumerate(top_k_id):
+                    out.write(str(user_id) + '\t' + str(item_id) + '\t' + str(top_k_score[i]) + '\n')
 
         print('End Store Predictions {0}'.format(time.time() - start))
 

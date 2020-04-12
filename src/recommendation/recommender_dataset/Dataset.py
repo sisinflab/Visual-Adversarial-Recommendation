@@ -8,6 +8,7 @@ class Dataset:
         path = '../data/' + args.dataset + '/'
         self.f_feature = path + args.experiment_name + '/features.npy'
         self.f_pos = path + 'trainingset.tsv'
+        self.df_train = pd.read_csv(self.f_pos, header=None, sep='\t')
         self.test = path + 'testset.tsv'
         self.bsz = args.batch_size
         self.emb_image = np.load(self.f_feature)

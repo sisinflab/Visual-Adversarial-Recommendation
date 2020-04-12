@@ -9,7 +9,7 @@ def parse_args():
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path')
-    parser.add_argument('--experiment_name', nargs='?', default='fgsm_806_409_eps16.0_it1_linf_XX_images',
+    parser.add_argument('--experiment_name', nargs='?', default='original',
                         help='original_images, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--model', nargs='?', default='VBPR',
                         help='recommender models: VBPR')
@@ -45,5 +45,5 @@ if __name__ == '__main__':
     start_time = time()
 
     print('START Training of the Recommender Model at {0}.'.format(start_time))
-    solver.store_predictions(4000)
+    solver.new_store_predictions(4000)
     print('END Training of the Recommender Model in {0} secs.'.format(time() - start_time))
