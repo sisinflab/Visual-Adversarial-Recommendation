@@ -181,7 +181,7 @@ class Solver:
 
     def load(self):
         try:
-            params = np.load(self.weight_dir + self.experiment_name + '_step{0}.npy'.format(self.epoch // 2),
+            params = np.load(self.weight_dir + self.experiment_name + '_step{0}_VBPR.npy'.format(self.epoch // 2),
                              allow_pickle=True)
             self.sess.run([self.model.assign_P, self.model.assign_Q, self.model.phi.assign(params[2])],
                           {self.model.init_emb_P: params[0], self.model.init_emb_Q: params[1]})

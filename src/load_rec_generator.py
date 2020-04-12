@@ -29,7 +29,7 @@ def parse_args():
     parser.add_argument('--weight_dir', nargs='?', default='rec_model_weights', help='directory to store the weights')
     parser.add_argument('--result_dir', nargs='?', default='rec_results', help='directory to store the predictions')
 
-    parser.add_argument('--topk', type=int, default=1000,
+    parser.add_argument('--topk', type=int, default=150,
                         help='top k predictions to store before the evaluation')
 
     return parser.parse_args()
@@ -41,6 +41,10 @@ if __name__ == '__main__':
     print('Device gpu: {0}'.format(os.environ['CUDA_VISIBLE_DEVICES']))
     solver = Solver(args)
     print(args)
+    if args.adv == 0:
+        # I need to duplicate because it divide by two in the code
+        solver.epoch = solver.epoch*2
+        solver.load()
 
     start_time = time()
 
