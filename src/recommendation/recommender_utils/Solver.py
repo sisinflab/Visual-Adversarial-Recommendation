@@ -163,7 +163,7 @@ class Solver:
         print('Start Store Predictions at epoch {0}'.format(epoch))
         start = time.time()
         # predictions = self.sess.run(self.model.predictions)
-        emb_P = self.sess.run(self.model.emb_P) * -1
+        emb_P = self.sess.run(self.model.emb_P)
         temp_emb_Q = self.sess.run(self.model.temp_emb_Q)
         predictions = np.matmul(emb_P, temp_emb_Q.transpose())
 
