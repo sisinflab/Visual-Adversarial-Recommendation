@@ -12,12 +12,12 @@ import pickle
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
-    parser.add_argument('--dataset', nargs='?', default='amazon_beauty', help='dataset path')
+    parser.add_argument('--dataset', nargs='?', default='amazon_men', help='dataset path')
     parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--emb_K', type=int, default=64, help='size of embeddings')
     parser.add_argument('--loss', nargs='?', default='bpr', help='loss of FM model: logistic, bpr, warp, warp-kos')
     parser.add_argument('--lr', type=float, default=0.05, help='learning rate')
-    parser.add_argument('--epoch', type=int, default=1, help='epochs')
+    parser.add_argument('--epoch', type=int, default=100, help='epochs')
     parser.add_argument('--cnn', nargs='?', default='resnet50', help='cnn type: resnet50')
     parser.add_argument('--weight_dir', nargs='?', default='rec_model_weights', help='directory to store the weights')
     parser.add_argument('--result_dir', nargs='?', default='rec_results', help='directory to store the predictions')
