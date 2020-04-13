@@ -77,43 +77,12 @@ if __name__ == '__main__':
         pickle.dump(model, dump, protocol=pickle.HIGHEST_PROTOCOL)
 
     # # Evaluation
-    # print("Evaluation...")
-    # full_users = []
-    # full_items = []
-    # for user_id in range(df_train[0].nunique()):
-    #     full_users += [user_id] * df_train[1].nunique()
-    #     full_items += range(df_train[1].nunique())
-    # full_users = np.array(full_users, dtype=np.int32)
-    # full_predictions = model.predict(full_users, full_items, item_features=item_features, num_threads=args.num_threads)
-    # print("End Evaluation")
-    #
-    # # Store Prediction Lists (.tsv)
-    # print("Storing results...")
-    # with open(result_directory + '_top{0}_ep{1}_LFM.tsv'.format(args.topk, args.epoch), 'w') as out:
-    #     num_items = df_train[1].nunique()
-    #     num_users = df_train[0].nunique()
-    #     # positions = []
-    #     # scores = []
-    #     for u in range(num_users):
-    #         u_predictions = full_predictions[u * num_items:u * num_items + num_items]
-    #         u_predictions[df_train[df_train[0] == u][1].to_list()] = -np.inf
-    #         top_k_id = u_predictions.argsort()[-topk:][::-1]
-    #         # positions.append(np.array(top_k_id))
-    #         top_k_score = u_predictions[top_k_id]
-    #         # scores.append(np.array(top_k_score))
-    #         for i, value in enumerate(top_k_id):
-    #             out.write(str(u) + '\t' + str(value) + '\t' + str(top_k_score[i]) + '\n')
-    #
-    #     # write.save_obj(positions, result_directory + '_top{0}_pos_ep{1}_LFM'.format(args.topk, args.epoch))
-    #     # write.save_obj(scores, result_directory + '_top{0}_score_ep{1}_LFM'.format(args.topk, args.epoch))
-    # print("End Store.")
-
     print("Evaluation...")
     with open(result_directory + '_top{0}_ep{1}_LFM.tsv'.format(args.topk, args.epoch), 'w') as out:
 
         for user_id in range(df_train[0].nunique()):
-            user = [user_id] * df_train[1].nunique()
-            items = range(df_train[1].nunique())
+            user = np.array([user_id] * df_train[1].nunique())
+            items = np.array([i for i in range(df_train[1].nunique())])
             u_predictions = model.predict(user, items, item_features=item_features, num_threads=args.num_threads)
 
             u_predictions[df_train[df_train[0] == user_id][1].to_list()] = -np.inf
