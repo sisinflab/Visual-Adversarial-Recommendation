@@ -9,7 +9,7 @@ def parse_args():
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path')
-    parser.add_argument('--experiment_name', nargs='?', default='original',
+    parser.add_argument('--experiment_name', nargs='?', default='free_adv_original',
                         help='original_images, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--model', nargs='?', default='VBPR',
                         help='recommender models: VBPR')

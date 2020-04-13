@@ -185,7 +185,7 @@ class Solver:
                              allow_pickle=True)
             self.sess.run([self.model.assign_P, self.model.assign_Q, self.model.phi.assign(params[2])],
                           {self.model.init_emb_P: params[0], self.model.init_emb_Q: params[1]})
-            print('Load parameters from {0}'.format(self.weight_dir + self.experiment_name + 'step2000.npy'))
+            print('Load parameters from {0}'.format(self.weight_dir + self.experiment_name + '_step{0}_VBPR.npy'.format(self.epoch // 2)))
         except Exception as ex:
             print('Start new model from scratch')
 

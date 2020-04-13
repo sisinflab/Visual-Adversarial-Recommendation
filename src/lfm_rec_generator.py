@@ -12,12 +12,12 @@ import pickle
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
-    parser.add_argument('--dataset', nargs='?', default='amazon_women', help='dataset path')
+    parser.add_argument('--dataset', nargs='?', default='amazon_beauty', help='dataset path')
     parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--emb_K', type=int, default=64, help='size of embeddings')
     parser.add_argument('--loss', nargs='?', default='bpr', help='loss of FM model: logistic, bpr, warp, warp-kos')
     parser.add_argument('--lr', type=float, default=0.05, help='learning rate')
-    parser.add_argument('--epoch', type=int, default=100, help='epochs')
+    parser.add_argument('--epoch', type=int, default=1, help='epochs')
     parser.add_argument('--cnn', nargs='?', default='resnet50', help='cnn type: resnet50')
     parser.add_argument('--weight_dir', nargs='?', default='rec_model_weights', help='directory to store the weights')
     parser.add_argument('--result_dir', nargs='?', default='rec_results', help='directory to store the predictions')
@@ -77,35 +77,52 @@ if __name__ == '__main__':
         pickle.dump(model, dump, protocol=pickle.HIGHEST_PROTOCOL)
 
     # # Evaluation
-    print("Evaluation...")
-    full_users = []
-    full_items = []
-    for user_id in range(df_train[0].nunique()):
-        full_users += [user_id] * df_train[1].nunique()
-        full_items += range(df_train[1].nunique())
-    full_users = np.array(full_users, dtype=np.int32)
-    full_predictions = model.predict(full_users, full_items, item_features=item_features, num_threads=args.num_threads)
-    print("End Evaluation")
+    # print("Evaluation...")
+    # full_users = []
+    # full_items = []
+    # for user_id in range(df_train[0].nunique()):
+    #     full_users += [user_id] * df_train[1].nunique()
+    #     full_items += range(df_train[1].nunique())
+    # full_users = np.array(full_users, dtype=np.int32)
+    # full_predictions = model.predict(full_users, full_items, item_features=item_features, num_threads=args.num_threads)
+    # print("End Evaluation")
+    #
+    # # Store Prediction Lists (.tsv)
+    # print("Storing results...")
+    # with open(result_directory + '_top{0}_ep{1}_LFM.tsv'.format(args.topk, args.epoch), 'w') as out:
+    #     num_items = df_train[1].nunique()
+    #     num_users = df_train[0].nunique()
+    #     # positions = []
+    #     # scores = []
+    #     for u in range(num_users):
+    #         u_predictions = full_predictions[u * num_items:u * num_items + num_items]
+    #         u_predictions[df_train[df_train[0] == u][1].to_list()] = -np.inf
+    #         top_k_id = u_predictions.argsort()[-topk:][::-1]
+    #         # positions.append(np.array(top_k_id))
+    #         top_k_score = u_predictions[top_k_id]
+    #         # scores.append(np.array(top_k_score))
+    #         for i, value in enumerate(top_k_id):
+    #             out.write(str(u) + '\t' + str(value) + '\t' + str(top_k_score[i]) + '\n')
+    #
+    #     # write.save_obj(positions, result_directory + '_top{0}_pos_ep{1}_LFM'.format(args.topk, args.epoch))
+    #     # write.save_obj(scores, result_directory + '_top{0}_score_ep{1}_LFM'.format(args.topk, args.epoch))
+    # print("End Store.")
 
-    # Store Prediction Lists (.tsv)
-    print("Storing results...")
+    print("Evaluation...")
     with open(result_directory + '_top{0}_ep{1}_LFM.tsv'.format(args.topk, args.epoch), 'w') as out:
-        num_items = df_train[1].nunique()
-        num_users = df_train[0].nunique()
-        # positions = []
-        # scores = []
-        for u in range(num_users):
-            u_predictions = full_predictions[u * num_items:u * num_items + num_items]
-            u_predictions[df_train[df_train[0] == u][1].to_list()] = -np.inf
+
+        for user_id in range(df_train[0].nunique()):
+            user = [user_id] * df_train[1].nunique()
+            items = range(df_train[1].nunique())
+            u_predictions = model.predict(user, items, item_features=item_features, num_threads=args.num_threads)
+
+            u_predictions[df_train[df_train[0] == user_id][1].to_list()] = -np.inf
             top_k_id = u_predictions.argsort()[-topk:][::-1]
             # positions.append(np.array(top_k_id))
             top_k_score = u_predictions[top_k_id]
             # scores.append(np.array(top_k_score))
-            for i, value in enumerate(top_k_id):
-                out.write(str(u) + '\t' + str(value) + '\t' + str(top_k_score[i]) + '\n')
-
-        # write.save_obj(positions, result_directory + '_top{0}_pos_ep{1}_LFM'.format(args.topk, args.epoch))
-        # write.save_obj(scores, result_directory + '_top{0}_score_ep{1}_LFM'.format(args.topk, args.epoch))
-    print("End Store.")
+            for i, item_id in enumerate(top_k_id):
+                out.write(str(user_id) + '\t' + str(item_id) + '\t' + str(top_k_score[i]) + '\n')
+    print("End Evaluation")
 
     print("*** COMPLETED in {0} ***".format(time() - ex))
