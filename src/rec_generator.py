@@ -7,7 +7,7 @@ import os
 def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
     parser.add_argument('--gpu', type=int, default=-1)
-    parser.add_argument('--dataset', nargs='?', default='amazon_women',
+    parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path')
     parser.add_argument('--experiment_name', nargs='?',
                         default='original',
