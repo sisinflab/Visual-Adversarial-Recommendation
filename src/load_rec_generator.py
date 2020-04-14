@@ -9,7 +9,7 @@ def parse_args():
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path')
-    parser.add_argument('--experiment_name', nargs='?', default='fgsm_806_409_eps16.0_it1_linf_XX_images',
+    parser.add_argument('--experiment_name', nargs='?', default='free_adv_original',
                         help='original_images, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--model', nargs='?', default='VBPR',
                         help='recommender models: VBPR')
@@ -29,7 +29,7 @@ def parse_args():
     parser.add_argument('--weight_dir', nargs='?', default='rec_model_weights', help='directory to store the weights')
     parser.add_argument('--result_dir', nargs='?', default='rec_results', help='directory to store the predictions')
 
-    parser.add_argument('--tp_k_predictions', type=int, default=1000,
+    parser.add_argument('--topk', type=int, default=150,
                         help='top k predictions to store before the evaluation')
 
     return parser.parse_args()
@@ -41,9 +41,13 @@ if __name__ == '__main__':
     print('Device gpu: {0}'.format(os.environ['CUDA_VISIBLE_DEVICES']))
     solver = Solver(args)
     print(args)
+    if args.adv == 0:
+        # I need to duplicate because it divide by two in the code
+        solver.epoch = solver.epoch*2
+        solver.load()
 
     start_time = time()
 
     print('START Training of the Recommender Model at {0}.'.format(start_time))
-    solver.store_predictions(4000)
+    solver.new_store_predictions(4000)
     print('END Training of the Recommender Model in {0} secs.'.format(time() - start_time))

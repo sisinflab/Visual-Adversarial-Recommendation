@@ -10,7 +10,7 @@ dataset_name = 'amazon_men/'
 experiment_name = ''
 prediction_files_path = result_dir + dataset_name
 
-pos_elements = pd.read_csv('../data/{0}/pos.txt'.format(dataset_name), sep='\t', header=None)
+pos_elements = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
 pos_elements.columns = ['u', 'i']
 
 N_USERS = pos_elements['u'].nunique()

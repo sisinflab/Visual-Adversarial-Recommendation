@@ -96,8 +96,8 @@ class AMR:
 
         self.adv_loss = 0
 
-        self.delta = tf.gradients(self.loss, [self.image_feature])[0]
 
+        self.delta = tf.gradients(self.loss, [self.image_feature])[0]
         self.delta = tf.stop_gradient(self.delta)
 
         self.pos_pred_adv, _, _, _ = self._create_inference(self.user_input, self.pos_input, adv=True)
