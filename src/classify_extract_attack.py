@@ -201,7 +201,6 @@ def classify_and_extract_attack():
 
                 # Generate attacked image with chosen attack algorithm
                 start_attack = time.time()
-                print('ATTACKING %i IMAGE' %(i + 1))
                 adv_perturbed_out = attack.run_attack(image=im[None, ...])
                 end_attack = time.time()
                 total_attack_time += (end_attack - start_attack)
