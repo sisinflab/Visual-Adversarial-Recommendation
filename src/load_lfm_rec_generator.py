@@ -86,6 +86,9 @@ if __name__ == '__main__':
             # scores.append(np.array(top_k_score))
             for i, item_id in enumerate(top_k_id):
                 out.write(str(user_id) + '\t' + str(item_id) + '\t' + str(top_k_score[i]) + '\n')
+            if user_id % 100 == 0:
+                print('{0}/{1}'.format(user_id, df_train[0].nunique()))
+
     print("End Evaluation")
 
     print("*** COMPLETED in {0} ***".format(time() - ex))
