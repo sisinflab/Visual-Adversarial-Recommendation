@@ -37,6 +37,8 @@ class CustomDataset(Dataset):
 
     def __getitem__(self, idx):
         sample = Image.open(self.root_dir + self.filenames[idx])
+        height = sample.size[0]
+        width = sample.size[1]
 
         try:
             sample.load()
@@ -47,12 +49,17 @@ class CustomDataset(Dataset):
             sample = sample.convert(mode='RGB')
 
         if self.reshape:
-            sample = sample.resize(size=(sample.size[0] // self.scale, sample.size[1] // self.scale), resample=Image.LANCZOS)
+            sample = sample.resize(size=(sample.size[0] // self.scale, sample.size[1] // self.scale),
+                                   resample=Image.BICUBIC)
 
         if self.transform:
             sample = self.transform(sample)
 
-        return sample, self.filenames[idx]
+        if self.reshape:
+            return sample, height, width, self.filenames[idx]
+
+        else:
+            return sample, self.filenames[idx]
 
 
 class CustomDataLoader:

@@ -80,15 +80,15 @@ def classify_and_extract_attack():
 
     if args.defense:
         path_images, path_input_classes, path_input_features, path_classes, model_path, \
-            path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
-                sections_fields=[('ORIGINAL', 'Images'),
-                                 ('ORIGINAL', 'Classes'),
-                                 ('ORIGINAL', 'Features'),
-                                 ('ALL', 'ImagenetClasses'),
-                                 ('ALL', 'ModelPath'),
-                                 ('DEFENSE', 'ImagesAttack'),
-                                 ('DEFENSE', 'FeaturesAttack'),
-                                 ('DEFENSE', 'ClassesAttack')])
+        path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
+            sections_fields=[('ORIGINAL', 'Images'),
+                             ('ORIGINAL', 'Classes'),
+                             ('ORIGINAL', 'Features'),
+                             ('ALL', 'ImagenetClasses'),
+                             ('ALL', 'ModelPath'),
+                             ('DEFENSE', 'ImagesAttack'),
+                             ('DEFENSE', 'FeaturesAttack'),
+                             ('DEFENSE', 'ClassesAttack')])
 
         path_input_classes, path_input_features = path_input_classes.format(
             args.dataset, args.model_dir), path_input_features.format(args.dataset, args.model_dir)
@@ -98,15 +98,15 @@ def classify_and_extract_attack():
 
     else:
         path_images, path_input_classes, path_input_features, path_classes, model_path, \
-            path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
-                sections_fields=[('ORIGINAL', 'Images'),
-                                 ('ORIGINAL', 'Classes'),
-                                 ('ORIGINAL', 'Features'),
-                                 ('ALL', 'ImagenetClasses'),
-                                 ('ALL', 'ModelPath'),
-                                 ('ATTACK', 'Images'),
-                                 ('ATTACK', 'Features'),
-                                 ('ATTACK', 'Classes')])
+        path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
+            sections_fields=[('ORIGINAL', 'Images'),
+                             ('ORIGINAL', 'Classes'),
+                             ('ORIGINAL', 'Features'),
+                             ('ALL', 'ImagenetClasses'),
+                             ('ALL', 'ModelPath'),
+                             ('ATTACK', 'Images'),
+                             ('ATTACK', 'Features'),
+                             ('ATTACK', 'Classes')])
 
         path_input_classes, path_input_features = path_input_classes.format(
             args.dataset), path_input_features.format(args.dataset)
@@ -127,11 +127,22 @@ def classify_and_extract_attack():
     denormalize = transforms.Normalize(mean=[-0.485 / 0.229, -0.456 / 0.224, -0.406 / 0.225],
                                        std=[1 / 0.229, 1 / 0.224, 1 / 0.225])
 
-    data = CustomDataset(root_dir=path_images,
-                         transform=transforms.Compose([
-                             to_tensor,
-                             normalize
-                         ]))
+    # Resize images for black-box attacks which are computationally expensive
+    if args.attack_type in ['spsa', 'zoo']:
+        data = CustomDataset(root_dir=path_images,
+                             reshape=True,
+                             scale=4,
+                             transform=transforms.Compose([
+                                 to_tensor,
+                                 normalize
+                             ]))
+
+    else:
+        data = CustomDataset(root_dir=path_images,
+                             transform=transforms.Compose([
+                                 to_tensor,
+                                 normalize
+                             ]))
 
     print('Loaded dataset from %s' % path_images)
     #########################################################################################################
@@ -190,12 +201,27 @@ def classify_and_extract_attack():
         os.makedirs(os.path.dirname(path_output_classes_attack))
 
     with open(path_output_classes_attack, 'w') as f:
-        fieldnames = ['ImageID', 'ClassNum', 'ClassStr', 'Prob', 'ClassNumStart', 'ClassStrStart', 'ProbStart']
+
+        if args.attack_type in ['spsa', 'zoo']:
+            fieldnames = ['ImageID',
+                          'ClassNum', 'ClassStr', 'Prob',  # new classification on small images
+                          'RClassNum', 'RClassStr', 'RProb',  # new classification on resized images
+                          'ClassNumStart', 'ClassStrStart', 'ProbStart']  # old classification
+        else:
+            fieldnames = ['ImageID',
+                          'ClassNum', 'ClassStr', 'Prob',
+                          'ClassNumStart', 'ClassStrStart', 'ProbStart']
+
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
         for i, d in enumerate(data):
-            im, name = d
+
+            if args.attack_type in ['spsa', 'zoo']:
+                im, height, width, name = d
+
+            else:
+                im, name = d
 
             if attack.must_attack(filename=name):
 
@@ -222,6 +248,20 @@ def classify_and_extract_attack():
                 # Read same image from memory
                 lossless_image = read_image(path_output_images_attack + os.path.splitext(name)[0] + '.tiff')
 
+                # If the attack is black-box, perform reshape to get the original image size
+                # However, classification and feature extraction will be performed on the downscaled image
+                if args.attack_type in ['spsa', 'zoo']:
+                    # Resize image to original dimension
+                    reshaped_lossless_image = Image.fromarray(adv_perturbed_out).resize(size=(height, width),
+                                                                                        resample=Image.BICUBIC)
+
+                    # Transform to tensor and normalize
+                    reshaped_lossless_image = normalize(to_tensor(reshaped_lossless_image))
+
+                    # Classify attacked image with pre-trained model and append new classification to csv
+                    out_class_reshaped = model.classification(list_classes=imgnet_classes,
+                                                              sample=(reshaped_lossless_image, name))
+
                 # Transform to tensor and normalize
                 lossless_image = normalize(to_tensor(lossless_image))
 
@@ -235,6 +275,12 @@ def classify_and_extract_attack():
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "ClassNum"].item()
                 out_class["ProbStart"] = df_origin_classification.loc[
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "Prob"].item()
+
+                # If the attack is black-box, add these other parameters to the output
+                if args.attack_type in ['spsa', 'zoo']:
+                    out_class["RClassNum"] = out_class_reshaped["ClassNum"]
+                    out_class["RClassStr"] = out_class_reshaped["ClassStr"]
+                    out_class["RProb"] = out_class_reshaped["Prob"]
 
                 writer.writerow(out_class)
 
