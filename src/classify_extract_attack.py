@@ -55,12 +55,12 @@ def parse_args():
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
                         help='dataset path: amazon_men, amazon_women, amazon_beauty')
-    parser.add_argument('--defense', type=int, default=1)  # 0 --> no defense mode, 1 --> defense mode
+    parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
     parser.add_argument('--model_file', type=str, default='model_best.pth.tar')
 
     # attacks specific parameters
-    parser.add_argument('--eps', type=float, default=32)
+    parser.add_argument('--eps', type=float, default=8)
     parser.add_argument('--it', type=int, default=1)
     parser.add_argument('--l', type=str, default='inf')
     parser.add_argument('--confidence', type=int, default=0)
@@ -75,6 +75,8 @@ def classify_and_extract_attack():
 
     #########################################################################################################
     # MODEL SETTING
+
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
     if args.defense:
         path_images, path_input_classes, path_input_features, path_classes, model_path, \
@@ -92,7 +94,7 @@ def classify_and_extract_attack():
             args.dataset, args.model_dir), path_input_features.format(args.dataset, args.model_dir)
 
         model_path = model_path.format(args.model_dir, args.model_file)
-        model = Model(model=models.resnet50(), gpu=args.gpu, model_path=model_path, pretrained_name=args.model_dir)
+        model = Model(model=models.resnet50(), model_path=model_path, pretrained_name=args.model_dir)
 
     else:
         path_images, path_input_classes, path_input_features, path_classes, model_path, \
@@ -109,7 +111,7 @@ def classify_and_extract_attack():
         path_input_classes, path_input_features = path_input_classes.format(
             args.dataset), path_input_features.format(args.dataset)
 
-        model = Model(model=models.resnet50(pretrained=True), gpu=args.gpu, model_name='ResNet50')
+        model = Model(model=models.resnet50(pretrained=True), model_name='ResNet50')
 
     model.set_out_layer(drop_layers=1)
     #########################################################################################################
@@ -153,8 +155,6 @@ def classify_and_extract_attack():
 
     #########################################################################################################
     # VISUAL ATTACK SETTING
-
-    os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
     print("\nRUNNING {0} ATTACK on DATASET {1}".format(attacks_params[args.attack_type]["name"], args.dataset))
     print("- ORIGINAL CLASS: %d/%d (%s)" % (args.origin_class, args.num_classes - 1, imgnet_classes[args.origin_class]))
