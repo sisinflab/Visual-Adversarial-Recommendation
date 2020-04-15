@@ -140,7 +140,7 @@ def coordinate_Newton_ADAM(losses, indice, grad, hess, batch_size, mt_arr, vt_ar
 
 
 class ZOOL2:
-    def __init__(self, sess, model, height=224, width=224, batch_size=128, num_channels=3, num_labels=1000,
+    def __init__(self, sess, model, height=224, width=224, batch_size=32, num_channels=3, num_labels=1000,
                  confidence=CONFIDENCE, targeted=True, learning_rate=LEARNING_RATE,
                  binary_search_steps=BINARY_SEARCH_STEPS, max_iterations=2000, print_every=100,
                  early_stop_iters=0, abort_early=ABORT_EARLY, initial_const=10.0, use_log=False, use_tanh=True,
@@ -149,6 +149,7 @@ class ZOOL2:
 
         ##############################################
         # max_iterations set to 2000 instead of 10000
+        # batch_size set to 32 instead of 128
         ##############################################
         """
         The L_2 optimized attack.
