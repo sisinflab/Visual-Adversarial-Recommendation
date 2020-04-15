@@ -231,6 +231,9 @@ def classify_and_extract_attack():
                 end_attack = time.time()
                 total_attack_time += (end_attack - start_attack)
 
+                if args.attack_type in ['spsa', 'zoo']:
+                    print('\n\n**************** ATTACK COMPLETED ON IMAGE %s ****************\n\n' % name)
+
                 # Denormalize image before saving to memory
                 adv_perturbed_out = denormalize(adv_perturbed_out[0])
 
@@ -287,7 +290,7 @@ def classify_and_extract_attack():
                 # Extract features using pre-trained model
                 features[i, :] = model.feature_extraction(sample=(lossless_image, name))
 
-            if (i + 1) % 100 == 0:
+            if (i + 1) % 100 == 0 and args.attack_type not in ['spsa', 'zoo']:
                 sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
                 sys.stdout.flush()
 
