@@ -80,15 +80,15 @@ def classify_and_extract_attack():
 
     if args.defense:
         path_images, path_input_classes, path_input_features, path_classes, model_path, \
-        path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
-            sections_fields=[('ORIGINAL', 'Images'),
-                             ('ORIGINAL', 'Classes'),
-                             ('ORIGINAL', 'Features'),
-                             ('ALL', 'ImagenetClasses'),
-                             ('ALL', 'ModelPath'),
-                             ('DEFENSE', 'ImagesAttack'),
-                             ('DEFENSE', 'FeaturesAttack'),
-                             ('DEFENSE', 'ClassesAttack')])
+            path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
+                sections_fields=[('ORIGINAL', 'Images'),
+                                 ('ORIGINAL', 'Classes'),
+                                 ('ORIGINAL', 'Features'),
+                                 ('ALL', 'ImagenetClasses'),
+                                 ('ALL', 'ModelPath'),
+                                 ('DEFENSE', 'ImagesAttack'),
+                                 ('DEFENSE', 'FeaturesAttack'),
+                                 ('DEFENSE', 'ClassesAttack')])
 
         path_input_classes, path_input_features = path_input_classes.format(
             args.dataset, args.model_dir), path_input_features.format(args.dataset, args.model_dir)
@@ -98,15 +98,15 @@ def classify_and_extract_attack():
 
     else:
         path_images, path_input_classes, path_input_features, path_classes, model_path, \
-        path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
-            sections_fields=[('ORIGINAL', 'Images'),
-                             ('ORIGINAL', 'Classes'),
-                             ('ORIGINAL', 'Features'),
-                             ('ALL', 'ImagenetClasses'),
-                             ('ALL', 'ModelPath'),
-                             ('ATTACK', 'Images'),
-                             ('ATTACK', 'Features'),
-                             ('ATTACK', 'Classes')])
+            path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
+                sections_fields=[('ORIGINAL', 'Images'),
+                                 ('ORIGINAL', 'Classes'),
+                                 ('ORIGINAL', 'Features'),
+                                 ('ALL', 'ImagenetClasses'),
+                                 ('ALL', 'ModelPath'),
+                                 ('ATTACK', 'Images'),
+                                 ('ATTACK', 'Features'),
+                                 ('ATTACK', 'Classes')])
 
         path_input_classes, path_input_features = path_input_classes.format(
             args.dataset), path_input_features.format(args.dataset)
