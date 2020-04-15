@@ -18,7 +18,17 @@ import tensorflow as tf
 
 
 class VisualAttack:
-    def __init__(self, tf_pytorch, df_classes, num_classes, origin_class, target_class, model, device, params, attack_type):
+    def __init__(self,
+                 tf_pytorch,
+                 df_classes,
+                 num_classes,
+                 origin_class,
+                 target_class,
+                 model,
+                 device,
+                 params,
+                 attack_type):
+
         self.origin_class = origin_class
         self.target_class = target_class
         self.df_classes = df_classes
@@ -68,10 +78,14 @@ class VisualAttack:
             self.attack_op = SaliencyMapMethodMemory(self.cleverhans_model, sess=self.sess)
         elif self.attack_type == 'zoo':
             print("\nSetting zoo attack")
+            self.batch_size = params["batch_size"]
+            print("Batch size set to: %d" % self.batch_size)
             # self.attack_op = ZOOL2(model=self.tf_model,
             #                        sess=self.sess)
         elif self.attack_type == 'spsa':
             print("\nSetting spsa attack")
+            self.batch_size = params["batch_size"]
+            print("Batch size set to: %d" % self.batch_size)
             self.attack_op = SPSANoClip(model=self.cleverhans_model, sess=self.sess)
         else:
             raise NotImplementedError('Not implemented attack.')
@@ -130,7 +144,11 @@ class VisualAttack:
             return adv_img_out
 
         elif self.attack_type == 'zoo':
-            attack_op = ZOOL2(self.sess, self.cleverhans_model, height=image.shape[2], width=image.shape[3])
+            attack_op = ZOOL2(self.sess,
+                              self.cleverhans_model,
+                              height=image.shape[2],
+                              width=image.shape[3],
+                              batch_size=self.batch_size)
             adv_img = attack_op.attack(image, self.y_target)
             del attack_op
             adv_img_out = torch.from_numpy(adv_img).permute(0, 3, 1, 2)
@@ -142,7 +160,8 @@ class VisualAttack:
             self.adv_x_op = self.attack_op.generate(x=self.x_op,
                                                     y_target=self.y_target_tf,
                                                     eps=self.params['eps'],
-                                                    nb_iter=self.params['nb_iter'])
+                                                    nb_iter=self.params['nb_iter'],
+                                                    spsa_samples=self.batch_size)
             adv_img = self.sess.run(self.adv_x_op, feed_dict={self.x_op: image, self.y_target_tf: self.target_class})
             adv_img_out = torch.from_numpy(adv_img)
             return adv_img_out

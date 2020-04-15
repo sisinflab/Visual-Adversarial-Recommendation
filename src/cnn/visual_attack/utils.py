@@ -144,8 +144,7 @@ def set_attack_paths(args,
         params = {
             "theta": 1.0,  #
             "gamma": 1.0,  #
-            # "clip_min": args.clip_min,
-            # "clip_max": args.clip_max,
+            "batch_size": args.batch_size,
             "y_target": None,
             "symbolic_impl": True  #
         }
@@ -159,7 +158,7 @@ def set_attack_paths(args,
                         'th' + str(params["theta"]), \
                         'ga' + str(params["gamma"]), \
                         'symb' + str(params["symbolic_impl"]), \
-                        'XX'
+                        'batch' + str(params["batch_size"])
 
         else:
             path_args = args.dataset, \
@@ -169,12 +168,13 @@ def set_attack_paths(args,
                         'th' + str(params["theta"]), \
                         'ga' + str(params["gamma"]), \
                         'symb' + str(params["symbolic_impl"]), \
-                        'XX'
+                        'batch' + str(params["batch_size"])
 
     elif args.attack_type == 'spsa':
         params = {
             "eps": args.eps / 255,
             "nb_iter": args.nb_iter,
+            "batch_size": args.batch_size,
             "y_target": None
         }
 
@@ -187,7 +187,7 @@ def set_attack_paths(args,
                         'eps' + str(args.eps), \
                         'delta0.01', \
                         'nb_iter' + str(args.nb_iter), \
-                        'XX'
+                        'batch' + str(params["batch_size"])
 
         else:
             path_args = args.dataset, \
@@ -197,7 +197,7 @@ def set_attack_paths(args,
                         'eps' + str(args.eps), \
                         'delta0.01', \
                         'nb_iter' + str(args.nb_iter), \
-                        'XX'
+                        'batch' + str(params["batch_size"])
 
     else:
         raise NotImplementedError('Unknown attack type.')

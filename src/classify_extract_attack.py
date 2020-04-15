@@ -66,6 +66,7 @@ def parse_args():
     parser.add_argument('--confidence', type=int, default=0)
     parser.add_argument('--nb_iter', type=int, default=100)
     parser.add_argument('--c', type=float, default=0)
+    parser.add_argument('--batch_size', type=int, default=32)
 
     return parser.parse_args()
 
