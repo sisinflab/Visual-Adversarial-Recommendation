@@ -3,15 +3,22 @@ import os
 import write
 
 dataset = 'amazon_sport'
-ratings = pd.read_csv('{0}/dataset_preprocessing/{1}/filtered_ratings.txt'.format(os.getcwd(), dataset), sep='\t',
-                      header=None)
-ratings.columns = ['item', 'user', 'rating']
+ratings = pd.read_csv('{0}/dataset_preprocessing/{1}/filtered_ratings.txt'.format(os.getcwd(), dataset), sep='\t')
+                      # , header=None)
+# try:
+#     ratings.columns = ['item', 'user', 'rating']
+# except:
+#     ratings.columns = ['item', 'user', 'rating', 't']
+
+if dataset == 'amazon_sport':
+    ratings.columns = ['item', 'user', 'rating']
+
 counts = ratings.groupby(['user'])['user'].agg('count').to_frame('count').reset_index()
 
 # Filter rating value to have implicit
 # ratings = ratings[ratings['rating'] > 3.0]
 
-core = 5
+core = 15
 print('******* CORE: {0} *******'.format(core))
 # Filter by 5 ratings
 ratings = ratings[ratings['user'].isin(counts[counts['count'] >= core]['user'])]
@@ -24,6 +31,8 @@ ratings = ratings[ratings['item'].isin(counts[counts['count'] >= core]['item'])]
 # Indexing
 n_users = ratings['user'].nunique()
 n_items = ratings['item'].nunique()
+
+print('NUM USERS: {0}\nNUM ITEMS: {1}\nNUM RATINGS:{2}'.format(n_users, n_items, len(ratings)))
 
 users_index = dict(zip(sorted(ratings['user'].unique()), range(0, n_users)))
 
@@ -78,8 +87,12 @@ for user in test.keys():
 
 train_dataset['user'] = train_dataset['user'].astype(dtype=int)
 train_dataset['item'] = train_dataset['item'].astype(dtype=int)
+train_dataset['rating'] = 1.0
+train_dataset['timestamp'] = 0
 test_dataset['user'] = test_dataset['user'].astype(dtype=int)
 test_dataset['item'] = test_dataset['item'].astype(dtype=int)
+test_dataset['rating'] = 1.0
+test_dataset['timestamp'] = 0
 
 test_dataset_items_only_in_test = test_dataset[~test_dataset['item'].isin(train_dataset['item'].unique())]
 # We should drop from test and move in train
@@ -92,10 +105,10 @@ for moving_item in test_dataset_items_only_in_test['item'].unique():
                                          ignore_index=True)
 
 train_dataset = train_dataset.sort_values(by=['user'])
-train_dataset[['user', 'item']].to_csv('{0}/dataset_preprocessing/{1}/trainingset.tsv'.format(os.getcwd(), dataset),
+train_dataset[['user', 'item', 'rating', 'timestamp']].to_csv('{0}/dataset_preprocessing/{1}/trainingset.tsv'.format(os.getcwd(), dataset),
                                        sep='\t', header=None, index=None)
 test_dataset = test_dataset.sort_values(by=['user'])
-test_dataset[['user', 'item']].to_csv('{0}/dataset_preprocessing/{1}/testset.tsv'.format(os.getcwd(), dataset),
+test_dataset[['user', 'item', 'rating', 'timestamp']].to_csv('{0}/dataset_preprocessing/{1}/testset.tsv'.format(os.getcwd(), dataset),
                                       sep='\t', header=None, index=None)
 
 write.save_obj(items_index, '{0}/dataset_preprocessing/{1}/item_indices'.format(os.getcwd(), dataset))

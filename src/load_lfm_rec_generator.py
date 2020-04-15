@@ -30,7 +30,7 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     ex = time()
-    print("raining of Light FM on DATASET {0}".format(args.dataset))
+    print("Training of Light FM on DATASET {0}".format(args.dataset))
     print("- PARAMETERS:")
     for arg in vars(args):
         print("\t- " + str(arg) + " = " + str(getattr(args, arg)))
