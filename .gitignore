@@ -28,3 +28,5 @@ cnn_models/*
 
 /src/dataset_preprocessing/*
 /src2/*
+
+/data/tradesy

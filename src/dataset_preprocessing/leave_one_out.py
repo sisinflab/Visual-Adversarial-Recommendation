@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import write
 
-dataset = 'amazon_sport'
+dataset = 'tradesy'
 ratings = pd.read_csv('{0}/dataset_preprocessing/{1}/filtered_ratings.txt'.format(os.getcwd(), dataset), sep='\t')
                       # , header=None)
 # try:
@@ -10,15 +10,17 @@ ratings = pd.read_csv('{0}/dataset_preprocessing/{1}/filtered_ratings.txt'.forma
 # except:
 #     ratings.columns = ['item', 'user', 'rating', 't']
 
-if dataset == 'amazon_sport':
+if dataset in ['amazon_sport']:
     ratings.columns = ['item', 'user', 'rating']
+else:
+    ratings.columns = ['user', 'item', 'rating']
 
 counts = ratings.groupby(['user'])['user'].agg('count').to_frame('count').reset_index()
 
 # Filter rating value to have implicit
 # ratings = ratings[ratings['rating'] > 3.0]
 
-core = 15
+core = 10
 print('******* CORE: {0} *******'.format(core))
 # Filter by 5 ratings
 ratings = ratings[ratings['user'].isin(counts[counts['count'] >= core]['user'])]
