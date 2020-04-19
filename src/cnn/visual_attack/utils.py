@@ -9,9 +9,9 @@ def parse_ord(ord_str):
 
 
 def set_attack_paths(args,
-                     path_output_images_attack,
-                     path_output_classes_attack,
-                     path_output_features_attack):
+                     path_images_attack,
+                     path_classes_attack,
+                     path_features_attack):
 
     if args.attack_type == 'fgsm':
         params = {
@@ -202,8 +202,8 @@ def set_attack_paths(args,
     else:
         raise NotImplementedError('Unknown attack type.')
 
-    path_output_images_attack = path_output_images_attack.format(*path_args)
-    path_output_classes_attack = path_output_classes_attack.format(*path_args)
-    path_output_features_attack = path_output_features_attack.format(*path_args)
+    path_images_attack = path_images_attack.format(*path_args)
+    path_classes_attack = path_classes_attack.format(*path_args)
+    path_features_attack = path_features_attack.format(*path_args)
 
-    return params, path_output_images_attack, path_output_classes_attack, path_output_features_attack
+    return params, path_images_attack, path_classes_attack, path_features_attack

@@ -66,7 +66,7 @@ def parse_args():
     parser.add_argument('--confidence', type=int, default=0)
     parser.add_argument('--nb_iter', type=int, default=100)
     parser.add_argument('--c', type=float, default=0)
-    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--batch_size', type=int, default=128)
 
     return parser.parse_args()
 
@@ -153,9 +153,9 @@ def classify_and_extract_attack():
 
     params, path_output_images_attack, path_output_classes_attack, path_output_features_attack = set_attack_paths(
         args=args,
-        path_output_images_attack=path_output_images_attack,
-        path_output_classes_attack=path_output_classes_attack,
-        path_output_features_attack=path_output_features_attack
+        path_images_attack=path_output_images_attack,
+        path_classes_attack=path_output_classes_attack,
+        path_features_attack=path_output_features_attack
     )
 
     imgnet_classes = read_imagenet_classes_txt(path_classes)
