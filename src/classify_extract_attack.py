@@ -223,7 +223,7 @@ def classify_and_extract_attack():
 
         for i, d in enumerate(data):
 
-            if args.attack_type in ['spsa', 'zoo']:
+            if args.attack_type in ['spsa', 'zoo', 'pgd']: # HO MODIFICATO QUI
                 im, height, width, name = d
 
             else:
