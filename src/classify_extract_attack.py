@@ -49,8 +49,8 @@ attacks_params = {
 def parse_args():
     parser = argparse.ArgumentParser(description="Run classification and feature extraction for a specific attack.")
     parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
-    parser.add_argument('--origin_class', type=int, default=806)
+    parser.add_argument('--attack_type', nargs='?', type=str, default='pgd')
+    parser.add_argument('--origin_class', type=int, default=774)
     parser.add_argument('--target_class', type=int, default=770)
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--dataset', nargs='?', default='amazon_men',
@@ -129,7 +129,7 @@ def classify_and_extract_attack():
                                        std=[1 / 0.229, 1 / 0.224, 1 / 0.225])
 
     # Resize images for black-box attacks which are computationally expensive
-    if args.attack_type in ['spsa', 'zoo']:
+    if args.attack_type in ['spsa', 'zoo', 'pgd']:  # HO MODIFICATO QUI
         data = CustomDataset(root_dir=path_images,
                              reshape=True,
                              scale=4,
@@ -157,6 +157,11 @@ def classify_and_extract_attack():
         path_classes_attack=path_output_classes_attack,
         path_features_attack=path_output_features_attack
     )
+
+    # HO MODIFICATO QUI
+    path_output_images_attack = os.path.dirname(os.path.dirname(path_output_images_attack)) + '_resize4/images/'
+    path_output_classes_attack = os.path.dirname(path_output_classes_attack) + '_resize4/classes.csv'
+    path_output_features_attack = os.path.dirname(path_output_features_attack) + '_resize4/features.npy'
 
     imgnet_classes = read_imagenet_classes_txt(path_classes)
 
