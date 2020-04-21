@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
         print('\tEvaluate CHR@{0}'.format(args.analyzed_k))
         N_USERS = predictions[0].nunique()
-        N = 30  # Top-N classes
+        N = args.analyzed_k # Top-N classes
         res = dict(sorted(chr.items(), key=itemgetter(1), reverse=True)[:N])
 
         res = {str(k): v / N_USERS for k, v in res.items()}
@@ -148,6 +148,6 @@ if __name__ == '__main__':
 
         df_ordered = df_ordered.append(temp_ordered[['experiment', 'classId', 'className', 'position', 'score']], ignore_index=True)
 
-    df_ordered.to_csv('{0}{1}/df_category_hit_ratio.csv'.format(chr_dir, dataset_name), index=None)
+    df_ordered.to_csv('{0}{1}/df_category_hit_ratio_at_{2}.csv'.format(chr_dir, dataset_name, args.analyzed_k), index=None)
 
-    sendmail('Finish Amazon Men Baseline Evaluation', 'Finished!')
+    sendmail('Finish {0} at {1} Evaluation'.format(dataset_name, args.analyzed_k), 'Finished!')
