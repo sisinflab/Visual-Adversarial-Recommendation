@@ -48,7 +48,7 @@ def parse_args():
     parser.add_argument('--topk', type=int, default=150, help='top k predictions to store before the evaluation')
     parser.add_argument('--analyzed_k', type=int, default=100,
                         help='K under analysis has to be lesser than stored topk')
-    parser.add_argument('--num_pool', type=int, default=10,
+    parser.add_argument('--num_pool', type=int, default=6,
                         help='Number of threads')
 
     return parser.parse_args()
@@ -137,7 +137,7 @@ if __name__ == '__main__':
                                                                                                      ascending=False)
         print('\nExperiment Name: {0}'.format(prediction_file))
 
-        temp_ordered['experiment'] = prediction_file.split('.')[0]
+        temp_ordered['experiment'] = prediction_file
         temp_ordered['className'] = 0
         temp_ordered['position'] = 0
 
