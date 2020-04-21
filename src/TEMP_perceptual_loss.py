@@ -59,7 +59,7 @@ def evaluate_perceptual_loss():
 
     for index, row in df_attacked_classification.iterrows():
 
-        if int(row["ClassNum"]) == args.target_class:
+        if row["ClassNum"] == args.target_class:
             current_perceptual_loss = mse(im1=original_features[int(row["ImageID"]), :],
                                           im2=attacked_features[int(row["ImageID"]), :])
             avg_perceptual_loss += current_perceptual_loss
