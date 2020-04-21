@@ -31,16 +31,22 @@ def evaluate_perceptual_loss():
     args = parse_args()
 
     if args.defense:
-        path_input_images_attack, path_input_features_attack, path_input_classes_attack = read_config(
-            sections_fields=[('DEFENSE', 'ImagesAttack'),
-                             ('DEFENSE', 'FeaturesAttack'),
-                             ('DEFENSE', 'ClassesAttack')])
+        path_input_images_attack, path_input_features_attack, path_input_classes_attack, \
+            path_input_features = read_config(
+                sections_fields=[('DEFENSE', 'ImagesAttack'),
+                                 ('DEFENSE', 'FeaturesAttack'),
+                                 ('DEFENSE', 'ClassesAttack'),
+                                 ('ORIGINAL', 'Features')])
 
     else:
-        path_input_images_attack, path_input_features_attack, path_input_classes_attack = read_config(
-            sections_fields=[('ATTACK', 'Images'),
-                             ('ATTACK', 'Features'),
-                             ('ATTACK', 'Classes')])
+        path_input_images_attack, path_input_features_attack, path_input_classes_attack, \
+            path_input_features = read_config(
+                sections_fields=[('ATTACK', 'Images'),
+                                 ('ATTACK', 'Features'),
+                                 ('ATTACK', 'Classes'),
+                                 ('ORIGINAL', 'Features')])
+
+    path_input_features = path_input_features.format(args.dataset)
 
     params, path_input_images_attack, path_input_classes_attack, path_input_features_attack = set_attack_paths(
         args=args,
@@ -49,7 +55,7 @@ def evaluate_perceptual_loss():
         path_features_attack=path_input_features_attack
     )
 
-    original_features = read_np(filename=path_input_features_attack)
+    original_features = read_np(filename=path_input_features)
     attacked_features = read_np(filename=path_input_features_attack)
 
     avg_perceptual_loss = 0.0
