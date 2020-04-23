@@ -129,7 +129,7 @@ def classify_and_extract_attack():
                                        std=[1 / 0.229, 1 / 0.224, 1 / 0.225])
 
     # Resize images for black-box attacks which are computationally expensive
-    if args.attack_type in ['spsa', 'zoo', 'pgd']:  # HO MODIFICATO QUI
+    if args.attack_type in ['zoo']:  # HO TOLTO SPSA
         data = CustomDataset(root_dir=path_images,
                              reshape=True,
                              scale=4,
@@ -157,11 +157,6 @@ def classify_and_extract_attack():
         path_classes_attack=path_output_classes_attack,
         path_features_attack=path_output_features_attack
     )
-
-    # HO MODIFICATO QUI
-    path_output_images_attack = os.path.dirname(os.path.dirname(path_output_images_attack)) + '_resize4/images/'
-    path_output_classes_attack = os.path.dirname(path_output_classes_attack) + '_resize4/classes.csv'
-    path_output_features_attack = os.path.dirname(path_output_features_attack) + '_resize4/features.npy'
 
     imgnet_classes = read_imagenet_classes_txt(path_classes)
 
@@ -207,23 +202,26 @@ def classify_and_extract_attack():
         os.makedirs(os.path.dirname(path_output_classes_attack))
 
     with open(path_output_classes_attack, 'w') as f:
+        fieldnames = ['ImageID',
+                      'ClassNum', 'ClassStr', 'Prob',
+                      'ClassNumStart', 'ClassStrStart', 'ProbStart']
 
-        if args.attack_type in ['spsa', 'zoo']:
-            fieldnames = ['ImageID',
-                          'ClassNum', 'ClassStr', 'Prob',  # new classification on small images
-                          'RClassNum', 'RClassStr', 'RProb',  # new classification on resized images
-                          'ClassNumStart', 'ClassStrStart', 'ProbStart']  # old classification
-        else:
-            fieldnames = ['ImageID',
-                          'ClassNum', 'ClassStr', 'Prob',
-                          'ClassNumStart', 'ClassStrStart', 'ProbStart']
+        # if args.attack_type in ['spsa', 'zoo']:
+        #     fieldnames = ['ImageID',
+        #                   'ClassNum', 'ClassStr', 'Prob',  # new classification on small images
+        #                   'RClassNum', 'RClassStr', 'RProb',  # new classification on resized images
+        #                   'ClassNumStart', 'ClassStrStart', 'ProbStart']  # old classification
+        # else:
+        #     fieldnames = ['ImageID',
+        #                   'ClassNum', 'ClassStr', 'Prob',
+        #                   'ClassNumStart', 'ClassStrStart', 'ProbStart']
 
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
         for i, d in enumerate(data):
 
-            if args.attack_type in ['spsa', 'zoo', 'pgd']: # HO MODIFICATO QUI
+            if args.attack_type in ['zoo']:  # HO TOLTO SPSA
                 im, height, width, name = d
 
             else:
@@ -238,7 +236,7 @@ def classify_and_extract_attack():
                 total_attack_time += (end_attack - start_attack)
 
                 if args.attack_type in ['spsa', 'zoo']:
-                    print('\n\n**************** ATTACK COMPLETED ON IMAGE %s ****************\n\n' % name)
+                    print('\n\n***************%d/%d samples completed***************\n\n' % (i + 1, data.num_samples))
 
                 # Denormalize image before saving to memory
                 adv_perturbed_out = denormalize(adv_perturbed_out[0])
@@ -259,17 +257,17 @@ def classify_and_extract_attack():
 
                 # If the attack is black-box, perform reshape to get the original image size
                 # However, classification and feature extraction will be performed on the downscaled image
-                if args.attack_type in ['spsa', 'zoo']:
-                    # Resize image to original dimension
-                    reshaped_lossless_image = Image.fromarray(adv_perturbed_out).resize(size=(height, width),
-                                                                                        resample=Image.BICUBIC)
-
-                    # Transform to tensor and normalize
-                    reshaped_lossless_image = normalize(to_tensor(reshaped_lossless_image))
-
-                    # Classify attacked image with pre-trained model and append new classification to csv
-                    out_class_reshaped = model.classification(list_classes=imgnet_classes,
-                                                              sample=(reshaped_lossless_image, name))
+                # if args.attack_type in ['spsa', 'zoo']:
+                #     # Resize image to original dimension
+                #     reshaped_lossless_image = Image.fromarray(adv_perturbed_out).resize(size=(height, width),
+                #                                                                         resample=Image.BICUBIC)
+                #
+                #     # Transform to tensor and normalize
+                #     reshaped_lossless_image = normalize(to_tensor(reshaped_lossless_image))
+                #
+                #     # Classify attacked image with pre-trained model and append new classification to csv
+                #     out_class_reshaped = model.classification(list_classes=imgnet_classes,
+                #                                               sample=(reshaped_lossless_image, name))
 
                 # Transform to tensor and normalize
                 lossless_image = normalize(to_tensor(lossless_image))
@@ -286,10 +284,10 @@ def classify_and_extract_attack():
                     df_origin_classification["ImageID"] == int(os.path.splitext(name)[0]), "Prob"].item()
 
                 # If the attack is black-box, add these other parameters to the output
-                if args.attack_type in ['spsa', 'zoo']:
-                    out_class["RClassNum"] = out_class_reshaped["ClassNum"]
-                    out_class["RClassStr"] = out_class_reshaped["ClassStr"]
-                    out_class["RProb"] = out_class_reshaped["Prob"]
+                # if args.attack_type in ['spsa', 'zoo']:
+                #     out_class["RClassNum"] = out_class_reshaped["ClassNum"]
+                #     out_class["RClassStr"] = out_class_reshaped["ClassStr"]
+                #     out_class["RProb"] = out_class_reshaped["Prob"]
 
                 writer.writerow(out_class)
 
