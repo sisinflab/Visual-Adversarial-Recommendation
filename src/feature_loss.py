@@ -94,7 +94,7 @@ def evaluate_feature_loss():
                 num_targeted_attacked += 1
 
     with open(output_txt, 'w') as f:
-        print('\n\nFinal MSE features loss: %.8f' % (avg_mse_features_loss / num_targeted_attacked), file=f)
+        print('Final MSE features loss: %.8f' % (avg_mse_features_loss / num_targeted_attacked), file=f)
         print('Final RMSE features loss: %.8f' % (avg_rmse_features_loss / num_targeted_attacked), file=f)
 
 
