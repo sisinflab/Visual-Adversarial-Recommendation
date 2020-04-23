@@ -2,6 +2,8 @@ from cnn.evaluate.visual_metrics import *
 from cnn.visual_attack.utils import *
 from utils.read import *
 import argparse
+import csv
+import os
 
 
 def parse_args():
@@ -27,7 +29,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def evaluate_perceptual_loss():
+def evaluate_feature_loss():
     args = parse_args()
 
     if args.defense:
@@ -58,25 +60,43 @@ def evaluate_perceptual_loss():
     original_features = read_np(filename=path_input_features)
     attacked_features = read_np(filename=path_input_features_attack)
 
-    avg_perceptual_loss = 0.0
+    avg_mse_features_loss = 0.0
+    avg_rmse_features_loss = 0.0
     num_targeted_attacked = 0
 
     df_attacked_classification = read_csv(path_input_classes_attack)
 
-    for index, row in df_attacked_classification.iterrows():
+    output_txt = os.path.dirname(path_input_classes_attack) + '/features_dist_avg.txt'
+    output_csv = os.path.dirname(path_input_classes_attack) + '/features_dist.csv'
 
-        if row["ClassNum"] == args.target_class:
-            current_perceptual_loss = mse(im1=original_features[int(row["ImageID"]), :],
-                                          im2=attacked_features[int(row["ImageID"]), :])
-            avg_perceptual_loss += current_perceptual_loss
-            num_targeted_attacked += 1
+    with open(output_csv, 'w') as f:
+        fieldnames = ['ImageID', 'MSE', 'RMSE']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
 
-        if (index + 1) % 100 == 0:
-            print('%d/%d samples completed' % (index + 1, len(df_attacked_classification)))
+        for index, row in df_attacked_classification.iterrows():
 
-    print('\n\nFinal perceptual loss for %s attack: %.8f' % (args.attack_type,
-                                                             avg_perceptual_loss / num_targeted_attacked))
+            if row["ClassNum"] == args.target_class:
+                current_mse_features_loss = mse(im1=original_features[int(row["ImageID"]), :],
+                                                im2=attacked_features[int(row["ImageID"]), :])
+                current_rmse_features_loss = rmse(im1=original_features[int(row["ImageID"]), :],
+                                                  im2=attacked_features[int(row["ImageID"]), :])
+
+                writer.writerow({
+                    'ImageID': row['ImageID'],
+                    'MSE': current_mse_features_loss,
+                    'RMSE': current_rmse_features_loss
+                })
+
+                avg_mse_features_loss += current_mse_features_loss
+                avg_rmse_features_loss += current_rmse_features_loss
+
+                num_targeted_attacked += 1
+
+    with open(output_txt, 'w') as f:
+        print('\n\nFinal MSE features loss: %.8f' % (avg_mse_features_loss / num_targeted_attacked), file=f)
+        print('Final RMSE features loss: %.8f' % (avg_rmse_features_loss / num_targeted_attacked), file=f)
 
 
 if __name__ == '__main__':
-    evaluate_perceptual_loss()
+    evaluate_feature_loss()
