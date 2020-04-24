@@ -62,12 +62,13 @@ def evaluate_feature_loss():
 
     avg_mse_features_loss = 0.0
     avg_rmse_features_loss = 0.0
-    num_targeted_attacked = 0
 
     df_attacked_classification = read_csv(path_input_classes_attack)
 
-    output_txt = os.path.dirname(path_input_classes_attack) + '/features_dist_avg.txt'
-    output_csv = os.path.dirname(path_input_classes_attack) + '/features_dist.csv'
+    num_attacked = len(df_attacked_classification)
+
+    output_txt = os.path.dirname(path_input_classes_attack) + '/features_dist_avg_all_attack.txt'
+    output_csv = os.path.dirname(path_input_classes_attack) + '/features_dist_all_attack.csv'
 
     with open(output_csv, 'w') as f:
         fieldnames = ['ImageID', 'MSE', 'RMSE']
@@ -76,26 +77,24 @@ def evaluate_feature_loss():
 
         for index, row in df_attacked_classification.iterrows():
 
-            if row["ClassNum"] == args.target_class:
-                current_mse_features_loss = mse(im1=original_features[int(row["ImageID"]), :],
-                                                im2=attacked_features[int(row["ImageID"]), :])
-                current_rmse_features_loss = rmse(im1=original_features[int(row["ImageID"]), :],
-                                                  im2=attacked_features[int(row["ImageID"]), :])
+            current_mse_features_loss = mse(im1=original_features[int(row["ImageID"]), :],
+                                            im2=attacked_features[int(row["ImageID"]), :])
+            current_rmse_features_loss = rmse(im1=original_features[int(row["ImageID"]), :],
+                                              im2=attacked_features[int(row["ImageID"]), :])
 
-                writer.writerow({
-                    'ImageID': row['ImageID'],
-                    'MSE': current_mse_features_loss,
-                    'RMSE': current_rmse_features_loss
-                })
+            writer.writerow({
+                'ImageID': row['ImageID'],
+                'MSE': current_mse_features_loss,
+                'RMSE': current_rmse_features_loss
+            })
 
-                avg_mse_features_loss += current_mse_features_loss
-                avg_rmse_features_loss += current_rmse_features_loss
-
-                num_targeted_attacked += 1
+            avg_mse_features_loss += current_mse_features_loss
+            avg_rmse_features_loss += current_rmse_features_loss
 
     with open(output_txt, 'w') as f:
-        print('Final MSE features loss: %.8f' % (avg_mse_features_loss / num_targeted_attacked), file=f)
-        print('Final RMSE features loss: %.8f' % (avg_rmse_features_loss / num_targeted_attacked), file=f)
+        print('Total attacked images: %d' % num_attacked, file=f)
+        print('Final MSE features loss: %.8f' % (avg_mse_features_loss / num_attacked), file=f)
+        print('Final RMSE features loss: %.8f' % (avg_rmse_features_loss / num_attacked), file=f)
 
 
 if __name__ == '__main__':
