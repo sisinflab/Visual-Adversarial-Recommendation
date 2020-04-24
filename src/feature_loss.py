@@ -38,7 +38,7 @@ def evaluate_feature_loss():
                 sections_fields=[('DEFENSE', 'ImagesAttack'),
                                  ('DEFENSE', 'FeaturesAttack'),
                                  ('DEFENSE', 'ClassesAttack'),
-                                 ('ORIGINAL', 'Features')])
+                                 ('DEFENSE', 'Features')])
 
     else:
         path_input_images_attack, path_input_features_attack, path_input_classes_attack, \
