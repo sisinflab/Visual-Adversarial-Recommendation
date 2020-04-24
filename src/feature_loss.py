@@ -7,7 +7,7 @@ import os
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Run attack evaluation.")
+    parser = argparse.ArgumentParser(description="Run feature loss evaluation.")
     parser.add_argument('--num_classes', type=int, default=1000)
     parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
     parser.add_argument('--origin_class', type=int, default=774)
@@ -39,6 +39,7 @@ def evaluate_feature_loss():
                                  ('DEFENSE', 'FeaturesAttack'),
                                  ('DEFENSE', 'ClassesAttack'),
                                  ('DEFENSE', 'Features')])
+        path_input_features = path_input_features.format(args.dataset, args.model_dir)
 
     else:
         path_input_images_attack, path_input_features_attack, path_input_classes_attack, \
@@ -48,7 +49,7 @@ def evaluate_feature_loss():
                                  ('ATTACK', 'Classes'),
                                  ('ORIGINAL', 'Features')])
 
-    path_input_features = path_input_features.format(args.dataset)
+        path_input_features = path_input_features.format(args.dataset)
 
     params, path_input_images_attack, path_input_classes_attack, path_input_features_attack = set_attack_paths(
         args=args,
