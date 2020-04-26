@@ -52,7 +52,7 @@ def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, positive_
 
     temp_category_DCG = []
     # Count the class occurrences for the user: user_id
-    for pos, item_index in enumerate(sorted_item_predictions):
+    for pos, item_index in enumerate(sorted_item_predictions[:ik]):
         if item_index in category_items:
             temp_category_DCG.append(1/math.log2(pos + 1 + 1)) # we need +1 +1 since the posiiton start from 0 in enumerate
 
@@ -83,7 +83,7 @@ def parse_args():
     parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--topk', type=int, default=150, help='top k predictions to store before the evaluation')
     parser.add_argument('--origin', type=int, default=834, help='Target Item id. Useful for CnDCG')
-    parser.add_argument('--analyzed_k', type=int, default=20, help='K under analysis has to be lesser than stored topk')
+    parser.add_argument('--analyzed_k', type=int, default=50, help='K under analysis has to be lesser than stored topk')
     parser.add_argument('--num_pool', type=int, default=1,
                         help='Number of threads')
 
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
             p = mp.Pool(args.num_pool)
 
-            for user_id in predictions[0].unique()[:50]:
+            for user_id in predictions[0].unique():
                 p.apply_async(elaborate_cndcg,
                               args=(class_frequency, user_id,
                                     predictions[predictions[0] == user_id][1].to_list()[:args.analyzed_k],
@@ -179,6 +179,7 @@ if __name__ == '__main__':
         # We need this operation to use the results in the Manager
         metric = dict()
         for key in class_frequency.keys():
+            print('Val {0}'.format(class_frequency[key]))
             metric[key] = class_frequency[key]
 
         print('\tEvaluate {0}@{1}'.format(args.metric, args.analyzed_k))
