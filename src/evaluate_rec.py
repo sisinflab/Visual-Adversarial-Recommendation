@@ -43,7 +43,7 @@ def compute_ndcg(sorted_item_predictions: typing.List,gain_map: typing.Dict, cut
 
 def compute_idcg(gain_map: typing.Dict, cutoff: int) -> float:
     """
-
+    Method to compute Ideal Discounted Cumulative Gain
     :param gain_map:
     :param cutoff:
     :return:
@@ -55,7 +55,8 @@ def compute_idcg(gain_map: typing.Dict, cutoff: int) -> float:
 
 def compute_user_gain_map(sorted_item_predictions: typing.List, sorted_item_scores: typing.List, threshold: int = 0) -> typing.Dict:
     """
-
+    Method to compute the Gain Map:
+    rel = 2**(score - threshold + 1) - 1
     :param sorted_item_predictions:
     :param sorted_item_scores:
     :param threshold:
