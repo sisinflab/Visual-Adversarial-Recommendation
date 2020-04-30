@@ -30,35 +30,72 @@ def elaborate_chr(class_frequency, user_id, sorted_item_predictions):
     return user_id
 
 def compute_ndcg(sorted_item_predictions: typing.List,gain_map: typing.Dict, cutoff: int) -> float:
+    """
+    Method to compute nDCG
+    :param sorted_item_predictions:
+    :param gain_map:
+    :param cutoff:
+    :return:
+    """
     idcg: float = compute_idcg(gain_map, cutoff)
-    ndcg: float = sum([gain_map[x] * compute_dicount(r) for r, x in enumerate(sorted_item_predictions) if r < cutoff])
+    ndcg: float = sum([gain_map.get(x, 0) * compute_dicount(r) for r, x in enumerate(sorted_item_predictions) if r < cutoff])
     return ndcg / idcg if ndcg > 0 else 0
 
 def compute_idcg(gain_map: typing.Dict, cutoff: int) -> float:
+    """
+
+    :param gain_map:
+    :param cutoff:
+    :return:
+    """
     gains: typing.List = sorted(list(gain_map.values()))
     n: int = min(len(gains), cutoff)
     m: int = len(gains)
     return sum(map(lambda g, r: gains[m - r - 1] * compute_dicount(r), gains, range(n)))
 
 def compute_user_gain_map(sorted_item_predictions: typing.List, sorted_item_scores: typing.List, threshold: int = 0) -> typing.Dict:
+    """
+
+    :param sorted_item_predictions:
+    :param sorted_item_scores:
+    :param threshold:
+    :return:
+    """
     return {id: 0 if score < threshold else 2**(score - threshold + 1) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
     # return {id: 0 if score < threshold else 2**(3) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
 
 
 def compute_category_idcg(gain_map: typing.Dict, category_items: typing.List, cutoff: int) -> float:
+    """
+
+    :param gain_map:
+    :param category_items:
+    :param cutoff:
+    :return:
+    """
     gains: typing.List = sorted(list(gain_map.values()), reverse=True)
     n: int = min(len(gains), cutoff, len(category_items))
     m: int = len(gains)
     return sum(map(lambda g, r: gains[m - r - 1] * compute_dicount(r), gains, range(n)))
 
-def compute_category_user_gain_map(sorted_item_predictions: typing.List,
-                                   sorted_item_scores: typing.List,
-                                   category_items: typing.List,
-                                   threshold: int = 0) -> typing.Dict:
-    return {id: 0 if (score < threshold) | (id not in category_items) else 2**(score - threshold + 1) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
+def compute_category_user_gain_map(category_items: typing.List, threshold: int = 0) -> typing.Dict:
+    """
+    Method that computes the user gain map considering a list of category items with score 1
+    :param sorted_item_predictions:
+    :param sorted_item_scores:
+    :param category_items:
+    :param threshold:
+    :return:
+    """
+    return {id: 2**(1 - threshold + 1) - 1 for id in category_items}
 
 
 def compute_dicount(k: int) -> float:
+    """
+    Method to compute logarithmic discount
+    :param k:
+    :return:
+    """
     return 1 / math.log(k + 2) * math.log(2)
 
 def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_item_scores, positive_items, category_items, item_original_class):
