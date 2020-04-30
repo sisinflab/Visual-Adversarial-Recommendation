@@ -10,6 +10,7 @@ counter = 0
 start_counter = 0
 users_size = 0
 classes = pd.DataFrame()
+import typing
 
 
 def elaborate_chr(class_frequency, user_id, sorted_item_predictions):
@@ -28,8 +29,24 @@ def elaborate_chr(class_frequency, user_id, sorted_item_predictions):
 
     return user_id
 
+def compute_ndcg(sorted_item_predictions: typing.List,gain_map: typing.Dict, cutoff: int):
+    idcg: float = compute_idcg(gain_map, cutoff)
+    ndcg: float = sum([gain_map[x] * compute_dicount(r) for r, x in enumerate(sorted_item_predictions) if r < cutoff])
+    return ndcg / idcg if ndcg > 0 else 0
 
-def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, positive_items, category_items, item_original_class):
+def compute_idcg(gain_map: typing.Dict, cutoff: int) -> float:
+    gains: typing.List = sorted(list(gain_map.values()), reverse=True)
+    n: int = min(len(gains), cutoff)
+    m: int = len(gains)
+    return sum(map(lambda g, r: gains[m - r - 1] * compute_dicount(r), gains, range(n)))
+
+def compute_user_gain_map(sorted_item_predictions: typing.List, sorted_item_scores: typing.List, threshold: int = 0) -> typing.Dict:
+    return {id: 0 if score < threshold else 2**(score - threshold + 1) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
+
+def compute_dicount(k: int) -> float:
+    return 1 / math.log(k + 2) * math.log(2)
+
+def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_item_scores, positive_items, category_items, item_original_class):
     """
     Methos to elaborate the prediction (CnDCG@K) for each user
     CnDCG@N(I_c, U) = \frac{1}{|U|} \sum_{u \in U}
@@ -44,21 +61,30 @@ def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, positive_
     :param positive_items:
     :return: user id sent to the count-elaborated
     """
-    k = len(sorted_item_predictions)
-    ik = len(set(category_items).difference(positive_items))
-    upper_bound_cidcg = k if k < ik else ik
 
-    category_iDCG = sum([1/math.log2(pos + 1) for pos in range(1, upper_bound_cidcg+1)])
+    gain_map: typing.Dict = compute_user_gain_map(sorted_item_predictions, sorted_item_scores, 0)
 
-    temp_category_DCG = []
-    # Count the class occurrences for the user: user_id
-    for pos, item_index in enumerate(sorted_item_predictions[:ik]):
-        if item_index in category_items:
-            temp_category_DCG.append(1/math.log2(pos + 1 + 1)) # we need +1 +1 since the posiiton start from 0 in enumerate
+    ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
 
-    category_DCG = sum(temp_category_DCG)
 
-    class_frequency[item_original_class] += category_DCG/category_iDCG
+    # k = len(sorted_item_predictions)
+    # ik = len(set(category_items).difference(positive_items))
+    # # upper_bound_cidcg = k if k < ik else ik
+    # upper_bound_cidcg = min(k,ik)
+    #
+    # category_iDCG = sum([1/math.log2(pos + 1) for pos in range(1, upper_bound_cidcg+1)])
+    #
+    # temp_category_DCG = []
+    # # Count the class occurrences for the user: user_id
+    # for pos, item_index in enumerate(sorted_item_predictions[:ik]):
+    #     if item_index in category_items:
+    #         temp_category_DCG.append(1/math.log2(pos + 1 + 1)) # we need +1 +1 since the posiiton start from 0 in enumerate
+    #
+    # category_DCG = sum(temp_category_DCG)
+    #
+    # class_frequency[item_original_class] += category_DCG/category_iDCG
+
+    class_frequency[item_original_class] += ndcg
 
     return user_id
 
@@ -170,6 +196,7 @@ if __name__ == '__main__':
                 p.apply_async(elaborate_cndcg,
                               args=(class_frequency, user_id,
                                     predictions[predictions[0] == user_id][1].to_list()[:args.analyzed_k],
+                                    predictions[predictions[0] == user_id][2].to_list()[:args.analyzed_k],
                                     train[train['userId'] == user_id]['itemId'].to_list(), category_items, args.origin, ),
                               callback=count_elaborated)
 
