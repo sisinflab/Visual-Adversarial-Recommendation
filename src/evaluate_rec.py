@@ -100,13 +100,15 @@ def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_it
     :param positive_items:
     :return: user id sent to the count-elaborated
     """
+    candidate_category_items: typing.List = list(filter(lambda x: x not in positive_items,category_items))
+    # candidate_category_items: typing.List = [x for x in category_items if x not in positive_items]
 
     #nDCG computed on training set
     # gain_map: typing.Dict = compute_user_gain_map(sorted_item_predictions, sorted_item_scores, 0)
     # ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
 
     #nDCG computed on training set considering a relevance based on categories
-    gain_map: typing.Dict = compute_category_user_gain_map(category_items, 0)
+    gain_map: typing.Dict = compute_category_user_gain_map(candidate_category_items, 0)
     ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
 
     # k = len(sorted_item_predictions)
