@@ -65,19 +65,6 @@ def compute_user_gain_map(sorted_item_predictions: typing.List, sorted_item_scor
     # return {id: 0 if score < threshold else 2**(3) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
 
 
-def compute_category_idcg(gain_map: typing.Dict, category_items: typing.List, cutoff: int) -> float:
-    """
-
-    :param gain_map:
-    :param category_items:
-    :param cutoff:
-    :return:
-    """
-    gains: typing.List = sorted(list(gain_map.values()), reverse=True)
-    n: int = min(len(gains), cutoff, len(category_items))
-    m: int = len(gains)
-    return sum(map(lambda g, r: gains[m - r - 1] * compute_dicount(r), gains, range(n)))
-
 def compute_category_user_gain_map(category_items: typing.List, threshold: int = 0) -> typing.Dict:
     """
     Method that computes the user gain map considering a list of category items with score 1
@@ -114,10 +101,13 @@ def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_it
     :return: user id sent to the count-elaborated
     """
 
-    gain_map: typing.Dict = compute_user_gain_map(sorted_item_predictions, sorted_item_scores, 0)
+    #nDCG computed on training set
+    # gain_map: typing.Dict = compute_user_gain_map(sorted_item_predictions, sorted_item_scores, 0)
+    # ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
 
+    #nDCG computed on training set considering a relevance based on categories
+    gain_map: typing.Dict = compute_category_user_gain_map(category_items, 0)
     ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
-
 
     # k = len(sorted_item_predictions)
     # ik = len(set(category_items).difference(positive_items))
