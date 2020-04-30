@@ -35,14 +35,14 @@ def compute_ndcg(sorted_item_predictions: typing.List,gain_map: typing.Dict, cut
     return ndcg / idcg if ndcg > 0 else 0
 
 def compute_idcg(gain_map: typing.Dict, cutoff: int) -> float:
-    gains: typing.List = sorted(list(gain_map.values()), reverse=True)
+    gains: typing.List = sorted(list(gain_map.values()))
     n: int = min(len(gains), cutoff)
     m: int = len(gains)
     return sum(map(lambda g, r: gains[m - r - 1] * compute_dicount(r), gains, range(n)))
 
 def compute_user_gain_map(sorted_item_predictions: typing.List, sorted_item_scores: typing.List, threshold: int = 0) -> typing.Dict:
-    # return {id: 0 if score < threshold else 2**(score - threshold + 1) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
-    return {id: 0 if score < threshold else 2**(3) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
+    return {id: 0 if score < threshold else 2**(score - threshold + 1) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
+    # return {id: 0 if score < threshold else 2**(3) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
 
 
 def compute_category_idcg(gain_map: typing.Dict, category_items: typing.List, cutoff: int) -> float:
