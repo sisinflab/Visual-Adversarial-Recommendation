@@ -38,8 +38,8 @@ def compute_ndcg(sorted_item_predictions: typing.List,gain_map: typing.Dict, cut
     :return:
     """
     idcg: float = compute_idcg(gain_map, cutoff)
-    ndcg: float = sum([gain_map.get(x, 0) * compute_dicount(r) for r, x in enumerate(sorted_item_predictions) if r < cutoff])
-    return ndcg / idcg if ndcg > 0 else 0
+    dcg: float = sum([gain_map.get(x, 0) * compute_dicount(r) for r, x in enumerate(sorted_item_predictions) if r < cutoff])
+    return dcg / idcg if dcg > 0 else 0
 
 def compute_idcg(gain_map: typing.Dict, cutoff: int) -> float:
     """
