@@ -224,7 +224,8 @@ if __name__ == '__main__':
 
                             print('Analyzing {0} of {1}'.format(prediction_file, dataset_name))
 
-                            predictions = pd.read_csv('../rec_results/{0}/{1}'.format(dataset_name, prediction_file), sep='\t',
+                            predictions = pd.read_csv('../rec_results/{0}/{1}'.format(dataset_name, prediction_file),
+                                                      sep='\t',
                                                       header=None)
 
                             # train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
@@ -233,7 +234,8 @@ if __name__ == '__main__':
                             category_items = classes[classes['ClassNum'] == origin]['ImageID'].to_list()
 
                             users_size = predictions[0].nunique()
-                            train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
+                            train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t',
+                                                header=None)
                             train.columns = ['userId', 'itemId']
 
                             manager = mp.Manager()
@@ -248,16 +250,20 @@ if __name__ == '__main__':
                                 for user_id in predictions[0].unique():
                                     p.apply_async(elaborate_chr,
                                                   args=(class_frequency, user_id,
-                                                        predictions[predictions[0] == user_id][1].to_list()[:analyzed_k],
+                                                        predictions[predictions[0] == user_id][1].to_list()[
+                                                        :analyzed_k],
                                                         origin,),
                                                   callback=count_elaborated)
                             else:
                                 for user_id in predictions[0].unique():
                                     p.apply_async(elaborate_cndcg,
                                                   args=(class_frequency, user_id,
-                                                        predictions[predictions[0] == user_id][1].to_list()[:analyzed_k],
-                                                        predictions[predictions[0] == user_id][2].to_list()[:analyzed_k],
-                                                        train[train['userId'] == user_id]['itemId'].to_list(), category_items,
+                                                        predictions[predictions[0] == user_id][1].to_list()[
+                                                        :analyzed_k],
+                                                        predictions[predictions[0] == user_id][2].to_list()[
+                                                        :analyzed_k],
+                                                        train[train['userId'] == user_id]['itemId'].to_list(),
+                                                        category_items,
                                                         origin,),
                                                   callback=count_elaborated)
 
@@ -283,14 +289,16 @@ if __name__ == '__main__':
 
                         baseline = None
                         if 'madry' in prediction_file:
-                            baseline = "madry_original_top150_ep{0}_{1}".format(100 if recommender == 'LFM' else 4000,
-                                                                                recommender)
+                            baseline = "madry_original_top150_ep{0}_{1}.tsv".format(
+                                100 if recommender == 'LFM' else 4000,
+                                recommender)
                         elif 'free' in prediction_file:
-                            baseline = 'free_adv_original_top150_ep{0}_{1}'.format(100 if recommender == 'LFM' else 4000,
-                                                                                   recommender)
+                            baseline = 'free_adv_original_top150_ep{0}_{1}.tsv'.format(
+                                100 if recommender == 'LFM' else 4000,
+                                recommender)
                         else:
-                            baseline = 'original_top150_ep{0}_{1}'.format(100 if recommender == 'LFM' else 4000,
-                                                                          recommender)
+                            baseline = 'original_top150_ep{0}_{1}.tsv'.format(100 if recommender == 'LFM' else 4000,
+                                                                              recommender)
 
                         baseline_experiment = None
                         if experiment_name.startswith('madry_original') or experiment_name.startswith(
@@ -314,8 +322,9 @@ if __name__ == '__main__':
                             star = ''
                             if p <= 0.05:
                                 star = '*'
-                            line = '{0}\t{1}\t{2}\t{3}\t{4}\t{5}'.format(dataset_name, an_metric, analyzed_k, experiment_name,
-                                                                      p, star)
+                            line = '{0}\t{1}\t{2}\t{3}\t{4}\t{5}'.format(dataset_name, an_metric, analyzed_k,
+                                                                         experiment_name,
+                                                                         p, star)
                             f.writelines(line)
                             print(line)
 
