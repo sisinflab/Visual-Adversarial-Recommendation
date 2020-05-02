@@ -6,6 +6,7 @@ import time
 import multiprocessing as mp
 import os
 import math
+
 counter = 0
 start_counter = 0
 users_size = 0
@@ -29,7 +30,8 @@ def elaborate_chr(class_frequency, user_id, sorted_item_predictions):
 
     return user_id
 
-def compute_ndcg(sorted_item_predictions: typing.List,gain_map: typing.Dict, cutoff: int) -> float:
+
+def compute_ndcg(sorted_item_predictions: typing.List, gain_map: typing.Dict, cutoff: int) -> float:
     """
     Method to compute nDCG
     :param sorted_item_predictions:
@@ -38,8 +40,10 @@ def compute_ndcg(sorted_item_predictions: typing.List,gain_map: typing.Dict, cut
     :return:
     """
     idcg: float = compute_idcg(gain_map, cutoff)
-    dcg: float = sum([gain_map.get(x, 0) * compute_dicount(r) for r, x in enumerate(sorted_item_predictions) if r < cutoff])
+    dcg: float = sum(
+        [gain_map.get(x, 0) * compute_dicount(r) for r, x in enumerate(sorted_item_predictions) if r < cutoff])
     return dcg / idcg if dcg > 0 else 0
+
 
 def compute_idcg(gain_map: typing.Dict, cutoff: int) -> float:
     """
@@ -53,7 +57,9 @@ def compute_idcg(gain_map: typing.Dict, cutoff: int) -> float:
     m: int = len(gains)
     return sum(map(lambda g, r: gains[m - r - 1] * compute_dicount(r), gains, range(n)))
 
-def compute_user_gain_map(sorted_item_predictions: typing.List, sorted_item_scores: typing.List, threshold: int = 0) -> typing.Dict:
+
+def compute_user_gain_map(sorted_item_predictions: typing.List, sorted_item_scores: typing.List,
+                          threshold: int = 0) -> typing.Dict:
     """
     Method to compute the Gain Map:
     rel = 2**(score - threshold + 1) - 1
@@ -62,7 +68,8 @@ def compute_user_gain_map(sorted_item_predictions: typing.List, sorted_item_scor
     :param threshold:
     :return:
     """
-    return {id: 0 if score < threshold else 2**(score - threshold + 1) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
+    return {id: 0 if score < threshold else 2 ** (score - threshold + 1) - 1 for id, score in
+            zip(sorted_item_predictions, sorted_item_scores)}
     # return {id: 0 if score < threshold else 2**(3) - 1 for id, score in zip(sorted_item_predictions, sorted_item_scores)}
 
 
@@ -75,7 +82,7 @@ def compute_category_user_gain_map(category_items: typing.List, threshold: int =
     :param threshold:
     :return:
     """
-    return {id: 2**(1 - threshold + 1) - 1 for id in category_items}
+    return {id: 2 ** (1 - threshold + 1) - 1 for id in category_items}
 
 
 def compute_dicount(k: int) -> float:
@@ -86,7 +93,9 @@ def compute_dicount(k: int) -> float:
     """
     return 1 / math.log(k + 2) * math.log(2)
 
-def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_item_scores, positive_items, category_items, item_original_class):
+
+def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_item_scores, positive_items,
+                    category_items, item_original_class):
     """
     Methos to elaborate the prediction (CnDCG@K) for each user
     CnDCG@N(I_c, U) = \frac{1}{|U|} \sum_{u \in U}
@@ -101,15 +110,13 @@ def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_it
     :param positive_items:
     :return: user id sent to the count-elaborated
     """
-    candidate_category_items: typing.List = list(filter(lambda x: x not in positive_items,category_items))
-    # candidate_category_items: typing.List = [x for x in category_items if x not in positive_items]
 
-    #nDCG computed on training set
+    # nDCG computed on training set
     # gain_map: typing.Dict = compute_user_gain_map(sorted_item_predictions, sorted_item_scores, 0)
     # ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
 
-    #nDCG computed on training set considering a relevance based on categories
-    gain_map: typing.Dict = compute_category_user_gain_map(candidate_category_items, 0)
+    # nDCG computed on training set considering a relevance based on categories
+    gain_map: typing.Dict = compute_category_user_gain_map(category_items, 0)
     ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
 
     # k = len(sorted_item_predictions)
@@ -154,7 +161,7 @@ def parse_args():
     parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--topk', type=int, default=150, help='top k predictions to store before the evaluation')
     parser.add_argument('--origin', type=int, default=834, help='Target Item id. Useful for CnDCG')
-    parser.add_argument('--analyzed_k', type=int, default=50, help='K under analysis has to be lesser than stored topk')
+    parser.add_argument('--analyzed_k', type=int, default=20, help='K under analysis has to be lesser than stored topk')
     parser.add_argument('--num_pool', type=int, default=1,
                         help='Number of threads')
 
@@ -242,7 +249,8 @@ if __name__ == '__main__':
                               args=(class_frequency, user_id,
                                     predictions[predictions[0] == user_id][1].to_list()[:args.analyzed_k],
                                     predictions[predictions[0] == user_id][2].to_list()[:args.analyzed_k],
-                                    train[train['userId'] == user_id]['itemId'].to_list(), category_items, args.origin, ),
+                                    train[train['userId'] == user_id]['itemId'].to_list(), category_items,
+                                    args.origin,),
                               callback=count_elaborated)
 
         p.close()
@@ -259,7 +267,7 @@ if __name__ == '__main__':
         res = dict(sorted(metric.items(), key=itemgetter(1), reverse=True)[:N])
 
         res = {str(k): v / N_USERS for k, v in res.items()}
-
+        print(res)
         keys = res.keys()
         values = res.values()
 

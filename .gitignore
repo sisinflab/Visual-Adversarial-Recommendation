@@ -32,5 +32,10 @@ cnn_models/*
 /data/tradesy
 
 /chr/*
+/cndcg/*
+/FinalRankSys/*
+/LatexTables(*
+/log/*
+data.zip
 
 /RankSys/*
