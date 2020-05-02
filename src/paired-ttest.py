@@ -328,4 +328,4 @@ if __name__ == '__main__':
                             f.writelines(line)
                             print(line)
 
-                    sendmail('Finish {0} at T-Test {1}@{2}'.format(dataset_name, an_metric, analyzed_k), 'Finished!')
+                    # sendmail('Finish {0} at T-Test {1}@{2}'.format(dataset_name, an_metric, analyzed_k), 'Finished!')
