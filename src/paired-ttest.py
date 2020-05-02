@@ -269,8 +269,6 @@ if __name__ == '__main__':
                             for key in class_frequency.keys():
                                 metric[key] = class_frequency[key]
 
-                            print('Val {0}'.format(metric))
-
                             ttest_map[prediction_file] = metric[key]
 
                     for experiment_name in ttest_map.keys():
