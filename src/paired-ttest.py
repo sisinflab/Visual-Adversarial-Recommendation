@@ -207,7 +207,6 @@ if __name__ == '__main__':
                     result_dir = '../rec_results/'
                     metric_dir = '../{0}/'.format(an_metric)
                     dataset_name = dataset
-                    experiment_name = experiment_name
                     prediction_files_path = result_dir + dataset_name
                     N = 50  # Top-N classes
 
