@@ -247,7 +247,7 @@ if __name__ == '__main__':
 
                             # Evaluate everything with respect to the origin (under evaluation) class
                             if an_metric == 'chr':
-                                for user_id in predictions[0].unique():
+                                for user_id in predictions[0].unique()[:1000]:
                                     p.apply_async(elaborate_chr,
                                                   args=(class_frequency, user_id,
                                                         predictions[predictions[0] == user_id][1].to_list()[
@@ -275,7 +275,7 @@ if __name__ == '__main__':
                             for key in class_frequency.keys():
                                 metric[key] = class_frequency[key]
 
-                            ttest_map[prediction_file] = metric[key]
+                            ttest_map[prediction_file] = metric
 
                     for experiment_name in ttest_map.keys():
 
