@@ -247,7 +247,7 @@ if __name__ == '__main__':
 
                             # Evaluate everything with respect to the origin (under evaluation) class
                             if an_metric == 'chr':
-                                for user_id in predictions[0].unique()[:1000]:
+                                for user_id in predictions[0].unique():
                                     p.apply_async(elaborate_chr,
                                                   args=(class_frequency, user_id,
                                                         predictions[predictions[0] == user_id][1].to_list()[
@@ -322,6 +322,9 @@ if __name__ == '__main__':
                             star = ''
                             if p <= 0.05:
                                 star = '*'
+                            else:
+                                start = '#'
+
                             line = '{0}\t{1}\t{2}\t{3}\t{4}\t{5}'.format(dataset_name, an_metric, analyzed_k,
                                                                          experiment_name,
                                                                          p, star)
