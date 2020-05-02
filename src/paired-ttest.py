@@ -186,138 +186,140 @@ def get_classes_dir(prediction_file):
 if __name__ == '__main__':
 
     args = parse_args()
-    # Global Configuration
-    for dataset in ['tradesy', 'amazon_men', 'amazon_women']:
 
-        origin = 0
-        if dataset == 'amazon_men':
-            origin = 774
-        elif dataset == 'amazon_women':
-            origin = 610
-        elif dataset == 'tradesy':
-            origin = 834
+    with open('ttest.txt', 'w') as f:
+        # Global Configuration
+        for dataset in ['tradesy', 'amazon_men', 'amazon_women']:
 
-        for an_metric in ['chr', 'cndcg']:
-            for analyzed_k in [20, 50]:
+            origin = 0
+            if dataset == 'amazon_men':
+                origin = 774
+            elif dataset == 'amazon_women':
+                origin = 610
+            elif dataset == 'tradesy':
+                origin = 834
 
-                ttest_map = {}
+            for an_metric in ['chr', 'cndcg']:
+                for analyzed_k in [20, 50]:
 
-                result_dir = '../rec_results/'
-                metric_dir = '../{0}/'.format(metric)
-                dataset_name = dataset
-                experiment_name = experiment_name
-                prediction_files_path = result_dir + dataset_name
-                N = 50  # Top-N classes
+                    ttest_map = {}
 
-                assert analyzed_k < args.topk
+                    result_dir = '../rec_results/'
+                    metric_dir = '../{0}/'.format(metric)
+                    dataset_name = dataset
+                    experiment_name = experiment_name
+                    prediction_files_path = result_dir + dataset_name
+                    N = 50  # Top-N classes
 
-                prediction_files = os.listdir(prediction_files_path)
+                    assert analyzed_k < args.topk
 
-                df_ordered = pd.DataFrame(columns=['experiment', 'classId', 'className', 'position', 'score'])
+                    prediction_files = os.listdir(prediction_files_path)
 
-                for prediction_file in prediction_files:
+                    df_ordered = pd.DataFrame(columns=['experiment', 'classId', 'className', 'position', 'score'])
 
-                    counter = 0
-                    start_counter = time.time()
-                    start = time.time()
+                    for prediction_file in prediction_files:
 
-                    print('Analyzing {0} of {1}'.format(prediction_file, dataset_name))
+                        counter = 0
+                        start_counter = time.time()
+                        start = time.time()
 
-                    predictions = pd.read_csv('../rec_results/{0}/{1}'.format(dataset_name, prediction_file), sep='\t',
-                                              header=None)
+                        print('Analyzing {0} of {1}'.format(prediction_file, dataset_name))
 
-                    # train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
-                    classes = pd.read_csv(
-                        '../data/{0}/{1}/classes.csv'.format(dataset_name, get_classes_dir(prediction_file)))
-                    category_items = classes[classes['ClassNum'] == origin]['ImageID'].to_list()
+                        predictions = pd.read_csv('../rec_results/{0}/{1}'.format(dataset_name, prediction_file), sep='\t',
+                                                  header=None)
 
-                    users_size = predictions[0].nunique()
-                    train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
-                    train.columns = ['userId', 'itemId']
+                        # train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
+                        classes = pd.read_csv(
+                            '../data/{0}/{1}/classes.csv'.format(dataset_name, get_classes_dir(prediction_file)))
+                        category_items = classes[classes['ClassNum'] == origin]['ImageID'].to_list()
 
-                    manager = mp.Manager()
-                    class_frequency = manager.dict()
-                    class_frequency[origin] = {}
-                    for user_id in train['userId'].unique():
-                        class_frequency[origin][user_id] = 0
+                        users_size = predictions[0].nunique()
+                        train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
+                        train.columns = ['userId', 'itemId']
 
-                    p = mp.Pool(args.num_pool)
+                        manager = mp.Manager()
+                        class_frequency = manager.dict()
+                        class_frequency[origin] = {}
+                        for user_id in train['userId'].unique():
+                            class_frequency[origin][user_id] = 0
 
-                    # Evaluate everything with respect to the origin (under evaluation) class
-                    if an_metric == 'chr':
-                        for user_id in predictions[0].unique():
-                            p.apply_async(elaborate_chr,
-                                          args=(class_frequency, user_id,
-                                                predictions[predictions[0] == user_id][1].to_list()[:analyzed_k],
-                                                origin,),
-                                          callback=count_elaborated)
-                    else:
-                        for user_id in predictions[0].unique():
-                            p.apply_async(elaborate_cndcg,
-                                          args=(class_frequency, user_id,
-                                                predictions[predictions[0] == user_id][1].to_list()[:analyzed_k],
-                                                predictions[predictions[0] == user_id][2].to_list()[:analyzed_k],
-                                                train[train['userId'] == user_id]['itemId'].to_list(), category_items,
-                                                origin,),
-                                          callback=count_elaborated)
+                        p = mp.Pool(args.num_pool)
 
-                    p.close()
-                    p.join()
+                        # Evaluate everything with respect to the origin (under evaluation) class
+                        if an_metric == 'chr':
+                            for user_id in predictions[0].unique():
+                                p.apply_async(elaborate_chr,
+                                              args=(class_frequency, user_id,
+                                                    predictions[predictions[0] == user_id][1].to_list()[:analyzed_k],
+                                                    origin,),
+                                              callback=count_elaborated)
+                        else:
+                            for user_id in predictions[0].unique():
+                                p.apply_async(elaborate_cndcg,
+                                              args=(class_frequency, user_id,
+                                                    predictions[predictions[0] == user_id][1].to_list()[:analyzed_k],
+                                                    predictions[predictions[0] == user_id][2].to_list()[:analyzed_k],
+                                                    train[train['userId'] == user_id]['itemId'].to_list(), category_items,
+                                                    origin,),
+                                              callback=count_elaborated)
 
-                    # We need this operation to use the results in the Manager
-                    metric = dict()
-                    for key in class_frequency.keys():
-                        print('Val {0}'.format(class_frequency[key]))
-                        metric[key] = class_frequency[key]
+                        p.close()
+                        p.join()
 
-                    ttest_map[prediction_file] = metric[key]
+                        # We need this operation to use the results in the Manager
+                        metric = dict()
+                        for key in class_frequency.keys():
+                            print('Val {0}'.format(class_frequency[key]))
+                            metric[key] = class_frequency[key]
 
-                for experiment_name in ttest_map.keys():
+                        ttest_map[prediction_file] = metric[key]
 
-                    recommender = None
-                    if 'VBPR' in prediction_file:
-                        recommender = 'VBPR'
-                    elif 'AMR' in prediction_file:
-                        recommender = 'AMR'
-                    elif 'LFM' in prediction_file:
-                        recommender = 'LFM'
+                    for experiment_name in ttest_map.keys():
 
-                    baseline = None
-                    if 'madry' in prediction_file:
-                        baseline = "madry_original_top150_ep{0}_{1}".format(100 if recommender == 'LFM' else 4000,
-                                                                            recommender)
-                    elif 'free' in prediction_file:
-                        baseline = 'free_adv_original_top150_ep{0}_{1}'.format(100 if recommender == 'LFM' else 4000,
-                                                                               recommender)
-                    else:
-                        baseline = 'original_top150_ep{0}_{1}'.format(100 if recommender == 'LFM' else 4000,
-                                                                      recommender)
+                        recommender = None
+                        if 'VBPR' in prediction_file:
+                            recommender = 'VBPR'
+                        elif 'AMR' in prediction_file:
+                            recommender = 'AMR'
+                        elif 'LFM' in prediction_file:
+                            recommender = 'LFM'
 
-                    baseline_experiment = None
-                    if experiment_name.startswith('madry_original') or experiment_name.startswith(
-                            'free_adv_original') or experiment_name.startswith('original'):
-                        print('this element is teh baseline and we do not evaluate with respect to itself')
-                    elif 'spsa' in experiment_name or 'zoo' in experiment_name:
-                        print('Spsa e Zoo not under evaluation')
-                    else:
-                        # Take the baseline and compare with the model
-                        baseline = ttest_map[baseline]
-                        actual_experiment = ttest_map[experiment_name]
+                        baseline = None
+                        if 'madry' in prediction_file:
+                            baseline = "madry_original_top150_ep{0}_{1}".format(100 if recommender == 'LFM' else 4000,
+                                                                                recommender)
+                        elif 'free' in prediction_file:
+                            baseline = 'free_adv_original_top150_ep{0}_{1}'.format(100 if recommender == 'LFM' else 4000,
+                                                                                   recommender)
+                        else:
+                            baseline = 'original_top150_ep{0}_{1}'.format(100 if recommender == 'LFM' else 4000,
+                                                                          recommender)
 
-                        base = []
-                        test = []
-                        # creo gli array da passare come baseline ed esperimento
-                        for user_id in actual_experiment.keys():
-                            base.append(baseline[user_id])
-                            test.append(actual_experiment[user_id])
+                        baseline_experiment = None
+                        if experiment_name.startswith('madry_original') or experiment_name.startswith(
+                                'free_adv_original') or experiment_name.startswith('original'):
+                            print('this element is teh baseline and we do not evaluate with respect to itself')
+                        elif 'spsa' in experiment_name or 'zoo' in experiment_name:
+                            print('Spsa e Zoo not under evaluation')
+                        else:
+                            # Take the baseline and compare with the model
+                            baseline = ttest_map[baseline]
+                            actual_experiment = ttest_map[experiment_name]
 
-                        p = stats.ttest_rel(base, test).pvalue
-                        star = ''
-                        if p <= 0.05:
-                            star = '*'
+                            base = []
+                            test = []
+                            # creo gli array da passare come baseline ed esperimento
+                            for user_id in actual_experiment.keys():
+                                base.append(baseline[user_id])
+                                test.append(actual_experiment[user_id])
 
-                        print(
-                            '{0}\t{1}\t{2}\t{3}\t{4}\t{5}'.format(dataset_name, an_metric, analyzed_k, experiment_name,
-                                                                  p, star))
+                            p = stats.ttest_rel(base, test).pvalue
+                            star = ''
+                            if p <= 0.05:
+                                star = '*'
+                            line = '{0}\t{1}\t{2}\t{3}\t{4}\t{5}'.format(dataset_name, an_metric, analyzed_k, experiment_name,
+                                                                      p, star)
+                            f.writelines(line)
+                            print(line)
 
-                sendmail('Finish {0} at T-Test {1}@{2}'.format(dataset_name, an_metric, analyzed_k), 'Finished!')
+                    sendmail('Finish {0} at T-Test {1}@{2}'.format(dataset_name, an_metric, analyzed_k), 'Finished!')
