@@ -269,8 +269,9 @@ if __name__ == '__main__':
                             # We need this operation to use the results in the Manager
                             metric = dict()
                             for key in class_frequency.keys():
-                                print('Val {0}'.format(class_frequency[key]))
                                 metric[key] = class_frequency[key]
+
+                            print('Val {0}'.format(metric))
 
                             ttest_map[prediction_file] = metric[key]
 
