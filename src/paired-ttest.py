@@ -27,8 +27,7 @@ def elaborate_chr(class_frequency, user_id, sorted_item_predictions, origin):
     for item_index in sorted_item_predictions:
         item_original_class = classes[classes['ImageID'] == item_index]['ClassNum'].values[0]
         if item_original_class == origin:
-            class_frequency[item_original_class][user_id] += 1
-
+            class_frequency[user_id] += 1
     return user_id
 
 
@@ -137,7 +136,7 @@ def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_it
     #
     # class_frequency[item_original_class] += category_DCG/category_iDCG
 
-    class_frequency[item_original_class][user_id] += ndcg
+    class_frequency[user_id] += ndcg
 
     return user_id
 
@@ -150,7 +149,7 @@ def count_elaborated(r):
     """
     global counter, start_counter, users_size
     counter += 1
-    if (counter + 1) % 100 == 0:
+    if (counter + 1) % 1000 == 0:
         print('{0}/{1} in {2}'.format(counter + 1, users_size, time.time() - start_counter))
         start_counter = time.time()
 
@@ -239,9 +238,8 @@ if __name__ == '__main__':
 
                             manager = mp.Manager()
                             class_frequency = manager.dict()
-                            class_frequency[origin] = {}
                             for user_id in train['userId'].unique():
-                                class_frequency[origin][user_id] = 0
+                                class_frequency[user_id] = 0
 
                             p = mp.Pool(args.num_pool)
 
