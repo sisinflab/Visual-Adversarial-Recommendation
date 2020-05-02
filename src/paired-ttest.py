@@ -218,61 +218,62 @@ if __name__ == '__main__':
                     df_ordered = pd.DataFrame(columns=['experiment', 'classId', 'className', 'position', 'score'])
 
                     for prediction_file in prediction_files:
+                        if 'spsa' not in prediction_file and 'zoo' not in prediction_file:
 
-                        counter = 0
-                        start_counter = time.time()
-                        start = time.time()
+                            counter = 0
+                            start_counter = time.time()
+                            start = time.time()
 
-                        print('Analyzing {0} of {1}'.format(prediction_file, dataset_name))
+                            print('Analyzing {0} of {1}'.format(prediction_file, dataset_name))
 
-                        predictions = pd.read_csv('../rec_results/{0}/{1}'.format(dataset_name, prediction_file), sep='\t',
-                                                  header=None)
+                            predictions = pd.read_csv('../rec_results/{0}/{1}'.format(dataset_name, prediction_file), sep='\t',
+                                                      header=None)
 
-                        # train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
-                        classes = pd.read_csv(
-                            '../data/{0}/{1}/classes.csv'.format(dataset_name, get_classes_dir(prediction_file)))
-                        category_items = classes[classes['ClassNum'] == origin]['ImageID'].to_list()
+                            # train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
+                            classes = pd.read_csv(
+                                '../data/{0}/{1}/classes.csv'.format(dataset_name, get_classes_dir(prediction_file)))
+                            category_items = classes[classes['ClassNum'] == origin]['ImageID'].to_list()
 
-                        users_size = predictions[0].nunique()
-                        train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
-                        train.columns = ['userId', 'itemId']
+                            users_size = predictions[0].nunique()
+                            train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
+                            train.columns = ['userId', 'itemId']
 
-                        manager = mp.Manager()
-                        class_frequency = manager.dict()
-                        class_frequency[origin] = {}
-                        for user_id in train['userId'].unique():
-                            class_frequency[origin][user_id] = 0
+                            manager = mp.Manager()
+                            class_frequency = manager.dict()
+                            class_frequency[origin] = {}
+                            for user_id in train['userId'].unique():
+                                class_frequency[origin][user_id] = 0
 
-                        p = mp.Pool(args.num_pool)
+                            p = mp.Pool(args.num_pool)
 
-                        # Evaluate everything with respect to the origin (under evaluation) class
-                        if an_metric == 'chr':
-                            for user_id in predictions[0].unique():
-                                p.apply_async(elaborate_chr,
-                                              args=(class_frequency, user_id,
-                                                    predictions[predictions[0] == user_id][1].to_list()[:analyzed_k],
-                                                    origin,),
-                                              callback=count_elaborated)
-                        else:
-                            for user_id in predictions[0].unique():
-                                p.apply_async(elaborate_cndcg,
-                                              args=(class_frequency, user_id,
-                                                    predictions[predictions[0] == user_id][1].to_list()[:analyzed_k],
-                                                    predictions[predictions[0] == user_id][2].to_list()[:analyzed_k],
-                                                    train[train['userId'] == user_id]['itemId'].to_list(), category_items,
-                                                    origin,),
-                                              callback=count_elaborated)
+                            # Evaluate everything with respect to the origin (under evaluation) class
+                            if an_metric == 'chr':
+                                for user_id in predictions[0].unique():
+                                    p.apply_async(elaborate_chr,
+                                                  args=(class_frequency, user_id,
+                                                        predictions[predictions[0] == user_id][1].to_list()[:analyzed_k],
+                                                        origin,),
+                                                  callback=count_elaborated)
+                            else:
+                                for user_id in predictions[0].unique():
+                                    p.apply_async(elaborate_cndcg,
+                                                  args=(class_frequency, user_id,
+                                                        predictions[predictions[0] == user_id][1].to_list()[:analyzed_k],
+                                                        predictions[predictions[0] == user_id][2].to_list()[:analyzed_k],
+                                                        train[train['userId'] == user_id]['itemId'].to_list(), category_items,
+                                                        origin,),
+                                                  callback=count_elaborated)
 
-                        p.close()
-                        p.join()
+                            p.close()
+                            p.join()
 
-                        # We need this operation to use the results in the Manager
-                        metric = dict()
-                        for key in class_frequency.keys():
-                            print('Val {0}'.format(class_frequency[key]))
-                            metric[key] = class_frequency[key]
+                            # We need this operation to use the results in the Manager
+                            metric = dict()
+                            for key in class_frequency.keys():
+                                print('Val {0}'.format(class_frequency[key]))
+                                metric[key] = class_frequency[key]
 
-                        ttest_map[prediction_file] = metric[key]
+                            ttest_map[prediction_file] = metric[key]
 
                     for experiment_name in ttest_map.keys():
 
