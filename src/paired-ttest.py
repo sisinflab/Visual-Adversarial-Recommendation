@@ -205,7 +205,7 @@ if __name__ == '__main__':
                     ttest_map = {}
 
                     result_dir = '../rec_results/'
-                    metric_dir = '../{0}/'.format(metric)
+                    metric_dir = '../{0}/'.format(an_metric)
                     dataset_name = dataset
                     experiment_name = experiment_name
                     prediction_files_path = result_dir + dataset_name
