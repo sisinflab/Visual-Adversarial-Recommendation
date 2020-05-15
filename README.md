@@ -136,7 +136,7 @@ python classify_extract_attack.py \
 This will produce (i) all attacked images, saved in ```tiff``` format to ```./data/<dataset_name>/<full_experiment_name>/images/``` and (ii) ```classes.csv``` and ```features.npy```. 
 
 ### 4. Recommendations generation after attack
-Generate the recommendation lists for the produced visual attacks as specified in [Recommendations generation] (#2-recommendations-generation).
+Generate the recommendation lists for the produced visual attacks as specified in [Recommendations generation](#2-recommendations-generation).
 
 
 ### EXTRA: script input parameters
