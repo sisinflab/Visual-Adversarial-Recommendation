@@ -93,11 +93,11 @@ def compute_dicount(k: int) -> float:
     return 1 / math.log(k + 2) * math.log(2)
 
 
-def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_item_scores, positive_items,
+def elaborate_ncdcg(class_frequency, user_id, sorted_item_predictions, sorted_item_scores, positive_items,
                     category_items, item_original_class):
     """
-    Methos to elaborate the prediction (CnDCG@K) for each user
-    CnDCG@N(I_c, U) = \frac{1}{|U|} \sum_{u \in U}
+    Methos to elaborate the prediction (ncdcg@K) for each user
+    ncdcg@N(I_c, U) = \frac{1}{|U|} \sum_{u \in U}
         \Bigg(
             \frac
             {\sum_{pos = 1}^{|I_c \setminus I^{+}_u|} \frac{rel(u, pos)}{\log(pos + 1)}}
@@ -139,10 +139,10 @@ def count_elaborated(r):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
     parser.add_argument('--dataset', nargs='?', default='tradesy', help='amazon_men, amazon_women, amazon_sport')
-    parser.add_argument('--metric', nargs='?', default='cndcg', help='chr, cndcg')
+    parser.add_argument('--metric', nargs='?', default='ncdcg', help='chr, ncdcg')
     parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--topk', type=int, default=150, help='top k predictions to store before the evaluation')
-    parser.add_argument('--origin', type=int, default=834, help='Target Item id. Useful for CnDCG')
+    parser.add_argument('--origin', type=int, default=834, help='Target Item id. Useful for ncdcg')
     parser.add_argument('--analyzed_k', type=int, default=20, help='K under analysis has to be lesser than stored topk')
     parser.add_argument('--num_pool', type=int, default=1,
                         help='Number of threads')
@@ -226,7 +226,7 @@ if __name__ == '__main__':
             p = mp.Pool(args.num_pool)
 
             for user_id in predictions[0].unique():
-                p.apply_async(elaborate_cndcg,
+                p.apply_async(elaborate_ncdcg,
                               args=(class_frequency, user_id,
                                     predictions[predictions[0] == user_id][1].to_list()[:args.analyzed_k],
                                     predictions[predictions[0] == user_id][2].to_list()[:args.analyzed_k],
