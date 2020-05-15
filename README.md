@@ -83,15 +83,30 @@ This will produce ```classes.csv``` and ```features.npy```, which is a ```N X 20
 
 ### 2. Recommendations generation
 After this initial step, run the following command to train one of the available recommender models based on the extracted visual features:
+
 ```
 python rec_generator.py \
   --dataset <dataset_name> \
   --gpu <gpu_id> \
   --experiment_name <full_experiment_name> \
   --epoch <num_training_epochs> \
-  --verbose <show_results_each_n_epochs> 
+  --verbose <show_results_each_n_epochs> \
+  --topk 150
 ```
-This will produce...
+The recommeder models will be stored in ```./rec_model_weights/<dataset_name>/``` and the top-150 recommendation lists for each users will be saved in ```./rec_results/<dataset_name>/```. 
+
+Extract the proposed rank-based metrics (CHR@K and nCDCG@K) you can execute the following command:
+```
+python evaluate_rec.py \
+  --dataset <dataset_name> \
+  --metric <ncdcg or chr> \
+  --experiment_name <full_experiment_name> \
+  -- origin <original_class_id> \
+  --topk 150 \
+  --analyzed_k <metric_k>
+```
+
+Results will be stored in ```./chr/<dataset_name>/``` and ```./ncdcg/<dataset_name>/``` in ```.tsv``` format. At this poit, you can select from the extracted category-based metrics the origin-target pair of ids to execute the explored VAR attack scenario.
 
 ### 3. Visual attacks
 Based upon the produced recommendation lists, choose an **origin** and a **target** class for each dataset. Then, run one of the available **targeted** attacks:
@@ -121,30 +136,7 @@ python classify_extract_attack.py \
 This will produce (i) all attacked images, saved in ```tiff``` format to ```./data/<dataset_name>/<full_experiment_name>/images/``` and (ii) ```classes.csv``` and ```features.npy```. 
 
 ### 4. Recommendations generation after attack
-Generate the recommendation lists for the produced visual attacks as follows:
-```
-python rec_generator.py \
-  --dataset <dataset_name> \
-  --gpu <gpu_id> \
-  --experiment_name <full_experiment_name> \
-  --epoch <num_training_epochs> \
-  --verbose <show_results_each_n_epochs> \
-  --topk 150
-```
-The recommeder models will be stored in ```./rec_model_weights/<dataset_name>/``` and the top-150 recommendation lists for each users will be saved in ```./rec_results/<dataset_name>/```. 
-
-Extract the proposed rank-based metrics (CHR@K and nCDCG@K) you can execute the following command:
-```
-python evaluate_rec.py \
-  --dataset <dataset_name> \
-  --metric <ncdcg or chr> \
-  --experiment_name <full_experiment_name> \
-  -- origin <original_class_id> \
-  --topk 150 \
-  --analyzed_k <metric_k>
-```
-
-Results will be stored in ```./chr/<dataset_name>/``` and ```./ncdcg/<dataset_name>/``` in ```.tsv``` format.
+Generate the recommendation lists for the produced visual attacks as specified in [Recommendations generation] (#2-recommendations-generation).
 
 
 ### EXTRA: script input parameters
