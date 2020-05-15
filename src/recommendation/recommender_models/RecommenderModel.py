@@ -1,8 +1,3 @@
-"""
-Created on April 1, 2020
-Define Recommender Model.
-@author Felice Antonio Merra (felice.merra@poliba.it)
-"""
 import tensorflow as tf
 
 
