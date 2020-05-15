@@ -106,7 +106,7 @@ python evaluate_rec.py \
   --analyzed_k <metric_k>
 ```
 
-Results will be stored in ```./chr/<dataset_name>/``` and ```./ncdcg/<dataset_name>/``` in ```.tsv``` format. At this poit, you can select from the extracted category-based metrics the origin-target pair of ids to execute the explored VAR attack scenario.
+Results will be stored in ```./chr/<dataset_name>/``` and ```./ncdcg/<dataset_name>/``` in ```.tsv``` format. At this point, you can select from the extracted category-based metrics the origin-target pair of ids to execute the explored VAR attack scenario.
 
 ### 3. Visual attacks
 Based upon the produced recommendation lists, choose an **origin** and a **target** class for each dataset. Then, run one of the available **targeted** attacks:
