@@ -96,13 +96,8 @@ def compute_dicount(k: int) -> float:
 def elaborate_ncdcg(class_frequency, user_id, sorted_item_predictions, sorted_item_scores, positive_items,
                     category_items, item_original_class):
     """
-    Methos to elaborate the prediction (ncdcg@K) for each user
-    ncdcg@N(I_c, U) = \frac{1}{|U|} \sum_{u \in U}
-        \Bigg(
-            \frac
-            {\sum_{pos = 1}^{|I_c \setminus I^{+}_u|} \frac{rel(u, pos)}{\log(pos + 1)}}
-            {\sum_{pos = 1}^{|I_c \setminus I^{+}_u|} \frac{1}{\log(pos + 1)}}
-        \Bigg)
+    Method to elaborate the prediction (ncdcg@K) for each user
+
     :param class_frequency:
     :param user_id:
     :param sorted_item_predictions:
