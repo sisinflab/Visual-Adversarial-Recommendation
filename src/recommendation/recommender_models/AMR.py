@@ -3,8 +3,6 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = ""
-
 
 class AMR:
 
@@ -96,7 +94,6 @@ class AMR:
 
         self.adv_loss = 0
 
-
         self.delta = tf.gradients(self.loss, [self.image_feature])[0]
         self.delta = tf.stop_gradient(self.delta)
 
@@ -142,7 +139,6 @@ class AMR:
         self._prediction()
         self._create_loss()
         self._create_optimizer()
-
 
     def get_saver_name(self):
         return "stored_vbpr_k_%d_lr_%s_regs_%s_eps_%f_lmd_%f" % \

@@ -3,7 +3,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
 class VBPR:
 
     def __init__(self, args, num_users, num_items, num_image_feature):

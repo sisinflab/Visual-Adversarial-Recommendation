@@ -7,8 +7,6 @@ import numpy as np
 import tensorflow as tf
 import os
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = ""
-
 from recommendation.recommender_models.VBPR import VBPR
 from recommendation.recommender_models.AMR import AMR
 from recommendation.recommender_dataset.Dataset import Dataset

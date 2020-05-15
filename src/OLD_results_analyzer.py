@@ -1,6 +1,5 @@
 import utils.read as read
 import utils.write as write
-from utils.sendmail import sendmail
 from utils import get_server_name, cpu_count
 from operator import itemgetter
 import argparse
@@ -152,5 +151,3 @@ if __name__ == '__main__':
 
                 f.writelines('\nExperiment Name: {0}'.format(prediction_file))
                 f.writelines(ordered.to_string())
-
-    sendmail('Elaborate Predictions on {0}'.format(get_server_name()), 'Amazon Women')

@@ -119,23 +119,6 @@ def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_it
     gain_map: typing.Dict = compute_category_user_gain_map(category_items, 0)
     ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
 
-    # k = len(sorted_item_predictions)
-    # ik = len(set(category_items).difference(positive_items))
-    # # upper_bound_cidcg = k if k < ik else ik
-    # upper_bound_cidcg = min(k,ik)
-    #
-    # category_iDCG = sum([1/math.log2(pos + 1) for pos in range(1, upper_bound_cidcg+1)])
-    #
-    # temp_category_DCG = []
-    # # Count the class occurrences for the user: user_id
-    # for pos, item_index in enumerate(sorted_item_predictions[:ik]):
-    #     if item_index in category_items:
-    #         temp_category_DCG.append(1/math.log2(pos + 1 + 1)) # we need +1 +1 since the posiiton start from 0 in enumerate
-    #
-    # category_DCG = sum(temp_category_DCG)
-    #
-    # class_frequency[item_original_class] += category_DCG/category_iDCG
-
     class_frequency[item_original_class] += ndcg
 
     return user_id
@@ -212,7 +195,6 @@ if __name__ == '__main__':
         predictions = pd.read_csv('../rec_results/{0}/{1}'.format(dataset_name, prediction_file), sep='\t',
                                   header=None)
 
-        # train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
         classes = pd.read_csv(
             '../data/{0}/{1}/classes.csv'.format(dataset_name, get_classes_dir(prediction_file)))
         users_size = predictions[0].nunique()
