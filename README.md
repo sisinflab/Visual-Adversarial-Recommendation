@@ -33,7 +33,7 @@ Then, install all required Python dependencies with the command:
 pip install -r requirements.txt
 ```
 
-To download and place correctly all datasets, run the bash script ```./scripts/download_datasets.sh```.
+To download and place correctly all datasets, run the bash script ```download_datasets.sh```.
 
 This will create the following directory tree:
 ```
