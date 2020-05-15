@@ -5,7 +5,7 @@ CIKM2020 Submission ID: 1883
 
 Here is the architectural scheme of our proposed framework:
 
-![VAR](overview.png)
+![VAR](./overview.png)
 
 **Table of Contents:**
 - [Requirements](#requirements)
