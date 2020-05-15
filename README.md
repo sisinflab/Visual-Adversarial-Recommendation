@@ -14,6 +14,7 @@ Here is the architectural scheme of our proposed framework:
   - [Recommendations generation](#2-recommendations-generation)
   - [Visual attacks](#3-visual-attacks)
   - [Recommendations generation after attack](#4-recommendations-generation-after-attack)
+  - [Attack Success Rate, Feature Loss and LPIPS](#5-attack-success-rate-feature-loss-and-lpips)
   - [EXTRA: script input parameters](#extra-script-input-parameters)
 - [Datasets, pre-trained defense models and attack parameters](#datasets-pre-trained-defense-models-and-attack-parameters)
   - [Datasets](#datasets)
