@@ -9,7 +9,7 @@
 pyvenv.cfg
 .env
 .venv
-.idea
+.idea/*
 env/
 virtualenv/
 venv/
