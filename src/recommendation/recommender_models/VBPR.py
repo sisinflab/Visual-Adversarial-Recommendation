@@ -153,3 +153,4 @@ class VBPR:
     def get_saver_name(self):
         return "stored_vbpr_k_%d_lr_%s_regs_%s_eps_%f_lmd_%f" % \
                (self.emb_K, self.slr, self.regs, self.epsilon, self.lmd)
+

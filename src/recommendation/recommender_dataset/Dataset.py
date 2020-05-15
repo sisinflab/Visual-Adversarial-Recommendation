@@ -56,3 +56,4 @@ class Dataset:
             samples = zip(*[(u, i) for i in neg_samples])
             yield map(np.array, samples)
 
+

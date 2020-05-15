@@ -211,3 +211,4 @@ class VisualAttack:
         adv_img_out = adv_img_out.permute(1, 2, 0)
 
         return adv_img_out
+

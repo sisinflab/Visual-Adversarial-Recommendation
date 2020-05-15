@@ -196,3 +196,4 @@ class Solver:
             store_model_path = store_model_path + '_VBPR'
 
         np.save(store_model_path + '.npy', params)
+

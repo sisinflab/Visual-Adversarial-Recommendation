@@ -298,3 +298,4 @@ def projected_optimization(loss_fn,
         check_diff = tf.no_op()
 
     return tf.stop_gradient(input_image + final_perturbation)
+

@@ -54,3 +54,4 @@ def save_image(image, filename):
 
     im = Image.fromarray(image)
     im.save(filename)
+

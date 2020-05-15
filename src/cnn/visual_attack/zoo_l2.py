@@ -722,3 +722,4 @@ class ZOOL2:
 
         # return the best solution found
         return o_bestattack, o_best_const
+

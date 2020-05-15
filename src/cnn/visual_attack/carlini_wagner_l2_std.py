@@ -347,3 +347,4 @@ class CWL2Std(CWL2):
         # return the best solution found
         o_bestl2 = np.array(o_bestl2)
         return o_bestattack
+

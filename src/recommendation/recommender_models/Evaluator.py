@@ -110,3 +110,4 @@ class Evaluator:
                 top_k_score = results[u][top_k_id]
                 for i, value in enumerate(top_k_id):
                     out.write(str(u) + '\t' + str(value) + '\t' + str(top_k_score[i]) + '\n')
+

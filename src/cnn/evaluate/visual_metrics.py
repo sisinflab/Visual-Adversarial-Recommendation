@@ -16,3 +16,4 @@ def psnr(im1, im2):
 
 def ssim(im1, im2):
     return structural_similarity(im1, im2, multichannel=True)
+

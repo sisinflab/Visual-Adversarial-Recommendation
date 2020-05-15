@@ -166,3 +166,4 @@ for i, (xs, filename) in enumerate(zip(images, images_paths)):
         print("Error on img {0}".format(filename))
 print('Attack Precision: {0}\nStill Original: {1}'.format(correctly_altered / len(images_paths),
                                                           remain_correct / len(images_paths)))
+

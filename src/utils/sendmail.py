@@ -26,3 +26,4 @@ def sendmail(mail_object, message):
     s.sendmail(me, "d.malitesta@gmail.com", msg.as_string())
 
     s.quit()
+

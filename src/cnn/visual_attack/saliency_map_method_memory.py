@@ -244,3 +244,4 @@ def jsma_symbolic(x, y_target, model, theta, gamma, clip_min, clip_max):
         parallel_iterations=1)
 
     return x_adv
+

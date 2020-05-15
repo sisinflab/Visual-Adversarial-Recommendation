@@ -80,3 +80,4 @@ class CustomDataLoader:
         self.dataloader = DataLoader(dataset=self.dataset,
                                      shuffle=self.shuffle,
                                      batch_size=self.batch_size)
+

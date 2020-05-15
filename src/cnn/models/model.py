@@ -159,3 +159,4 @@ class Model:
         if self.feature_model:
             feature = np.squeeze(self.feature_model(image[None, ...].to(self.device)).data.cpu().numpy())
             return feature
+
