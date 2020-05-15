@@ -128,9 +128,24 @@ python rec_generator.py \
   --gpu <gpu_id> \
   --experiment_name <full_experiment_name> \
   --epoch <num_training_epochs> \
-  --verbose <show_results_each_n_epochs>
+  --verbose <show_results_each_n_epochs> \
+  --topk 150
 ```
-This will produce...
+The recommeder models will be stored in ```./rec_model_weights/<dataset_name>/``` and the top-150 recommendation lists for each users will be saved in ```./rec_results/<dataset_name>/```. 
+
+Extract the proposed rank-based metrics (CHR@K and nCDCG@K) you can execute the following command:
+```
+python evaluate_rec.py \
+  --dataset <dataset_name> \
+  --metric <ncdcg or chr> \
+  --experiment_name <full_experiment_name> \
+  -- origin <original_class_id> \
+  --topk 150 \
+  --analyzed_k <metric_k>
+```
+
+Results will be stored in ```./chr/<dataset_name>/``` and ```./ncdcg/<dataset_name>/``` in ```.tsv``` format.
+
 
 ### EXTRA: script input parameters
 ```
