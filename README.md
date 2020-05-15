@@ -138,6 +138,18 @@ This will produce (i) all attacked images, saved in ```tiff``` format to ```./da
 ### 4. Recommendations generation after attack
 Generate the recommendation lists for the produced visual attacks as specified in [Recommendations generation](#2-recommendations-generation).
 
+### 5. Attack success, Feature Loss and LPIPS
+In order to generate the attack Success Rate (SR) for each attack/defense combination, run the following script:
+```
+python -u evaluate_attack.py [SAME PARAMETERS SEEN FOR classify_extract_attack.py]
+```
+this will produce the text file ```./data/<dataset_name>/<full_experiment_name>/success_results.txt```.
+
+Then, to generate the Feature Loss (FL) for each attack/defense combination, run the following script:
+```
+python -u feature_loss.py [SAME PARAMETERS SEEN FOR classify_extract_attack.py]
+```
+this will generate the text file ```./data/<dataset_name>/full_experiment_name>/features_dist_avg_all_attack.txt``` with the average FL results, and the csv file ```./data/<dataset_name>/<full_experiment_name>/features_dist_all_attack.csv``` with the FL results for each attacked image.
 
 ### EXTRA: script input parameters
 ```
