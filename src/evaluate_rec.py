@@ -1,4 +1,3 @@
-from utils.sendmail import sendmail
 from operator import itemgetter
 import argparse
 import pandas as pd

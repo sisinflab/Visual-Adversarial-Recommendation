@@ -11,3 +11,4 @@ mkdir -p ./rec_results/tradesy/
 mkdir -p ./rec_model_weights/amazon_men/
 mkdir -p ./rec_model_weights/amazon_women/
 mkdir -p ./rec_model_weights/tradesy/
+
