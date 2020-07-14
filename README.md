@@ -196,7 +196,7 @@ Finally, to generate LPIPS results, please refer to the [official GitHub reposit
 |    Amazon Women    |   10 | 16,668 | 2,981 | 54,473  |
 |      Tradesy       |   10 | 6,253 | 1,670 | 21,533 |
 
-[Click here](https://we.tl/t-dlSbrNz4gR) to download datasets.
+[Click here](https://we.tl/t-1JRNWWwG2N) to download datasets.
 
 ### Pre-trained defense models
 |              Model name                 | Description |           Link          |
