@@ -1,7 +1,5 @@
 # Visual Adversarial Recommendation
-This is the official github repository of the paper **Visual Adversarial Recommendation**.
-
-CIKM2020 Submission ID: 1883
+This is the official github repository of the paper **The Inefficiency of Adversarial Robustification on Deep Neural Networks: the case of Visual Recommenders**.
 
 Here is the architectural scheme of our proposed framework:
 
