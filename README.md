@@ -1,4 +1,4 @@
-# Visual Adversarial Recommendation
+# The Inefficiency of DNN Adversarial Robustification in Protecting Visual Recommenders
 Here is the architectural scheme of our proposed framework:
 
 ![VAR](./overview.png)
