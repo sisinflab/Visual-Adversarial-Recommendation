@@ -146,9 +146,7 @@ Then, to generate the Feature Loss (FL) for each attack/defense combination, run
 ```
 python -u feature_loss.py [SAME PARAMETERS SEEN FOR classify_extract_attack.py]
 ```
-this will generate the text file ```./data/<dataset_name>/full_experiment_name>/features_dist_avg_all_attack.txt``` with the average FL results, and the csv file ```./data/<dataset_name>/<full_experiment_name>/features_dist_all_attack.csv``` with the FL results for each attacked image.
-
-Finally, to generate LPIPS results, please refer to the [official GitHub repository](https://github.com/richzhang/PerceptualSimilarity). To produce the results shown in the paper, we trained VGG model in the *tune* configuration (please, refer to the [paper](https://arxiv.org/pdf/1801.03924.pdf) for a complete understanding).  
+this will generate the text file ```./data/<dataset_name>/full_experiment_name>/features_dist_avg_all_attack.txt``` with the average FL results, and the csv file ```./data/<dataset_name>/<full_experiment_name>/features_dist_all_attack.csv``` with the FL results for each attacked image. 
 
 ### EXTRA: script input parameters
 ```
