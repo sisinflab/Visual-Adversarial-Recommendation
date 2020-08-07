@@ -10,7 +10,7 @@ Here is the architectural scheme of our proposed framework:
   - [Recommendations generation](#2-recommendations-generation)
   - [Visual attacks](#3-visual-attacks)
   - [Recommendations generation after attack](#4-recommendations-generation-after-attack)
-  - [Attack Success Rate, Feature Loss and LPIPS](#5-attack-success-rate-feature-loss-and-lpips)
+  - [Attack Success Rate and Feature Loss](#5-attack-success-rate-and-feature-loss)
   - [EXTRA: script input parameters](#extra-script-input-parameters)
 - [Datasets, pre-trained defense models and attack parameters](#datasets-pre-trained-defense-models-and-attack-parameters)
   - [Datasets](#datasets)
@@ -135,7 +135,7 @@ This will produce (i) all attacked images, saved in ```tiff``` format to ```./da
 ### 4. Recommendations generation after attack
 Generate the recommendation lists for the produced visual attacks as specified in [Recommendations generation](#2-recommendations-generation).
 
-### 5. Attack Success Rate, Feature Loss and LPIPS
+### 5. Attack Success Rate and Feature Loss
 In order to generate the attack Success Rate (SR) for each attack/defense combination, run the following script:
 ```
 python -u evaluate_attack.py [SAME PARAMETERS SEEN FOR classify_extract_attack.py]
