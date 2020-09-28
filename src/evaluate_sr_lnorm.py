@@ -126,7 +126,10 @@ def eval_sr_ln():
     print('\nCALCULATED METRICS:')
     print('\t - Number of correctly attacked samples: %d/%d' % (correct_attack, attack_data.num_samples))
     print('\t - SR (percent): %.5f' % ((correct_attack / num_attacked) * 100))
-    print('\t - Average Normalized L-dissimilarity: %.10f' % (lnorm / correct_attack))
+    if correct_attack:
+        print('\t - Average Normalized L-dissimilarity: %.10f' % (lnorm / correct_attack))
+    else:
+        print('\t - Average Normalized L-dissimilarity: NaN')
 
     with open(txt_out, "w") as f:
         print('End of metrics calculation.', file=f)
@@ -135,7 +138,10 @@ def eval_sr_ln():
         print('\nCALCULATED METRICS:', file=f)
         print('\t - Number of correctly attacked samples: %d/%d' % (correct_attack, attack_data.num_samples), file=f)
         print('\t - SR (percent): %.5f' % ((correct_attack / num_attacked) * 100), file=f)
-        print('\t - Average Normalized L-dissimilarity: %.10f' % (lnorm / correct_attack), file=f)
+        if correct_attack:
+            print('\t - Average Normalized L-dissimilarity: %.10f' % (lnorm / correct_attack), file=f)
+        else:
+            print('\t - Average Normalized L-dissimilarity: NaN', file=f)
 
 
 if __name__ == '__main__':
