@@ -1,11 +1,7 @@
-# Visual Adversarial Recommendation
-This is the official github repository of the paper **Visual Adversarial Recommendation**.
-
-CIKM2020 Submission ID: 1883
-
+# An Empirical Study of DNNs Robustification Inefficacy in Protecting Visual Recommenders
 Here is the architectural scheme of our proposed framework:
 
-![VAR](overview.png)
+![VAR](./overview.png)
 
 **Table of Contents:**
 - [Requirements](#requirements)
@@ -14,6 +10,7 @@ Here is the architectural scheme of our proposed framework:
   - [Recommendations generation](#2-recommendations-generation)
   - [Visual attacks](#3-visual-attacks)
   - [Recommendations generation after attack](#4-recommendations-generation-after-attack)
+  - [Attack Success Rate and Feature Loss](#5-attack-success-rate-and-feature-loss)
   - [EXTRA: script input parameters](#extra-script-input-parameters)
 - [Datasets, pre-trained defense models and attack parameters](#datasets-pre-trained-defense-models-and-attack-parameters)
   - [Datasets](#datasets)
@@ -83,15 +80,30 @@ This will produce ```classes.csv``` and ```features.npy```, which is a ```N X 20
 
 ### 2. Recommendations generation
 After this initial step, run the following command to train one of the available recommender models based on the extracted visual features:
+
 ```
 python rec_generator.py \
   --dataset <dataset_name> \
   --gpu <gpu_id> \
   --experiment_name <full_experiment_name> \
   --epoch <num_training_epochs> \
-  --verbose <show_results_each_n_epochs> 
+  --verbose <show_results_each_n_epochs> \
+  --topk 150
 ```
-This will produce...
+The recommeder models will be stored in ```./rec_model_weights/<dataset_name>/``` and the top-150 recommendation lists for each users will be saved in ```./rec_results/<dataset_name>/```. 
+
+Extract the proposed rank-based metrics (CHR@K and nCDCG@K) you can execute the following command:
+```
+python evaluate_rec.py \
+  --dataset <dataset_name> \
+  --metric <ncdcg or chr> \
+  --experiment_name <full_experiment_name> \
+  -- origin <original_class_id> \
+  --topk 150 \
+  --analyzed_k <metric_k>
+```
+
+Results will be stored in ```./chr/<dataset_name>/``` and ```./ncdcg/<dataset_name>/``` in ```.tsv``` format. At this point, you can select from the extracted category-based metrics the origin-target pair of ids to execute the explored VAR attack scenario.
 
 ### 3. Visual attacks
 Based upon the produced recommendation lists, choose an **origin** and a **target** class for each dataset. Then, run one of the available **targeted** attacks:
@@ -121,31 +133,20 @@ python classify_extract_attack.py \
 This will produce (i) all attacked images, saved in ```tiff``` format to ```./data/<dataset_name>/<full_experiment_name>/images/``` and (ii) ```classes.csv``` and ```features.npy```. 
 
 ### 4. Recommendations generation after attack
-Generate the recommendation lists for the produced visual attacks as follows:
-```
-python rec_generator.py \
-  --dataset <dataset_name> \
-  --gpu <gpu_id> \
-  --experiment_name <full_experiment_name> \
-  --epoch <num_training_epochs> \
-  --verbose <show_results_each_n_epochs> \
-  --topk 150
-```
-The recommeder models will be stored in ```./rec_model_weights/<dataset_name>/``` and the top-150 recommendation lists for each users will be saved in ```./rec_results/<dataset_name>/```. 
+Generate the recommendation lists for the produced visual attacks as specified in [Recommendations generation](#2-recommendations-generation).
 
-Extract the proposed rank-based metrics (CHR@K and nCDCG@K) you can execute the following command:
+### 5. Attack Success Rate and Feature Loss
+In order to generate the attack Success Rate (SR) for each attack/defense combination, run the following script:
 ```
-python evaluate_rec.py \
-  --dataset <dataset_name> \
-  --metric <ncdcg or chr> \
-  --experiment_name <full_experiment_name> \
-  -- origin <original_class_id> \
-  --topk 150 \
-  --analyzed_k <metric_k>
+python -u evaluate_attack.py [SAME PARAMETERS SEEN FOR classify_extract_attack.py]
 ```
+this will produce the text file ```./data/<dataset_name>/<full_experiment_name>/success_results.txt```, which contains the average SR results.
 
-Results will be stored in ```./chr/<dataset_name>/``` and ```./ncdcg/<dataset_name>/``` in ```.tsv``` format.
-
+Then, to generate the Feature Loss (FL) for each attack/defense combination, run the following script:
+```
+python -u feature_loss.py [SAME PARAMETERS SEEN FOR classify_extract_attack.py]
+```
+this will generate the text file ```./data/<dataset_name>/full_experiment_name>/features_dist_avg_all_attack.txt``` with the average FL results, and the csv file ```./data/<dataset_name>/<full_experiment_name>/features_dist_all_attack.csv``` with the FL results for each attacked image. 
 
 ### EXTRA: script input parameters
 ```
@@ -189,7 +190,7 @@ Results will be stored in ```./chr/<dataset_name>/``` and ```./ncdcg/<dataset_na
 |    Amazon Women    |   10 | 16,668 | 2,981 | 54,473  |
 |      Tradesy       |   10 | 6,253 | 1,670 | 21,533 |
 
-[Click here](https://gofile.io/d/QmRlVq) to download datasets.
+[Click here](https://drive.google.com/file/d/1_daGmkBRqv5z201rNUAW1R3C29rPqBEL/view?usp=sharing) to download datasets.
 
 ### Pre-trained defense models
 |              Model name                 | Description |           Link          |
