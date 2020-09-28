@@ -8,6 +8,13 @@ def parse_ord(ord_str):
         return int(ord_str)
 
 
+def calculate_norm(im, norm_type):
+    if norm_type in ['0', '1', '2']:
+        return np.linalg.norm(im, ord=int(norm_type))
+    elif norm_type == 'inf':
+        return np.linalg.norm(im, ord=np.inf)
+
+
 def set_attack_paths(args,
                      path_images_attack,
                      path_classes_attack,

@@ -26,6 +26,7 @@ data/old_amazon_men
 data/pdf_images
 /rec_results/*
 cnn_models/*
+visual_results/*
 
 /src/dataset_preprocessing/*
 /src/OLD_*
