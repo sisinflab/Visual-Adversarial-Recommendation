@@ -84,7 +84,7 @@ def eval_sr_ln():
     num_attacked = len(df)
 
     csv_out = '../visual_results/' + args.dataset + '/' + \
-              os.path.basename(os.path.dirname(path_classes_attacked)) + '/lnorm.csv '
+              os.path.basename(os.path.dirname(path_classes_attacked)) + '/lnorm.csv'
     txt_out = '../visual_results/' + args.dataset + '/' + \
               os.path.basename(os.path.dirname(path_classes_attacked)) + '/final_sr_lnorm.txt'
 
