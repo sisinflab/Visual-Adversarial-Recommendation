@@ -105,19 +105,20 @@ def eval_sr_ln():
             img0, name0 = a
             img1, name1 = o
 
-            if df.iloc[i]["ClassNum"] == args.target_class:
-                img0 = img0.permute(1, 2, 0).detach().cpu().numpy()
-                img1 = img1.permute(1, 2, 0).detach().cpu().numpy()
+            img0 = img0.permute(1, 2, 0).detach().cpu().numpy()
+            img1 = img1.permute(1, 2, 0).detach().cpu().numpy()
 
-                current_lnorm = calculate_norm(
-                    im=(img0 - img1).reshape(-1),
-                    norm_type=str(args.l)) / calculate_norm(im=img0.reshape(-1),
-                                                            norm_type=str(args.l))
-                lnorm += current_lnorm
-                writer.writerow({
-                    'ImageID': os.path.splitext(name0)[0],
-                    'LNorm': current_lnorm
-                })
+            current_lnorm = calculate_norm(
+                im=(img0 - img1).reshape(-1),
+                norm_type=str(args.l)) / calculate_norm(im=img0.reshape(-1),
+                                                        norm_type=str(args.l))
+            lnorm += current_lnorm
+            writer.writerow({
+                'ImageID': os.path.splitext(name0)[0],
+                'LNorm': current_lnorm
+            })
+
+            if df.iloc[i]["ClassNum"] == args.target_class:
                 correct_attack += 1
 
     print('End of metrics calculation.')
@@ -126,10 +127,7 @@ def eval_sr_ln():
     print('\nCALCULATED METRICS:')
     print('\t - Number of correctly attacked samples: %d/%d' % (correct_attack, attack_data.num_samples))
     print('\t - SR (percent): %.5f' % ((correct_attack / num_attacked) * 100))
-    if correct_attack:
-        print('\t - Average Normalized L-dissimilarity: %.10f' % (lnorm / correct_attack))
-    else:
-        print('\t - Average Normalized L-dissimilarity: NaN')
+    print('\t - Average Normalized L-dissimilarity: %.10f' % (lnorm / num_attacked))
 
     with open(txt_out, "w") as f:
         print('End of metrics calculation.', file=f)
@@ -138,10 +136,7 @@ def eval_sr_ln():
         print('\nCALCULATED METRICS:', file=f)
         print('\t - Number of correctly attacked samples: %d/%d' % (correct_attack, attack_data.num_samples), file=f)
         print('\t - SR (percent): %.5f' % ((correct_attack / num_attacked) * 100), file=f)
-        if correct_attack:
-            print('\t - Average Normalized L-dissimilarity: %.10f' % (lnorm / correct_attack), file=f)
-        else:
-            print('\t - Average Normalized L-dissimilarity: NaN', file=f)
+        print('\t - Average Normalized L-dissimilarity: %.10f' % (lnorm / num_attacked), file=f)
 
 
 if __name__ == '__main__':
