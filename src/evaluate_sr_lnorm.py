@@ -102,8 +102,8 @@ def eval_sr_ln():
         writer.writeheader()
 
         for i, (o, a) in enumerate(zip(original_data, attack_data)):
-            img0, name0 = a
-            img1, name1 = o
+            img0, name0 = o
+            img1, name1 = a
 
             img0 = img0.permute(1, 2, 0).detach().cpu().numpy()
             img1 = img1.permute(1, 2, 0).detach().cpu().numpy()
