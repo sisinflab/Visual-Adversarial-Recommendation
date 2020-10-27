@@ -5,6 +5,7 @@ import utils.write as write
 import pandas as pd
 import numpy as np
 import tensorflow as tf
+import pickle
 import os
 
 from recommendation.recommender_models.VBPR import VBPR
@@ -111,7 +112,11 @@ class Solver:
             self.new_store_predictions(i)
         else:
             self.new_store_predictions_tf_2(i)
-        self.save(i)
+
+        if self.model_name == 'VBPR' or self.adv:
+            self.save(i)
+        else:
+            self.save_tf_2(i)
 
     def evaluate_rec_metrics(self, para):
         r, K = para
@@ -244,6 +249,22 @@ class Solver:
             print('Load parameters from {0}'.format(self.weight_dir + self.experiment_name + '_step{0}_VBPR.npy'.format(self.epoch // 2)))
         except Exception as ex:
             print('Start new model from scratch')
+
+    def save_tf_2(self, epoch):
+        params, optimizer = self.model.get_model_params()
+        store_model_path = self.weight_dir + self.experiment_name + '_ep{0}_{1}'.format(epoch, self.model_name)
+
+        # save model state as dict
+        model_dict = {
+            'model_name': self.model_name,
+            'dataset': self.dataset_name,
+            'epoch': epoch,
+            'model_state_dict': params,
+            'optimizer_state_np': optimizer.get_weights()
+        }
+
+        with open(store_model_path + '.pkl', 'wb') as f:
+            pickle.dump(model_dict, f)
 
     def save(self, step):
         params = self.sess.run(tf.compat.v1.trainable_variables())
