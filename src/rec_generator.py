@@ -12,14 +12,15 @@ def parse_args():
     parser.add_argument('--experiment_name', nargs='?',
                         default='original',
                         help='original, fgsm_***, cw_***, pgd_***')
-    parser.add_argument('--model', nargs='?', default='VBPR',
-                        help='recommender models: VBPR')
+    parser.add_argument('--model', nargs='?', default='DVBPR',
+                        help='recommender models: VBPR, DVBPR')
     parser.add_argument('--emb1_K', type=int, default=64, help='size of embeddings')
     parser.add_argument('--batch_size', type=int, default=512, help='batch size')
     parser.add_argument('--lr', nargs='?', default='[0.01,1e-4,1e-3]', help='learning rate')
-    parser.add_argument('--verbose', type=int, default=1000, help='vebrosity and Checkpoint epoch')
-    parser.add_argument('--epoch', type=int, default=4000, help='epochs')
-    parser.add_argument('--regs', nargs='?', default='[1e-1,1e-3,0]', help='lambdas for regularization')
+    parser.add_argument('--verbose', type=int, default=1, help='vebrosity and Checkpoint epoch')
+    parser.add_argument('--epoch', type=int, default=2, help='epochs')
+    # parser.add_argument('--regs', nargs='?', default='[1e-1,1e-3,0]', help='lambdas for regularization')
+    parser.add_argument('--regs', nargs='?', default='[1.0, 0.001]', help='lambdas for regularization')
     parser.add_argument('--lmd', type=float, default=0.1,
                         help='lambda for balance the common loss and adversarial loss')
     parser.add_argument('--keep_prob', type=float, default=0.6, help='keep probability of dropout layers')
@@ -30,7 +31,7 @@ def parse_args():
     parser.add_argument('--weight_dir', nargs='?', default='rec_model_weights', help='directory to store the weights')
     parser.add_argument('--result_dir', nargs='?', default='rec_results', help='directory to store the predictions')
 
-    parser.add_argument('--topk', type=int, default=150,
+    parser.add_argument('--topk', type=int, default=100,
                         help='top k predictions to store before the evaluation')
 
     return parser.parse_args()

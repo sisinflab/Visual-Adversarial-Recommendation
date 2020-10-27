@@ -23,9 +23,17 @@ class Solver:
         self.model_name = args.model
         if self.adv:
             self.model = AMR(args, self.dataset.usz, self.dataset.isz, self.dataset.fsz)
+            self.sess = tf.compat.v1.Session()
+            self.sess.run(tf.compat.v1.global_variables_initializer())
+            self.saver = tf.compat.v1.train.Saver(tf.compat.v1.trainable_variables(), max_to_keep=0)
+            self.sess.run(self.model.assign_image, feed_dict={self.model.init_image: self.dataset.emb_image})
         else:
             if self.model_name == 'VBPR':
                 self.model = VBPR(args, self.dataset.usz, self.dataset.isz, self.dataset.fsz)
+                self.sess = tf.compat.v1.Session()
+                self.sess.run(tf.compat.v1.global_variables_initializer())
+                self.saver = tf.compat.v1.train.Saver(tf.compat.v1.trainable_variables(), max_to_keep=0)
+                self.sess.run(self.model.assign_image, feed_dict={self.model.init_image: self.dataset.emb_image})
             elif self.model_name == 'DVBPR':
                 self.model = DVBPR(args, self.dataset.usz, self.dataset.isz)
             else:
@@ -33,10 +41,7 @@ class Solver:
         self.epoch = args.epoch
         self.verbose = args.verbose
 
-        self.sess = tf.compat.v1.Session()
-        self.sess.run(tf.compat.v1.global_variables_initializer())
-        self.saver = tf.compat.v1.train.Saver(tf.compat.v1.trainable_variables(), max_to_keep=0)
-        self.sess.run(self.model.assign_image, feed_dict={self.model.init_image: self.dataset.emb_image})
+
 
         self.topk = args.topk
         self.weight_dir = '../' + args.weight_dir + '/'

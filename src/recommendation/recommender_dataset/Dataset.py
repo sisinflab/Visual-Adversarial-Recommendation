@@ -72,11 +72,11 @@ class Dataset:
 
         for st in range(0, sz, self.bsz):
             if self.model_name == 'VBPR':
-                samples = zip(map(self.sample, range(st, st + self.bsz)))
+                samples = zip(*map(self.sample, range(st, st + self.bsz)))
                 yield map(np.array, samples)
             elif self.model_name == 'DVBPR':
-                samples = zip(map(self.sample_images, range(st, st + self.bsz)))
-                yield zip(map(np.array, samples))
+                samples = zip(*map(self.sample_images, range(st, st + self.bsz)))
+                yield map(np.array, samples)
 
     def test_generator(self):
 

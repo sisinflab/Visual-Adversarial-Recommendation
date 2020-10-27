@@ -12,11 +12,11 @@ class DVBPR:
         self.dataset = args.dataset
         self.emb_K = args.emb1_K
         self.regs = args.regs
-        self.lambda1 = self.regs[0]
-        self.lambda2 = self.regs[1]
+        self.lambda1 = float(self.regs[1:-1].split(',')[0])
+        self.lambda2 = float(self.regs[1:-1].split(',')[1])
         self.num_users = num_users
         self.num_items = num_items
-        self.lr = args.lr
+        self.lr = 1e-4
         self.initializer = tf.initializers.GlorotUniform()
         self._initialize_variables()
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.lr)
@@ -85,7 +85,7 @@ class DVBPR:
 
     def train_step(self, user, pos, neg):
         with tf.GradientTape() as tape:
-            self._loss(user[0], pos[0], neg[0])
+            self._loss(user, pos, neg)
 
         params = [self.Tu,
                   *self.cnn.trainable_variables]
