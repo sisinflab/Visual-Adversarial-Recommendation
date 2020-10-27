@@ -8,8 +8,10 @@ import tensorflow as tf
 import os
 
 from recommendation.recommender_models.VBPR import VBPR
+from recommendation.recommender_models.DVBPR import DVBPR
 from recommendation.recommender_models.AMR import AMR
 from recommendation.recommender_dataset.Dataset import Dataset
+from config.configs import *
 
 
 class Solver:
@@ -18,10 +20,16 @@ class Solver:
         self.dataset_name = args.dataset
         self.experiment_name = args.experiment_name
         self.adv = args.adv
+        self.model_name = args.model
         if self.adv:
             self.model = AMR(args, self.dataset.usz, self.dataset.isz, self.dataset.fsz)
         else:
-            self.model = VBPR(args, self.dataset.usz, self.dataset.isz, self.dataset.fsz)
+            if self.model_name == 'VBPR':
+                self.model = VBPR(args, self.dataset.usz, self.dataset.isz, self.dataset.fsz)
+            elif self.model_name == 'DVBPR':
+                self.model = DVBPR(args, self.dataset.usz, self.dataset.isz)
+            else:
+                raise NotImplemented('The model has not been implemented yet!')
         self.epoch = args.epoch
         self.verbose = args.verbose
 
@@ -65,6 +73,19 @@ class Solver:
             except StopIteration:
                 break
 
+    def one_epoch_tf2(self):
+        loss = 0.0
+        steps = 0
+        generator = self.dataset.batch_generator()
+        while True:
+            try:
+                steps += 1
+                train_inputs = next(generator)
+                loss += self.model.train_step(*train_inputs)
+            except StopIteration:
+                break
+        return loss / steps
+
     def train(self):
         start_epoch = 0
         if self.adv:
@@ -72,12 +93,19 @@ class Solver:
 
         for i in range(start_epoch + 1, self.epoch + 1):
             start = time.time()
-            self.one_epoch()
+
+            if self.model_name == 'DVBPR':
+                self.one_epoch_tf2()
+            else:
+                self.one_epoch()
             if i % self.verbose == 0:
                 self.save(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
 
-        self.new_store_predictions(i)
+        if self.model_name == 'VBPR' or self.adv:
+            self.new_store_predictions(i)
+        else:
+            self.new_store_predictions_tf_2(i)
         self.save(i)
 
     def evaluate_rec_metrics(self, para):
@@ -154,6 +182,31 @@ class Solver:
         write.save_obj(score_predictions, prediction_name)
 
         print('End Store Predictions {0}'.format(time.time() - start))
+
+    def new_store_predictions_tf_2(self, epoch):
+        print('Start Store Predictions at epoch {0}'.format(epoch))
+        start = time.time()
+
+        predictions = self.model.prediction_all().numpy()
+
+        if self.model_name == 'DVBPR':
+            np.save(features_DVBPR_path.format(self.dataset_name), self.model.Phi)
+
+        print("Storing results...")
+
+        with open(self.result_dir + self.experiment_name + '_top{0}_ep{1}_{2}.tsv'.format(self.topk,
+                                                                                          epoch,
+                                                                                          self.model_name),
+                  'w') as out:
+            for user_id, u_predictions in enumerate(predictions):
+                # for other metrics calculation
+                u_predictions[self.dataset.df_train[self.dataset.df_train[0] == user_id][1].to_list()] = -np.inf
+                top_k_id = u_predictions.argsort()[-self.topk:][::-1]
+                top_k_score = u_predictions[top_k_id]
+                for i, item_id in enumerate(top_k_id):
+                    out.write(str(user_id) + '\t' + str(item_id) + '\t' + str(top_k_score[i]) + '\n')
+
+        print('End Store Predictions in {0} seconds'.format(time.time() - start))
 
     def new_store_predictions(self, epoch):
         # We multiply the users embeddings by -1 to have the np sorting operation in the correct order

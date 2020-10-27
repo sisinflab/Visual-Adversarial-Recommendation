@@ -1,12 +1,15 @@
 import numpy as np
 import random
 import pandas as pd
-
+from PIL import Image
+from config.configs import *
 
 class Dataset:
     def __init__(self, args):
         path = '../data/' + args.dataset + '/'
         self.f_feature = path + args.experiment_name + '/features.npy'
+        self.model_name = args.model
+        self.dataset = args.dataset
         self.f_pos = path + 'trainingset.tsv'
         self.df_train = pd.read_csv(self.f_pos, header=None, sep='\t')
         self.test = path + 'testset.tsv'
@@ -40,13 +43,40 @@ class Dataset:
             i_neg = random.randrange(self.isz)
         return u, i, i_neg
 
+    def sample_images(self, p):
+        u, i_pos = self.pos[p]
+        i_neg = i_pos
+        while i_neg in self.inter[u] or i_neg in self.coldstart:  # remove the cold start items from negative
+            i_neg = random.randrange(self.isz)
+        im_pos = Image.open(images_path.format(self.dataset) + str(i_pos) + '.jpg')
+        im_neg = Image.open(images_path.format(self.dataset) + str(i_neg) + '.jpg')
+        try:
+            im_pos.load()
+        except ValueError:
+            print(f'Image at path {i_pos}.jpg was not loaded correctly!')
+        try:
+            im_neg.load()
+        except ValueError:
+            print(f'Image at path {i_neg}.jpg was not loaded correctly!')
+        if im_pos.mode != 'RGB':
+            im_pos = im_pos.convert(mode='RGB')
+        if im_neg.mode != 'RGB':
+            im_neg = im_neg.convert(mode='RGB')
+        im_pos = (np.array(im_pos.resize((224, 224))) - np.float32(127.5)) / np.float32(127.5)
+        im_neg = (np.array(im_neg.resize((224, 224))) - np.float32(127.5)) / np.float32(127.5)
+        return u, im_pos, im_neg
+
     def batch_generator(self):
         self.shuffle()
-        sz = len(self.pos)//self.bsz*self.bsz
+        sz = len(self.pos) // self.bsz * self.bsz  # in case batch size is not evenly divisible by the dataset size
 
         for st in range(0, sz, self.bsz):
-            samples = zip(*map(self.sample, range(st, st + self.bsz)))
-            yield map(np.array, samples)
+            if self.model_name == 'VBPR':
+                samples = zip(map(self.sample, range(st, st + self.bsz)))
+                yield map(np.array, samples)
+            elif self.model_name == 'DVBPR':
+                samples = zip(map(self.sample_images, range(st, st + self.bsz)))
+                yield zip(map(np.array, samples))
 
     def test_generator(self):
 
