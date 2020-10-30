@@ -105,7 +105,10 @@ class Solver:
             else:
                 self.one_epoch()
             if i % self.verbose == 0:
-                self.save(i)
+                if self.model_name == 'VBPR' or self.adv:
+                    self.save(i)
+                else:
+                    self.save_tf_2(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
 
         if self.model_name == 'VBPR' or self.adv:
