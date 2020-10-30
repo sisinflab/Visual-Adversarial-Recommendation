@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-import write
+import utils.write as write
 
 dataset = 'tradesy'
 ratings = pd.read_csv('{0}/dataset_preprocessing/{1}/filtered_ratings.txt'.format(os.getcwd(), dataset), sep='\t')

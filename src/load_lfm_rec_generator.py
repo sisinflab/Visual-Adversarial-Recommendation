@@ -52,7 +52,7 @@ if __name__ == '__main__':
     (train_interactions, weights) = train.build_interactions(((row[0], row[1])
                                                               for index, row in df_train.iterrows()))
     # Build Features
-    # Call build_user/item_features with iterables of (user/item id, [features]) or (user/item id, {feature: feature weight}) to build feature matrices.
+    ## Call build_user/item_features with iterables of (user/item id, [features]) or (user/item id, {feature: feature weight}) to build feature matrices.
     print('Loading Features...')
     list_features = {}
     for image_index, image_feature in enumerate(features):

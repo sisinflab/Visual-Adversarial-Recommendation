@@ -112,7 +112,7 @@ def elaborate_cndcg(class_frequency, user_id, sorted_item_predictions, sorted_it
 
     # nDCG computed on training set
     # gain_map: typing.Dict = compute_user_gain_map(sorted_item_predictions, sorted_item_scores, 0)
-    # ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
+    ## ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
 
     # nDCG computed on training set considering a relevance based on categories
     gain_map: typing.Dict = compute_category_user_gain_map(category_items, 0)

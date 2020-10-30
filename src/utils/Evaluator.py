@@ -37,7 +37,7 @@ def _evaluate_input(user):
 
 
 def _eval_by_user(user):
-    # get predictions of data in testing set
+    ## get predictions of data in testing set
     user_input, item_input = _feed_dicts[user]
     predictions, _, _ = _model.get_inference(user_input, item_input)
 
