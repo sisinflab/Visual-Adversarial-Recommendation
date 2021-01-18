@@ -22,7 +22,7 @@ def parse_args():
     parser.add_argument('--model_file', type=str, default='model_best.pth.tar')
     parser.add_argument('--drop_layers', type=int, default=2, help='layers to drop for feature model')
     parser.add_argument('--resize', type=int, default=224,
-                        help='1 --> no resize, otherwise resize to (resize, resize)')
+                        help='0 --> no resize, otherwise resize to (resize, resize)')
     parser.add_argument('--separate_outputs', type=bool, default=True,
                         help='whether to store (or not) feature numpy separately')
 
