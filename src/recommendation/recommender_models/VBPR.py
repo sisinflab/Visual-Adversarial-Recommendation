@@ -1,7 +1,10 @@
-import os
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
+import random
+import numpy as np
+
+random.seed(0)
+np.random.seed(0)
+tf.random.set_random_seed(0)
 
 
 class VBPR:

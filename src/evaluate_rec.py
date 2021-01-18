@@ -266,5 +266,5 @@ if __name__ == '__main__':
     df_ordered.to_csv('{0}{1}/df_{2}_at_{3}.csv'.format(metric_dir, dataset_name, args.metric, args.analyzed_k),
                       index=None)
 
-    sendmail('Finish {0} at Evaluation {1}@{2}'.format(dataset_name, args.metric, args.analyzed_k), 'Finished!')
+    # sendmail('Finish {0} at Evaluation {1}@{2}'.format(dataset_name, args.metric, args.analyzed_k), 'Finished!')
 

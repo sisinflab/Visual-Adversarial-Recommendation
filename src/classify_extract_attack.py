@@ -58,6 +58,13 @@ def parse_args():
     parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
     parser.add_argument('--model_file', type=str, default='model_best.pth.tar')
+    parser.add_argument('--drop_layers', type=int, default=2, help='layers to drop for feature model')
+    parser.add_argument('--resize', type=int, default=224,
+                        help='1 --> no resize, otherwise resize to (resize, resize)')
+    parser.add_argument('--separate_outputs', type=bool, default=True,
+                        help='whether to store (or not) feature numpy separately')
+    parser.add_argument('--run_attack', type=bool, default=False,
+                        help='whether to run the attack, or recover the attacked image from the disk')
 
     # attacks specific parameters
     parser.add_argument('--eps', type=float, default=8)
@@ -80,37 +87,44 @@ def classify_and_extract_attack():
     os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
     if args.defense:
-        path_images, path_input_classes, path_input_features, path_classes, model_path, \
-            path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
+        path_images, path_input_classes, path_input_features, path_input_features_dir, path_classes, model_path, \
+            path_output_images_attack, path_output_features_attack, path_output_features_attack_dir, \
+            path_output_classes_attack = read_config(
                 sections_fields=[('ORIGINAL', 'Images'),
                                  ('ORIGINAL', 'Classes'),
                                  ('ORIGINAL', 'Features'),
+                                 ('ORIGINAL', 'FeaturesDir'),
                                  ('ALL', 'ImagenetClasses'),
                                  ('ALL', 'ModelPath'),
                                  ('DEFENSE', 'ImagesAttack'),
                                  ('DEFENSE', 'FeaturesAttack'),
+                                 ('DEFENSE', 'FeaturesDirAttack'),
                                  ('DEFENSE', 'ClassesAttack')])
 
-        path_input_classes, path_input_features = path_input_classes.format(
-            args.dataset, args.model_dir), path_input_features.format(args.dataset, args.model_dir)
+        path_input_classes, path_input_features, path_input_features_dir = path_input_classes.format(
+            args.dataset, args.model_dir), path_input_features.format(args.dataset, args.model_dir), \
+            path_input_features_dir.format(args.dataset, args.model_dir)
 
         model_path = model_path.format(args.model_dir, args.model_file)
         model = Model(model=models.resnet50(), model_path=model_path, pretrained_name=args.model_dir)
 
     else:
-        path_images, path_input_classes, path_input_features, path_classes, model_path, \
-            path_output_images_attack, path_output_features_attack, path_output_classes_attack = read_config(
+        path_images, path_input_classes, path_input_features, path_input_features_dir, path_classes, model_path, \
+            path_output_images_attack, path_output_features_attack, path_output_features_attack_dir, \
+            path_output_classes_attack = read_config(
                 sections_fields=[('ORIGINAL', 'Images'),
                                  ('ORIGINAL', 'Classes'),
                                  ('ORIGINAL', 'Features'),
+                                 ('ORIGINAL', 'FeaturesDir'),
                                  ('ALL', 'ImagenetClasses'),
                                  ('ALL', 'ModelPath'),
                                  ('ATTACK', 'Images'),
                                  ('ATTACK', 'Features'),
+                                 ('ATTACK', 'FeaturesDir'),
                                  ('ATTACK', 'Classes')])
 
-        path_input_classes, path_input_features = path_input_classes.format(
-            args.dataset), path_input_features.format(args.dataset)
+        path_input_classes, path_input_features, path_input_features_dir = path_input_classes.format(
+            args.dataset), path_input_features.format(args.dataset), path_input_features_dir.format(args.dataset)
 
         model = Model(model=models.resnet50(pretrained=True), model_name='ResNet50')
 
@@ -123,6 +137,8 @@ def classify_and_extract_attack():
     path_images = path_images.format(args.dataset)
 
     to_tensor = transforms.ToTensor()
+    resize = [transforms.Resize((args.resize, args.resize),
+                                interpolation=Image.BICUBIC)] if args.resize else []
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
     denormalize = transforms.Normalize(mean=[-0.485 / 0.229, -0.456 / 0.224, -0.406 / 0.225],
@@ -133,17 +149,15 @@ def classify_and_extract_attack():
         data = CustomDataset(root_dir=path_images,
                              reshape=True,
                              scale=4,
-                             transform=transforms.Compose([
-                                 to_tensor,
-                                 normalize
-                             ]))
+                             transform=transforms.Compose(
+                                 [to_tensor] + [normalize]
+                             ))
 
     else:
         data = CustomDataset(root_dir=path_images,
-                             transform=transforms.Compose([
-                                 to_tensor,
-                                 normalize
-                             ]))
+                             transform=transforms.Compose(
+                                 resize + [to_tensor] + [normalize]
+                             ))
 
     print('Loaded dataset from %s' % path_images)
     #########################################################################################################
@@ -162,7 +176,10 @@ def classify_and_extract_attack():
 
     df_origin_classification = read_csv(path_input_classes)
 
-    features = read_np(filename=path_input_features)
+    if not args.separate_outputs:
+        features = read_np(filename=path_input_features)
+    else:
+        features = None
     #########################################################################################################
 
     #########################################################################################################
@@ -221,36 +238,37 @@ def classify_and_extract_attack():
 
         for i, d in enumerate(data):
 
-            if args.attack_type in ['zoo']:  # HO TOLTO SPSA
+            if args.attack_type in ['zoo']:
                 im, height, width, name = d
 
             else:
                 im, name = d
 
             if attack.must_attack(filename=name):
+                # If attack must be run, else read the attacked image from the disk
+                if args.run_attack:
+                    # Generate attacked image with chosen attack algorithm
+                    start_attack = time.time()
+                    adv_perturbed_out = attack.run_attack(image=im[None, ...])
+                    end_attack = time.time()
+                    total_attack_time += (end_attack - start_attack)
 
-                # Generate attacked image with chosen attack algorithm
-                start_attack = time.time()
-                adv_perturbed_out = attack.run_attack(image=im[None, ...])
-                end_attack = time.time()
-                total_attack_time += (end_attack - start_attack)
+                    if args.attack_type in ['spsa', 'zoo']:
+                        print('\n\n***************%d/%d samples completed***************\n\n' % (i + 1, data.num_samples))
 
-                if args.attack_type in ['spsa', 'zoo']:
-                    print('\n\n***************%d/%d samples completed***************\n\n' % (i + 1, data.num_samples))
+                    # Denormalize image before saving to memory
+                    adv_perturbed_out = denormalize(adv_perturbed_out[0])
 
-                # Denormalize image before saving to memory
-                adv_perturbed_out = denormalize(adv_perturbed_out[0])
+                    # Clip before saving image to memory
+                    adv_perturbed_out[adv_perturbed_out < 0.0] = 0.0
+                    adv_perturbed_out[adv_perturbed_out > 1.0] = 1.0
 
-                # Clip before saving image to memory
-                adv_perturbed_out[adv_perturbed_out < 0.0] = 0.0
-                adv_perturbed_out[adv_perturbed_out > 1.0] = 1.0
+                    # Transform into numpy, permute and multiply by 255 (uint8)
+                    adv_perturbed_out = (adv_perturbed_out.permute(1, 2, 0).detach().cpu().numpy() * 255).astype('uint8')
 
-                # Transform into numpy, permute and multiply by 255 (uint8)
-                adv_perturbed_out = (adv_perturbed_out.permute(1, 2, 0).detach().cpu().numpy() * 255).astype('uint8')
-
-                # Save image as tiff (lossless compression)
-                save_image(image=adv_perturbed_out,
-                           filename=path_output_images_attack + os.path.splitext(name)[0] + '.tiff')
+                    # Save image as tiff (lossless compression)
+                    save_image(image=adv_perturbed_out,
+                               filename=path_output_images_attack + os.path.splitext(name)[0] + '.tiff')
 
                 # Read same image from memory
                 lossless_image = read_image(path_output_images_attack + os.path.splitext(name)[0] + '.tiff')
@@ -292,20 +310,38 @@ def classify_and_extract_attack():
                 writer.writerow(out_class)
 
                 # Extract features using pre-trained model
-                features[i, :] = model.feature_extraction(sample=(lossless_image, name))
+                if not args.separate_outputs:
+                    features[i, :] = model.feature_extraction(sample=(lossless_image, name))
+                else:
+                    cnn_features = model.feature_extraction(sample=(lossless_image, name))
+                    cnn_features = cnn_features.reshape((1,
+                                                         cnn_features.shape[1],
+                                                         cnn_features.shape[2],
+                                                         cnn_features.shape[0]))
+                    save_np(npy=cnn_features,
+                            filename=path_output_features_attack_dir + str(i) + '.npy')
+
+            # Copy the features of non-attacked images, if we are in the separate output scenario (e.g., ACF)
+            elif args.separate_outputs:
+                shutil.copy(path_input_features_dir + str(i) + '.npy',
+                            path_output_features_attack_dir + str(i) + '.npy')
 
             if (i + 1) % 100 == 0 and args.attack_type not in ['spsa', 'zoo']:
                 sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
                 sys.stdout.flush()
 
     # Save all extracted features (attacked and non-attacked ones)
-    save_np(npy=features, filename=path_output_features_attack)
+    if not args.separate_outputs:
+        save_np(npy=features, filename=path_output_features_attack)
 
     end = time.time()
 
     print('\n\nAttack, classification and feature extraction completed in %f seconds.' % (end - start))
     print('Attack completed in %f seconds.' % total_attack_time)
-    print('Saved features numpy in ==> %s' % path_output_features_attack)
+    if not args.separate_outputs:
+        print('Saved features numpy in ==> %s' % path_output_features_attack)
+    else:
+        print('Saved features numpy in ==> %s' % path_output_features_attack_dir)
     print('Saved classification file in ==> %s' % path_output_classes_attack)
     #########################################################################################################
 

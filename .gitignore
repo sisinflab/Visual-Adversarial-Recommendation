@@ -38,7 +38,7 @@ lpips_results/*
 /chr/*
 /cndcg/*
 /FinalRankSys/*
-/LatexTables(*
+/LatexTables/*
 /log/*
 data.zip
 

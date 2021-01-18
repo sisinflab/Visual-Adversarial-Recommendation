@@ -1,15 +1,13 @@
 import math
 import time
-import utils.read as read
 import utils.write as write
-import pandas as pd
 import numpy as np
 import tensorflow as tf
 import pickle
-import os
 
 from recommendation.recommender_models.VBPR import VBPR
 from recommendation.recommender_models.DVBPR import DVBPR
+from recommendation.recommender_models.ACF import ACF
 from recommendation.recommender_models.AMR import AMR
 from recommendation.recommender_dataset.Dataset import Dataset
 from config.configs import *
@@ -37,13 +35,13 @@ class Solver:
                 self.sess.run(self.model.assign_image, feed_dict={self.model.init_image: self.dataset.emb_image})
             elif self.model_name == 'DVBPR':
                 self.model = DVBPR(args, self.dataset.usz, self.dataset.isz)
+            elif self.model_name == 'ACF':
+                self.model = ACF(args, self.dataset)
             else:
                 raise NotImplemented('The model has not been implemented yet!')
+
         self.epoch = args.epoch
         self.verbose = args.verbose
-
-
-
         self.topk = args.topk
         self.weight_dir = '../' + args.weight_dir + '/'
         self.result_dir = '../' + args.result_dir + '/'
@@ -79,19 +77,6 @@ class Solver:
             except StopIteration:
                 break
 
-    def one_epoch_tf2(self):
-        loss = 0.0
-        steps = 0
-        generator = self.dataset.batch_generator()
-        while True:
-            try:
-                steps += 1
-                train_inputs = next(generator)
-                loss += self.model.train_step(*train_inputs)
-            except StopIteration:
-                break
-        return loss / steps
-
     def train(self):
         start_epoch = 0
         if self.adv:
@@ -99,24 +84,44 @@ class Solver:
 
         for i in range(start_epoch + 1, self.epoch + 1):
             start = time.time()
-
-            if self.model_name == 'DVBPR':
-                self.one_epoch_tf2()
-            else:
-                self.one_epoch()
+            self.one_epoch()
             if i % self.verbose == 0:
                 self.save(i)
             print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
 
-        if self.model_name == 'VBPR' or self.adv:
-            self.new_store_predictions(i)
-        else:
-            self.new_store_predictions_tf_2(i)
+        self.new_store_predictions(i)
+        self.save(i)
 
-        if self.model_name == 'VBPR' or self.adv:
-            self.save(i)
+    def train_tf2(self):
+        if self.model_name == 'DVBPR':
+            next_batch = self.dataset.next_triple_batch_pipeline()
         else:
-            self.save_tf_2(i)
+            next_batch = self.dataset.next_triple_batch()
+
+        steps = 0
+        loss = 0
+        it = 1
+        steps_per_epoch = len(self.dataset.pos_elements) // self.dataset.bsz
+
+        start_ep = time.time()
+
+        print('Start training... (TF2 VERSION)')
+        for batch in next_batch:
+            steps += 1
+            loss_batch = self.model.train_step(batch)
+            loss += loss_batch
+
+            # epoch is over
+            if steps == steps_per_epoch:
+                print('Epoch {0}/{1} in {2} secs.'.format(it, self.dataset.epochs, time.time() - start_ep))
+                start_ep = time.time()
+                it += 1
+                loss = 0
+                steps = 0
+
+        print('Training end... (TF2 VERSION)')
+        self.new_store_predictions_tf_2(it - 1)
+        self.save_tf_2(it - 1)
 
     def evaluate_rec_metrics(self, para):
         r, K = para
