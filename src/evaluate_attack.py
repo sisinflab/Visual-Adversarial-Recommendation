@@ -96,5 +96,5 @@ def evaluate_attack():
 
 
 if __name__ == '__main__':
-    evaluate_attack()
 
+    evaluate_attack()

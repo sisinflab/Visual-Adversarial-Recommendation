@@ -42,7 +42,7 @@ if __name__ == '__main__':
     solver = Solver(args)
     print(args)
     if args.adv == 0:
-        # I need to duplicate because it divide by two in the code
+        ## I need to duplicate because it divide by two in the code
         solver.epoch = solver.epoch*2
         solver.load()
 

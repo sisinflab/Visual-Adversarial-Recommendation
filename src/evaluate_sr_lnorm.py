@@ -51,7 +51,7 @@ def eval_sr_ln():
                              ('ATTACK', 'Features'),
                              ('ATTACK', 'Classes')])
 
-    # setting original parameters
+    ## setting original parameters
     params, path_images_original, path_classes_original, path_features_original = set_attack_paths(
         args=args,
         path_images_attack=path_images_original,

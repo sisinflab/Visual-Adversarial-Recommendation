@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
 
-    # attacks specific parameters
+    ## attacks specific parameters
     parser.add_argument('--eps', type=float, default=4.0)
     parser.add_argument('--it', type=int, default=1)
     parser.add_argument('--l', type=str, default='inf')

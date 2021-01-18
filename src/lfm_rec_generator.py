@@ -41,7 +41,7 @@ if __name__ == '__main__':
     result_directory = '../rec_results/{0}/{1}'.format(args.dataset, args.experiment_name)
     weight_directory = '../rec_model_weights/{0}/{1}'.format(args.dataset, args.experiment_name)
 
-    # Read Dataset
+    ## Read Dataset
     df_train = pd.read_csv(dataset_directory + '/trainingset.tsv', header=None, sep='\t')
     df_test = pd.read_csv(dataset_directory + '/testset.tsv', header=None, sep='\t')
     features = read_np('{0}/{1}/features.npy'.format(dataset_directory, args.experiment_name))

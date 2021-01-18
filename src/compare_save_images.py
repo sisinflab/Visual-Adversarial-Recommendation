@@ -120,3 +120,4 @@ def compare_and_save_images():
 if __name__ == '__main__':
     compare_and_save_images()
 
+
