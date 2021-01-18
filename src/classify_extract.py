@@ -21,6 +21,7 @@ def parse_args():
     parser.add_argument('--model_dir', type=str, default='free_adv')
     parser.add_argument('--model_file', type=str, default='model_best.pth.tar')
     parser.add_argument('--drop_layers', type=int, default=2, help='layers to drop for feature model')
+    parser.add_argument('--extract', type=bool, default=False, help='whether to extract features or not')
     parser.add_argument('--resize', type=int, default=224,
                         help='0 --> no resize, otherwise resize to (resize, resize)')
     parser.add_argument('--separate_outputs', type=bool, default=True,
@@ -69,10 +70,11 @@ def classify_and_extract():
 
         model = Model(model=models.resnet50(pretrained=True), gpu=args.gpu, model_name='ResNet50')
 
-    if not os.path.exists(path_output_features_dir):
-        os.makedirs(path_output_features_dir)
+    if args.extract:
+        if not os.path.exists(path_output_features_dir):
+            os.makedirs(path_output_features_dir)
 
-    model.set_out_layer(drop_layers=args.drop_layers)
+        model.set_out_layer(drop_layers=args.drop_layers)
     #########################################################################################################
     #
     #########################################################################################################
@@ -99,10 +101,9 @@ def classify_and_extract():
 
     df = pd.DataFrame([], columns={'ImageID', 'ClassStr', 'ClassNum', 'Prob'})
 
-    if not args.separate_outputs:
-        features = np.empty(shape=(data.num_samples, 2048))
-    else:
-        features = None
+    if args.extract:
+        if not args.separate_outputs:
+            features = np.empty(shape=(data.num_samples, 2048))
     #########################################################################################################
 
     #########################################################################################################
@@ -114,16 +115,17 @@ def classify_and_extract():
     for i, d in enumerate(data):
         out_class = model.classification(list_classes=img_classes, sample=d)
 
-        if not args.separate_outputs:
-            features[i, :] = model.feature_extraction(sample=d)
-        else:
-            cnn_features = model.feature_extraction(sample=d)
-            cnn_features = cnn_features.reshape((1,
-                                                 cnn_features.shape[1],
-                                                 cnn_features.shape[2],
-                                                 cnn_features.shape[0]))
-            save_np(npy=cnn_features,
-                    filename=path_output_features_dir + str(i) + '.npy')
+        if args.extract:
+            if not args.separate_outputs:
+                features[i, :] = model.feature_extraction(sample=d)
+            else:
+                cnn_features = model.feature_extraction(sample=d)
+                cnn_features = cnn_features.reshape((1,
+                                                     cnn_features.shape[1],
+                                                     cnn_features.shape[2],
+                                                     cnn_features.shape[0]))
+                save_np(npy=cnn_features,
+                        filename=path_output_features_dir + str(i) + '.npy')
         df = df.append(out_class, ignore_index=True)
 
         if (i + 1) % 100 == 0:
@@ -132,16 +134,19 @@ def classify_and_extract():
 
     write_csv(df=df, filename=path_output_classes)
 
-    if not args.separate_outputs:
-        save_np(npy=features, filename=path_output_features)
+    if args.extract:
+        if not args.separate_outputs:
+            save_np(npy=features, filename=path_output_features)
 
     end = time.time()
 
     print('\n\nClassification and feature extraction completed in %f seconds.' % (end - start))
-    if not args.separate_outputs:
-        print('Saved features numpy in ==> %s' % path_output_features)
-    else:
-        print('Saved features numpy in ==> %s' % path_output_features_dir)
+
+    if args.extract:
+        if not args.separate_outputs:
+            print('Saved features numpy in ==> %s' % path_output_features)
+        else:
+            print('Saved features numpy in ==> %s' % path_output_features_dir)
     print('Saved classification file in ==> %s' % path_output_classes)
     #########################################################################################################
 
