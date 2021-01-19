@@ -11,6 +11,7 @@ class Dataset:
         path = '../data/' + args.dataset + '/'
         self.epochs = args.epoch
         self.model_name = args.model
+        print(self.model_name)
         self.dataset = args.dataset
         self.f_pos = path + 'trainingset.tsv'
         self.df_train = pd.read_csv(self.f_pos, header=None, sep='\t')
