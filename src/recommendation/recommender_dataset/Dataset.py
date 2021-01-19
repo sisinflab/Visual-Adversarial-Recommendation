@@ -11,7 +11,6 @@ class Dataset:
         path = '../data/' + args.dataset + '/'
         self.epochs = args.epoch
         self.model_name = args.model
-        print(self.model_name)
         self.dataset = args.dataset
         self.f_pos = path + 'trainingset.tsv'
         self.df_train = pd.read_csv(self.f_pos, header=None, sep='\t')
@@ -23,6 +22,8 @@ class Dataset:
             self.emb_image = np.load(self.f_feature)
             self.emb_image = self.emb_image / np.max(np.abs(self.emb_image))
             self.fsz = self.emb_image.shape[1]
+        elif self.model_name == 'DVBPR':
+            pass
         elif self.model_name == 'ACF':
             self.f_feature = '../data/' + args.dataset + '/' + args.experiment_name + '/features/'
             emb_image = np.load(self.f_feature + '0.npy')
