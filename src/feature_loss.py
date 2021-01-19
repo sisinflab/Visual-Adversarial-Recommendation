@@ -16,8 +16,10 @@ def parse_args():
                         help='dataset path: amazon_men, amazon_women, tradesy')
     parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
-    parser.add_argument('--separate_outputs', type=bool, default=True,
+    parser.add_argument('--separate_outputs', type=bool, default=False,
                         help='whether to store (or not) feature numpy separately')
+    parser.add_argument('--additional_features_args', nargs='?', type=str, default='',
+                        help='additional args to append to features filename')
 
     ## attacks specific parameters
     parser.add_argument('--eps', type=float, default=4.0)
@@ -59,6 +61,9 @@ def evaluate_feature_loss():
         path_classes_attack=path_input_classes_attack,
         path_features_attack=path_input_features_attack
     )
+
+    path_input_features = os.path.splitext(path_input_features)[0] + args.additional_features_args + '.npy'
+    path_input_features_attack = os.path.splitext(path_input_features_attack)[0] + args.additional_features_args + '.npy'
 
     if not args.separate_outputs:
         original_features = read_np(filename=path_input_features)
