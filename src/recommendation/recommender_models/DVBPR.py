@@ -22,7 +22,7 @@ class DVBPR:
         self.lambda2 = self.regs[1]
         self.num_users = num_users
         self.num_items = num_items
-        self.lr = float(args.lr[1:-1])
+        self.lr = args.lr[0]
         self._initialize_variables()
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.lr)
 
