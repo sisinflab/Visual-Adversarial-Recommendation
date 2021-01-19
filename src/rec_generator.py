@@ -1,7 +1,6 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-# lambdas for DVBPR [1.0, 0.001]
 # lr for VBPR, AMR [0.01,1e-4,1e-3]
 
 import argparse
@@ -19,11 +18,11 @@ parser.add_argument('--emb1_K', type=int, default=64, help='size of embeddings')
 parser.add_argument('--layers_component', type=list, default=[64, 1], help='list component level layers for ACF')
 parser.add_argument('--layers_item', type=list, default=[64, 1], help='list item level layers for ACF')
 parser.add_argument('--batch_size', type=int, default=512, help='batch size')
-parser.add_argument('--lr', type=list, default=[1e-4], help='learning rate')
-parser.add_argument('--verbose', type=int, default=1, help='vebrosity and Checkpoint epoch')
+parser.add_argument('--lr', nargs='+', type=float, default=[1e-4], help='learning rate')
+parser.add_argument('--verbose', type=int, default=1, help='verbosity and Checkpoint epoch')
 parser.add_argument('--epoch', type=int, default=2, help='epochs')
 # parser.add_argument('--regs', nargs='?', default='[1e-1,1e-3,0]', help='lambdas for regularization')
-parser.add_argument('--regs', type=list, default=[0.001], help='lambdas for regularization')
+parser.add_argument('--regs', nargs='+', type=float, default=[0.001], help='lambdas for regularization')
 parser.add_argument('--lmd', type=float, default=0.1,
                     help='lambda for balance the common loss and adversarial loss')
 parser.add_argument('--keep_prob', type=float, default=0.6, help='keep probability of dropout layers')
