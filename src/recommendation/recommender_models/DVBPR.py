@@ -17,7 +17,7 @@ class DVBPR:
     def __init__(self, args, num_users, num_items):
         self.dataset = args.dataset
         self.emb_K = args.emb1_K
-        self.regs = args.regs.list
+        self.regs = args.regs
         self.lambda1 = self.regs[0]
         self.lambda2 = self.regs[1]
         self.num_users = num_users
