@@ -4,6 +4,7 @@ import utils.write as write
 import numpy as np
 import tensorflow as tf
 import pickle
+import datetime
 
 from recommendation.recommender_models.VBPR import VBPR
 from recommendation.recommender_models.DVBPR import DVBPR
@@ -90,7 +91,9 @@ class Solver:
                     self.save(i)
                 else:
                     self.save_tf_2(i)
-            print('Epoch {0}/{1} in {2} secs.'.format(i, self.epoch, time.time() - start))
+            print('Epoch {0}/{1} in {2}.'.format(i,
+                                                 self.epoch,
+                                                 datetime.timedelta(seconds=(time.time() - start))))
 
         self.new_store_predictions(i)
         self.save(i)
@@ -116,7 +119,9 @@ class Solver:
 
             # epoch is over
             if steps == steps_per_epoch:
-                print('Epoch {0}/{1} in {2} secs.'.format(it, self.dataset.epochs, time.time() - start_ep))
+                print('Epoch {0}/{1} in {2}.'.format(it,
+                                                     self.dataset.epochs,
+                                                     datetime.timedelta(seconds=(time.time() - start_ep))))
                 if it % self.verbose == 0:
                     self.save_tf_2(it)
                 start_ep = time.time()
