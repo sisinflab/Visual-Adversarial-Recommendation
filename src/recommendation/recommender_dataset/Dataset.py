@@ -27,7 +27,7 @@ class Dataset:
             emb_image = np.load(self.f_feature + '0.npy')
             self.emb_image_shape = emb_image.shape
         else:
-            raise NotImplemented('Model not implemented yet!')
+            raise NotImplementedError('Model not implemented yet!')
 
         self.pos = np.loadtxt(self.f_pos, dtype=np.int)
         self.usz, self.isz = np.max(self.pos, 0) + 1
