@@ -38,7 +38,7 @@ class Solver:
             elif self.model_name == 'ACF':
                 self.model = ACF(args, self.dataset)
             else:
-                raise NotImplemented('The model has not been implemented yet!')
+                raise NotImplementedError('The model has not been implemented yet!')
 
         self.epoch = args.epoch
         self.verbose = args.verbose
