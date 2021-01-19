@@ -119,9 +119,10 @@ class Solver:
 
             # epoch is over
             if steps == steps_per_epoch:
-                print('Epoch {0}/{1} in {2}.'.format(it,
-                                                     self.dataset.epochs,
-                                                     datetime.timedelta(seconds=(time.time() - start_ep))))
+                print('Epoch {0}/{1} in {2}, loss: {3}.'.format(it,
+                                                                self.dataset.epochs,
+                                                                datetime.timedelta(seconds=(time.time() - start_ep)),
+                                                                loss / steps_per_epoch))
                 if it % self.verbose == 0:
                     self.save_tf_2(it)
                 start_ep = time.time()
