@@ -211,7 +211,7 @@ class ACF:
 
         return opt_loss.numpy()
 
-    def predict_all(self):
+    def prediction_all(self):
         all_pos_u = [{'u': i, 'u_pos': self.data.inter[i]} for i in range(self.data.usz)]
 
         with concurrent.futures.ThreadPoolExecutor() as executor:

@@ -9,9 +9,7 @@ output_classes_path = original + 'classes.csv'
 features_path = original + 'features.npy'
 
 # NEW EXPERIMENTS
-new_data_path = '../new_data/{0}/'
-new_original = new_data_path + 'original/'
-features_DVBPR_path = new_original + 'features_DVBRP.npy'
+features_DVBPR_path = original + 'features_DVBRP.npy'
 
 # RESULTS
 results_path = '../results/rec_results/{0}_top{1}_ep{2}_{3}.tsv'
