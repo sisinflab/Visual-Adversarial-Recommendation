@@ -34,6 +34,7 @@ class Dataset:
         self.pos = np.loadtxt(self.f_pos, dtype=np.int)
         self.usz, self.isz = np.max(self.pos, 0)[0] + 1, np.max(self.pos, 0)[1] + 1
         self.pos_elements = pd.read_csv(self.f_pos, sep='\t', header=None)
+        print(self.pos_elements.columns)
         self.pos_elements.columns = ['u', 'i']
         self.pos_elements.u = self.pos_elements.u.astype(int)
         self.pos_elements.i = self.pos_elements.i.astype(int)
