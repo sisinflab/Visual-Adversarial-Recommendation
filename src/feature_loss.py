@@ -16,6 +16,8 @@ def parse_args():
                         help='dataset path: amazon_men, amazon_women, tradesy')
     parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
+    parser.add_argument('--separate_outputs', type=bool, default=True,
+                        help='whether to store (or not) feature numpy separately')
 
     ## attacks specific parameters
     parser.add_argument('--eps', type=float, default=4.0)
@@ -36,18 +38,18 @@ def evaluate_feature_loss():
         path_input_images_attack, path_input_features_attack, path_input_classes_attack, \
             path_input_features = read_config(
                 sections_fields=[('DEFENSE', 'ImagesAttack'),
-                                 ('DEFENSE', 'FeaturesAttack'),
+                                 ('DEFENSE', 'FeaturesAttack') if not args.separate_outputs else ('DEFENSE', 'FeaturesDirAttack'),
                                  ('DEFENSE', 'ClassesAttack'),
-                                 ('DEFENSE', 'Features')])
+                                 ('DEFENSE', 'Features') if not args.separate_outputs else ('DEFENSE', 'FeaturesDir')])
         path_input_features = path_input_features.format(args.dataset, args.model_dir)
 
     else:
         path_input_images_attack, path_input_features_attack, path_input_classes_attack, \
             path_input_features = read_config(
                 sections_fields=[('ATTACK', 'Images'),
-                                 ('ATTACK', 'Features'),
+                                 ('ATTACK', 'Features') if not args.separate_outputs else ('ATTACK', 'FeaturesDir'),
                                  ('ATTACK', 'Classes'),
-                                 ('ORIGINAL', 'Features')])
+                                 ('ORIGINAL', 'Features') if not args.separate_outputs else ('ORIGINAL', 'FeaturesDir')])
 
         path_input_features = path_input_features.format(args.dataset)
 
@@ -58,8 +60,9 @@ def evaluate_feature_loss():
         path_features_attack=path_input_features_attack
     )
 
-    original_features = read_np(filename=path_input_features)
-    attacked_features = read_np(filename=path_input_features_attack)
+    if not args.separate_outputs:
+        original_features = read_np(filename=path_input_features)
+        attacked_features = read_np(filename=path_input_features_attack)
 
     avg_mse_features_loss = 0.0
     avg_rmse_features_loss = 0.0
@@ -78,11 +81,18 @@ def evaluate_feature_loss():
 
         for index, row in df_attacked_classification.iterrows():
 
-            current_mse_features_loss = mse(im1=original_features[int(row["ImageID"]), :],
-                                            im2=attacked_features[int(row["ImageID"]), :])
-            current_rmse_features_loss = rmse(im1=original_features[int(row["ImageID"]), :],
-                                              im2=attacked_features[int(row["ImageID"]), :])
-
+            if not args.separate_outputs:
+                current_mse_features_loss = mse(im1=original_features[int(row["ImageID"]), :],
+                                                im2=attacked_features[int(row["ImageID"]), :])
+                current_rmse_features_loss = rmse(im1=original_features[int(row["ImageID"]), :],
+                                                  im2=attacked_features[int(row["ImageID"]), :])
+            else:
+                original_feature = read_np(path_input_features + str(row["ImageID"]) + '.npy')
+                attacked_feature = read_np(path_input_features_attack + str(row["ImageID"]) + '.npy')
+                current_mse_features_loss = mse(im1=original_feature,
+                                                im2=attacked_feature)
+                current_rmse_features_loss = rmse(im1=original_feature,
+                                                  im2=attacked_feature)
             writer.writerow({
                 'ImageID': row['ImageID'],
                 'MSE': current_mse_features_loss,

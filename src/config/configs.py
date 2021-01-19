@@ -9,7 +9,7 @@ output_classes_path = original + 'classes.csv'
 features_path = original + 'features.npy'
 
 # DVBPR additional paths
-features_DVBPR_path = '../data/{0}/features_DVBRP.npy'
+features_DVBPR_path = '../data/{0}/features.npy'
 images_DVBPR_path = '../data/{0}/images/'
 
 # RESULTS
