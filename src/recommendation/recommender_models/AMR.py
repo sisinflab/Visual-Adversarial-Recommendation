@@ -4,7 +4,7 @@ import random
 
 random.seed(0)
 np.random.seed(0)
-tf.random.set_random_seed(0)
+tf.compat.v1.random.set_random_seed(0)
 
 
 class AMR:

@@ -9,7 +9,7 @@ import os
 
 random.seed(0)
 np.random.seed(0)
-tf.random.set_random_seed(0)
+tf.compat.v1.random.set_random_seed(0)
 logging.disable(logging.WARNING)
 
 
