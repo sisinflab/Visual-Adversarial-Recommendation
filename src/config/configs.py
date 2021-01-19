@@ -1,6 +1,6 @@
 # OLD EXPERIMENTS
 data_path = '../data/{0}/'
-classes_path = '../data/imagenet_classes.txt'
+classes_path = '../../data/imagenet_classes.txt'
 training_path = data_path + 'trainingset.tsv'
 test_path = data_path + 'testset.tsv'
 original = data_path + 'original/'
