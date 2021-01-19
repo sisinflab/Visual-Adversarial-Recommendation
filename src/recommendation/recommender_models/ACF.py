@@ -14,8 +14,8 @@ class ACF:
     def __init__(self, args, dataset):
         self.data = dataset
         self.emb_K = args.emb1_K
-        self.regs = float(args.regs[1:-1])
-        self.lr = float(args.lr[1:-1])
+        self.regs = args.regs[0]
+        self.lr = args.lr[0]
         self.num_users = dataset.usz
         self.num_items = dataset.isz
 

@@ -18,8 +18,8 @@ class DVBPR:
         self.dataset = args.dataset
         self.emb_K = args.emb1_K
         self.regs = args.regs
-        self.lambda1 = float(self.regs[1:-1].split(',')[0])
-        self.lambda2 = float(self.regs[1:-1].split(',')[1])
+        self.lambda1 = self.regs[0]
+        self.lambda2 = self.regs[1]
         self.num_users = num_users
         self.num_items = num_items
         self.lr = float(args.lr[1:-1])
