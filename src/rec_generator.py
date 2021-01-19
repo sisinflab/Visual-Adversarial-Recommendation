@@ -12,7 +12,7 @@ parser.add_argument('--dataset', nargs='?', default='tradesy',
 parser.add_argument('--experiment_name', nargs='?',
                     default='original',
                     help='original, fgsm_***, cw_***, pgd_***')
-parser.add_argument('--model', nargs='?', default='ACF',
+parser.add_argument('--model', nargs='?', default='DVBPR',
                     help='recommender models: VBPR, DVBPR')
 parser.add_argument('--emb1_K', type=int, default=64, help='size of embeddings')
 parser.add_argument('--layers_component', type=list, default=[64, 1], help='list component level layers for ACF')
@@ -40,7 +40,7 @@ args = parser.parse_args()
 
 import tensorflow as tf
 if args.model in ['DVBPR', 'ACF']:
-    tf.enable_eager_execution()
+    tf.compat.v1.enable_eager_execution()
 
 from recommendation.recommender_utils.Solver import Solver
 from time import time
