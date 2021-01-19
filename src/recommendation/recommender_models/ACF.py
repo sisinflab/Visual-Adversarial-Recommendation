@@ -212,7 +212,7 @@ class ACF:
         return opt_loss.numpy()
 
     def prediction_all(self):
-        all_pos_u = [{'u': i, 'u_pos': self.data.inter[i]} for i in range(self.data.usz)]
+        all_pos_u = [{'u': i, 'u_pos': list(self.data.inter[i])} for i in range(self.data.usz)]
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             output = executor.map(self._calculate_beta_alpha, all_pos_u)
