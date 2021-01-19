@@ -12,6 +12,7 @@ class Dataset:
         self.epochs = args.epoch
         self.model_name = args.model
         self.dataset = args.dataset
+        self.experiment_name = '{0}/{1}'.format(self.dataset, args.experiment_name)
         self.f_pos = path + 'trainingset.tsv'
         self.df_train = pd.read_csv(self.f_pos, header=None, sep='\t')
         self.test = path + 'testset.tsv'
@@ -25,7 +26,7 @@ class Dataset:
         elif self.model_name == 'DVBPR':
             pass
         elif self.model_name == 'ACF':
-            self.f_feature = '../data/' + args.dataset + '/' + args.experiment_name + '/features/'
+            self.f_feature = '../data/' + self.experiment_name + '/features/'
             emb_image = np.load(self.f_feature + '0.npy')
             self.emb_image_shape = emb_image.shape
         else:
@@ -58,8 +59,8 @@ class Dataset:
         return u, i, i_neg
 
     def read_images_triple(self, user, pos, neg):
-        im_pos = Image.open(images_path.format(self.dataset) + str(pos.numpy()) + '.jpg')
-        im_neg = Image.open(images_path.format(self.dataset) + str(neg.numpy()) + '.jpg')
+        im_pos = Image.open(images_DVBPR_path.format(self.experiment_name) + str(pos.numpy()) + '.jpg')
+        im_neg = Image.open(images_DVBPR_path.format(self.experiment_name) + str(neg.numpy()) + '.jpg')
 
         try:
             im_pos.load()

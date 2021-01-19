@@ -16,6 +16,7 @@ logging.disable(logging.WARNING)
 class DVBPR:
     def __init__(self, args, num_users, num_items):
         self.dataset = args.dataset
+        self.experiment_name = '{0}/{1}'.format(self.dataset, args.experiment_name)
         self.emb_K = args.emb1_K
         self.regs = args.regs
         self.lambda1 = self.regs[0]
@@ -49,7 +50,7 @@ class DVBPR:
         # load all images and calculate phi for each of them
         # assign phi to Phi to get the overall Phi vector
         # calculate the prediction for all users-items
-        images_list = os.listdir(images_path.format(self.dataset))
+        images_list = os.listdir(images_DVBPR_path.format(self.experiment_name))
         images_list.sort(key=lambda x: int(x.split(".")[0]))
         for index, item in enumerate(images_list):
             im = Image.open(images_path.format(self.dataset) + item)

@@ -10,7 +10,7 @@ parser.add_argument('--gpu', type=int, default=0)
 parser.add_argument('--dataset', nargs='?', default='tradesy',
                     help='dataset path')
 parser.add_argument('--experiment_name', nargs='?',
-                    default='original',
+                    default='fgsm_774_770_eps8.0_it1_linf_XX',
                     help='original, fgsm_***, cw_***, pgd_***')
 parser.add_argument('--model', nargs='?', default='DVBPR',
                     help='recommender models: VBPR, DVBPR')
@@ -22,7 +22,7 @@ parser.add_argument('--lr', nargs='+', type=float, default=[1e-4], help='learnin
 parser.add_argument('--verbose', type=int, default=1, help='verbosity and Checkpoint epoch')
 parser.add_argument('--epoch', type=int, default=2, help='epochs')
 # parser.add_argument('--regs', nargs='?', default='[1e-1,1e-3,0]', help='lambdas for regularization')
-parser.add_argument('--regs', nargs='+', type=float, default=[0.001], help='lambdas for regularization')
+parser.add_argument('--regs', nargs='+', type=float, default=[1, 0.001], help='lambdas for regularization')
 parser.add_argument('--lmd', type=float, default=0.1,
                     help='lambda for balance the common loss and adversarial loss')
 parser.add_argument('--keep_prob', type=float, default=0.6, help='keep probability of dropout layers')

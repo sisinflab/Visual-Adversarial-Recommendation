@@ -21,7 +21,7 @@ class Solver:
         self.experiment_name = args.experiment_name
         self.adv = args.adv
         self.model_name = args.model
-        if self.adv:
+        if self.adv and self.model_name not in ['DVBPR', 'ACF']:
             self.model = AMR(args, self.dataset.usz, self.dataset.isz, self.dataset.fsz)
             self.sess = tf.compat.v1.Session()
             self.sess.run(tf.compat.v1.global_variables_initializer())
@@ -65,7 +65,7 @@ class Solver:
 
         self.experiment_name = '{0}/{1}'.format(self.dataset_name, self.experiment_name)
 
-        if self.adv:
+        if self.adv and self.model_name not in ['DVBPR', 'ACF']:
             self.load()
 
     def one_epoch(self):
@@ -216,7 +216,7 @@ class Solver:
         predictions = self.model.prediction_all().numpy()
 
         if self.model_name == 'DVBPR':
-            np.save(features_DVBPR_path.format(self.dataset_name), self.model.Phi)
+            np.save(features_DVBPR_path.format(self.experiment_name), self.model.Phi)
 
         print("Storing results...")
 

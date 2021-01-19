@@ -8,8 +8,9 @@ images_path = original + 'images/'
 output_classes_path = original + 'classes.csv'
 features_path = original + 'features.npy'
 
-# NEW EXPERIMENTS
-features_DVBPR_path = original + 'features_DVBRP.npy'
+# DVBPR additional paths
+features_DVBPR_path = '../data/{0}/features_DVBRP.npy'
+images_DVBPR_path = '../data/{0}/images/'
 
 # RESULTS
 results_path = '../results/rec_results/{0}_top{1}_ep{2}_{3}.tsv'
