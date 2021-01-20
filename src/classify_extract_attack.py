@@ -66,7 +66,7 @@ def parse_args():
                         help='whether to store (or not) feature numpy separately')
     parser.add_argument('--run_attack', type=bool, default=False,
                         help='whether to run the attack, or recover the attacked image from the disk')
-    parser.add_argument('--additional_features_args', type=str, default='ACF',
+    parser.add_argument('--additional_features_args', type=str, default='',
                         help='additional arguments to add to features path (ACF for ACF features)')
 
     # attacks specific parameters
@@ -177,6 +177,9 @@ def classify_and_extract_attack():
         path_classes_attack=path_output_classes_attack,
         path_features_attack=path_output_features_attack if not args.separate_outputs else path_output_features_attack_dir
     )
+
+    if args.separate_outputs:
+        path_output_features_attack_dir = path_output_features_attack
 
     imgnet_classes = read_imagenet_classes_txt(path_classes)
 
