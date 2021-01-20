@@ -211,7 +211,7 @@ def set_attack_paths(args,
 
     path_images_attack = path_images_attack.format(*path_args)
     path_classes_attack = path_classes_attack.format(*path_args)
-    path_features_attack = path_features_attack.format(*path_args)
+    path_features_attack = path_features_attack.format(*path_args, args.additional_features_args)
 
     return params, path_images_attack, path_classes_attack, path_features_attack
 

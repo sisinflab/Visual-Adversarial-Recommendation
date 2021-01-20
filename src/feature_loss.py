@@ -18,7 +18,7 @@ def parse_args():
     parser.add_argument('--model_dir', type=str, default='free_adv')
     parser.add_argument('--separate_outputs', type=bool, default=False,
                         help='whether to store (or not) feature numpy separately')
-    parser.add_argument('--additional_features_args', nargs='?', type=str, default='',
+    parser.add_argument('--additional_features_args', nargs='?', type=str, default='DVBPR',
                         help='additional args to append to features filename')
 
     ## attacks specific parameters
@@ -43,7 +43,7 @@ def evaluate_feature_loss():
                                  ('DEFENSE', 'FeaturesAttack') if not args.separate_outputs else ('DEFENSE', 'FeaturesDirAttack'),
                                  ('DEFENSE', 'ClassesAttack'),
                                  ('DEFENSE', 'Features') if not args.separate_outputs else ('DEFENSE', 'FeaturesDir')])
-        path_input_features = path_input_features.format(args.dataset, args.model_dir)
+        path_input_features = path_input_features.format(args.dataset, args.model_dir, args.additional_features_args)
 
     else:
         path_input_images_attack, path_input_features_attack, path_input_classes_attack, \
@@ -53,7 +53,7 @@ def evaluate_feature_loss():
                                  ('ATTACK', 'Classes'),
                                  ('ORIGINAL', 'Features') if not args.separate_outputs else ('ORIGINAL', 'FeaturesDir')])
 
-        path_input_features = path_input_features.format(args.dataset)
+        path_input_features = path_input_features.format(args.dataset, args.additional_features_args)
 
     params, path_input_images_attack, path_input_classes_attack, path_input_features_attack = set_attack_paths(
         args=args,
@@ -61,9 +61,6 @@ def evaluate_feature_loss():
         path_classes_attack=path_input_classes_attack,
         path_features_attack=path_input_features_attack
     )
-
-    path_input_features = os.path.splitext(path_input_features)[0] + args.additional_features_args + '.npy'
-    path_input_features_attack = os.path.splitext(path_input_features_attack)[0] + args.additional_features_args + '.npy'
 
     if not args.separate_outputs:
         original_features = read_np(filename=path_input_features)

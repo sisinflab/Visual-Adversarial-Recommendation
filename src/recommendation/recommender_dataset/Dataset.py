@@ -18,7 +18,7 @@ class Dataset:
         self.test = path + 'testset.tsv'
         self.bsz = args.batch_size
 
-        if self.model_name not in ['DVBPR', 'ACF']:
+        if self.model_name not in ['DVBPR', 'ACF', 'ACFFull']:
             self.f_feature = path + args.experiment_name + '/features.npy'
             self.emb_image = np.load(self.f_feature)
             self.emb_image = self.emb_image / np.max(np.abs(self.emb_image))
@@ -29,6 +29,13 @@ class Dataset:
             self.f_feature = '../data/' + self.experiment_name + '/features/'
             emb_image = np.load(self.f_feature + '0.npy')
             self.emb_image_shape = emb_image.shape
+        elif self.model_name == 'ACFFull':
+            self.f_feature = path + args.experiment_name + '/features_ACF.npy'
+            self.emb_image = np.load(self.f_feature)
+            self.emb_image = self.emb_image / np.max(np.abs(self.emb_image))
+            self.emb_image = self.emb_image.reshape(self.emb_image.shape[0],
+                                                    self.emb_image.shape[1] * self.emb_image.shape[2],
+                                                    self.emb_image.shape[3])
         else:
             raise NotImplementedError('Model not implemented yet!')
 

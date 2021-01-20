@@ -10,9 +10,9 @@ parser.add_argument('--gpu', type=int, default=0)
 parser.add_argument('--dataset', nargs='?', default='tradesy',
                     help='dataset path')
 parser.add_argument('--experiment_name', nargs='?',
-                    default='fgsm_774_770_eps8.0_it1_linf_XX',
+                    default='original',
                     help='original, fgsm_***, cw_***, pgd_***')
-parser.add_argument('--model', nargs='?', default='DVBPR',
+parser.add_argument('--model', nargs='?', default='ACF',
                     help='recommender models: VBPR, DVBPR')
 parser.add_argument('--emb1_K', type=int, default=64, help='size of embeddings')
 parser.add_argument('--layers_component', type=list, default=[64, 1], help='list component level layers for ACF')

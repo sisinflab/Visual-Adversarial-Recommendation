@@ -26,6 +26,8 @@ def parse_args():
                         help='0 --> no resize, otherwise resize to (resize, resize)')
     parser.add_argument('--separate_outputs', type=bool, default=False,
                         help='whether to store (or not) feature numpy separately')
+    parser.add_argument('--add_args_features', type=str, default='',
+                        help='additional arguments to add to features path (ACF for ACF features)')
 
     return parser.parse_args()
 
@@ -48,7 +50,7 @@ def classify_and_extract():
 
         path_output_classes, path_output_features, path_output_features_dir = \
             path_output_classes.format(args.dataset, args.model_dir), \
-            path_output_features.format(args.dataset, args.model_dir), \
+            path_output_features.format(args.dataset, args.model_dir, args.add_args_features), \
             path_output_features_dir.format(args.dataset, args.model_dir)
 
         model_path = model_path.format(args.model_dir, args.model_file)
@@ -65,7 +67,7 @@ def classify_and_extract():
                                  ('ALL', 'ModelPath')])
         path_output_classes, path_output_features, path_output_features_dir = \
             path_output_classes.format(args.dataset), \
-            path_output_features.format(args.dataset), \
+            path_output_features.format(args.dataset, args.add_args_features), \
             path_output_features_dir.format(args.dataset)
 
         model = Model(model=models.resnet50(pretrained=True), gpu=args.gpu, model_name='ResNet50')

@@ -9,6 +9,7 @@ import datetime
 from recommendation.recommender_models.VBPR import VBPR
 from recommendation.recommender_models.DVBPR import DVBPR
 from recommendation.recommender_models.ACF import ACF
+from recommendation.recommender_models.ACFFull import ACFFull
 from recommendation.recommender_models.AMR import AMR
 from recommendation.recommender_dataset.Dataset import Dataset
 from config.configs import *
@@ -21,7 +22,7 @@ class Solver:
         self.experiment_name = args.experiment_name
         self.adv = args.adv
         self.model_name = args.model
-        if self.adv and self.model_name not in ['DVBPR', 'ACF']:
+        if self.adv and self.model_name not in ['DVBPR', 'ACF', 'ACFFull']:
             self.model = AMR(args, self.dataset.usz, self.dataset.isz, self.dataset.fsz)
             self.sess = tf.compat.v1.Session()
             self.sess.run(tf.compat.v1.global_variables_initializer())
@@ -38,6 +39,8 @@ class Solver:
                 self.model = DVBPR(args, self.dataset.usz, self.dataset.isz)
             elif self.model_name == 'ACF':
                 self.model = ACF(args, self.dataset)
+            elif self.model_name == 'ACFFull':
+                self.model = ACFFull(args, self.dataset)
             else:
                 raise NotImplementedError('The model has not been implemented yet!')
 
@@ -65,7 +68,7 @@ class Solver:
 
         self.experiment_name = '{0}/{1}'.format(self.dataset_name, self.experiment_name)
 
-        if self.adv and self.model_name not in ['DVBPR', 'ACF']:
+        if self.adv and self.model_name not in ['DVBPR', 'ACF', 'ACFFull']:
             self.load()
 
     def one_epoch(self):
