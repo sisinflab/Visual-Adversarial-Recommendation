@@ -9,7 +9,7 @@ import logging
 
 from cnn.visual_attack.carlini_wagner_l2_std import CarliniWagnerL2Std
 from cnn.visual_attack.zoo_l2 import ZOOL2
-from cnn.visual_attack.spsa_no_clip import SPSANoClip
+# from cnn.visual_attack.spsa_no_clip import SPSANoClip
 from cnn.visual_attack.saliency_map_method_memory import SaliencyMapMethodMemory
 
 logging.disable(logging.WARNING)
@@ -82,11 +82,11 @@ class VisualAttack:
             print("Batch size set to: %d" % self.batch_size)
             # self.attack_op = ZOOL2(model=self.tf_model,
             #                        sess=self.sess)
-        elif self.attack_type == 'spsa':
-            print("\nSetting spsa attack")
-            self.batch_size = params["batch_size"]
-            print("Batch size set to: %d" % self.batch_size)
-            self.attack_op = SPSANoClip(model=self.cleverhans_model, sess=self.sess)
+        # elif self.attack_type == 'spsa':
+        #     print("\nSetting spsa attack")
+        #     self.batch_size = params["batch_size"]
+        #     print("Batch size set to: %d" % self.batch_size)
+        #     self.attack_op = SPSANoClip(model=self.cleverhans_model, sess=self.sess)
         else:
             raise NotImplementedError('Not implemented attack.')
 

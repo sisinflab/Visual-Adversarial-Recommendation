@@ -6,7 +6,7 @@ import logging
 import numpy as np
 import tensorflow as tf
 
-from cleverhans.attacks.attack import Attack
+# from cleverhans.attacks.attack import Attack
 from cleverhans.compat import reduce_sum, reduce_max
 from cleverhans.model import CallableModelWrapper, Model, wrapper_warning_logits
 from cleverhans import utils

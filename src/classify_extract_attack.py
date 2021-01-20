@@ -67,7 +67,7 @@ def parse_args():
                         help='whether to store (or not) feature numpy separately')
     parser.add_argument('--run_attack', type=bool, default=True,
                         help='whether to run the attack, or recover the attacked image from the disk')
-    parser.add_argument('--add_args_features', type=str, default='',
+    parser.add_argument('--additional_features_args', type=str, default='',
                         help='additional arguments to add to features path (ACF for ACF features)')
 
     # attacks specific parameters
@@ -107,7 +107,7 @@ def classify_and_extract_attack():
 
         path_input_classes, path_input_features, path_input_features_dir = path_input_classes.format(
             args.dataset, args.model_dir), path_input_features.format(args.dataset, args.model_dir,
-                                                                      args.add_args_features), \
+                                                                      args.additional_features_args), \
             path_input_features_dir.format(args.dataset, args.model_dir)
 
         model_path = model_path.format(args.model_dir, args.model_file)
@@ -129,7 +129,7 @@ def classify_and_extract_attack():
                                  ('ATTACK', 'Classes')])
 
         path_input_classes, path_input_features, path_input_features_dir = path_input_classes.format(
-            args.dataset), path_input_features.format(args.dataset, args.add_args_features), path_input_features_dir.format(args.dataset)
+            args.dataset), path_input_features.format(args.dataset, args.additional_features_args), path_input_features_dir.format(args.dataset)
 
         model = Model(model=models.resnet50(pretrained=True), model_name='ResNet50')
 
