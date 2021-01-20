@@ -21,10 +21,10 @@ def parse_args():
     parser.add_argument('--model_dir', type=str, default='free_adv')
     parser.add_argument('--model_file', type=str, default='model_best.pth.tar')
     parser.add_argument('--drop_layers', type=int, default=2, help='layers to drop for feature model')
-    parser.add_argument('--extract', type=bool, default=False, help='whether to extract features or not')
+    parser.add_argument('--extract', type=bool, default=True, help='whether to extract features or not')
     parser.add_argument('--resize', type=int, default=224,
                         help='0 --> no resize, otherwise resize to (resize, resize)')
-    parser.add_argument('--separate_outputs', type=bool, default=True,
+    parser.add_argument('--separate_outputs', type=bool, default=False,
                         help='whether to store (or not) feature numpy separately')
 
     return parser.parse_args()
@@ -103,7 +103,7 @@ def classify_and_extract():
 
     if args.extract:
         if not args.separate_outputs:
-            features = np.empty(shape=(data.num_samples, 2048))
+            features = np.empty(shape=(data.num_samples, *model.output_shape))
     #########################################################################################################
 
     #########################################################################################################
@@ -117,7 +117,7 @@ def classify_and_extract():
 
         if args.extract:
             if not args.separate_outputs:
-                features[i, :] = model.feature_extraction(sample=d)
+                features[i] = model.feature_extraction(sample=d)
             else:
                 cnn_features = model.feature_extraction(sample=d)
                 cnn_features = cnn_features.reshape((1,

@@ -38,6 +38,7 @@ class Model:
         self.gpu = gpu
         self.model_path = model_path
         self.feature_model = None
+        self.output_shape = None
 
         if self.gpu != -1:
             use_cuda = torch.cuda.is_available()
@@ -119,6 +120,11 @@ class Model:
         if self.eval:
             self.feature_model.eval()
 
+        output = self.feature_model(torch.rand((1, 3, 224, 224)).to(self.device)).data.cpu().numpy()
+        output = output.reshape((output.shape[0], output.shape[2], output.shape[3], output.shape[1]))
+        output = np.squeeze(output)
+        self.output_shape = output.shape
+
     def classification(self, list_classes, sample):
         """
         This function runs classification given a model, the list of possible classes (as strings)
@@ -158,5 +164,6 @@ class Model:
 
         if self.feature_model:
             feature = np.squeeze(self.feature_model(image[None, ...].to(self.device)).data.cpu().numpy())
+            feature = feature.reshape(self.output_shape)
             return feature
 
