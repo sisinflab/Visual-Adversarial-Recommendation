@@ -135,7 +135,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
     parser.add_argument('--dataset', nargs='?', default='tradesy', help='amazon_men, amazon_women, amazon_sport')
     parser.add_argument('--metric', nargs='?', default='ncdcg', help='chr, ncdcg')
-    parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
+    # parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--topk', type=int, default=150, help='top k predictions to store before the evaluation')
     parser.add_argument('--origin', type=int, default=834, help='Target Item id. Useful for ncdcg')
     parser.add_argument('--analyzed_k', type=int, default=20, help='K under analysis has to be lesser than stored topk')
@@ -168,9 +168,10 @@ if __name__ == '__main__':
     result_dir = '../rec_results/'
     metric_dir = '../{0}/'.format(args.metric)
     dataset_name = args.dataset
-    experiment_name = args.experiment_name
+    # experiment_name = args.experiment_name
     prediction_files_path = result_dir + dataset_name
-    N = 50  # Top-N classes
+    # N = 50  # Top-N classes
+    N = args.analyzed_k
 
     assert args.analyzed_k < args.topk
 
@@ -264,7 +265,7 @@ if __name__ == '__main__':
                                        ignore_index=True)
 
     df_ordered.to_csv('{0}{1}/df_{2}_at_{3}.csv'.format(metric_dir, dataset_name, args.metric, args.analyzed_k),
-                      index=None)
+                      index=False)
 
     # sendmail('Finish {0} at Evaluation {1}@{2}'.format(dataset_name, args.metric, args.analyzed_k), 'Finished!')
 
