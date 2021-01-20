@@ -59,15 +59,14 @@ def parse_args():
     parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
     parser.add_argument('--model_file', type=str, default='model_best.pth.tar')
-    parser.add_argument('--extract', type=bool, default=False, help='whether to extract features or not')
     parser.add_argument('--drop_layers', type=int, default=2, help='layers to drop for feature model')
     parser.add_argument('--resize', type=int, default=224,
                         help='0 --> no resize, otherwise resize to (resize, resize)')
     parser.add_argument('--separate_outputs', type=bool, default=True,
                         help='whether to store (or not) feature numpy separately')
-    parser.add_argument('--run_attack', type=bool, default=True,
+    parser.add_argument('--run_attack', type=bool, default=False,
                         help='whether to run the attack, or recover the attacked image from the disk')
-    parser.add_argument('--additional_features_args', type=str, default='',
+    parser.add_argument('--additional_features_args', type=str, default='ACF',
                         help='additional arguments to add to features path (ACF for ACF features)')
 
     # attacks specific parameters
@@ -133,10 +132,9 @@ def classify_and_extract_attack():
 
         model = Model(model=models.resnet50(pretrained=True), model_name='ResNet50')
 
-    if args.extract:
-        if not os.path.exists(path_input_features_dir):
-            os.makedirs(path_input_features_dir)
-        model.set_out_layer(drop_layers=args.drop_layers)
+    if not os.path.exists(path_input_features_dir):
+        os.makedirs(path_input_features_dir)
+    model.set_out_layer(drop_layers=args.drop_layers)
     #########################################################################################################
 
     #########################################################################################################
