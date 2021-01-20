@@ -132,8 +132,6 @@ def classify_and_extract_attack():
 
         model = Model(model=models.resnet50(pretrained=True), model_name='ResNet50')
 
-    if not os.path.exists(path_input_features_dir):
-        os.makedirs(path_input_features_dir)
     model.set_out_layer(drop_layers=args.drop_layers)
     #########################################################################################################
 
@@ -180,6 +178,8 @@ def classify_and_extract_attack():
 
     if args.separate_outputs:
         path_output_features_attack_dir = path_output_features_attack
+        if not os.path.exists(path_output_features_attack_dir):
+            os.makedirs(path_output_features_attack_dir)
 
     imgnet_classes = read_imagenet_classes_txt(path_classes)
 
