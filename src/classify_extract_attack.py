@@ -316,7 +316,7 @@ def classify_and_extract_attack():
 
                 # Extract features using pre-trained model
                 if not args.separate_outputs:
-                    features[i, :] = model.feature_extraction(sample=(lossless_image, name))
+                    features[i] = model.feature_extraction(sample=(lossless_image, name))
                 else:
                     cnn_features = model.feature_extraction(sample=(lossless_image, name))
                     cnn_features = cnn_features.reshape((1,
