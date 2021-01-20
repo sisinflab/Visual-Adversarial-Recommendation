@@ -223,9 +223,6 @@ def classify_and_extract_attack():
 
     if not os.path.exists(os.path.dirname(path_output_classes_attack)):
         os.makedirs(os.path.dirname(path_output_classes_attack))
-    else:
-        shutil.rmtree(os.path.dirname(path_output_classes_attack))
-        os.makedirs(os.path.dirname(path_output_classes_attack))
 
     with open(path_output_classes_attack, 'w') as f:
         fieldnames = ['ImageID',
