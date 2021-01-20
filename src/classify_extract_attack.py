@@ -175,7 +175,7 @@ def classify_and_extract_attack():
         args=args,
         path_images_attack=path_output_images_attack,
         path_classes_attack=path_output_classes_attack,
-        path_features_attack=path_output_features_attack
+        path_features_attack=path_output_features_attack if not args.separate_outputs else path_output_features_attack_dir
     )
 
     imgnet_classes = read_imagenet_classes_txt(path_classes)
