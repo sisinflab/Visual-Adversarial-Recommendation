@@ -20,10 +20,10 @@ def parse_args():
     parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
     parser.add_argument('--model_file', type=str, default='model_best.pth.tar')
-    parser.add_argument('--drop_layers', type=int, default=2, help='layers to drop for feature model')
-    parser.add_argument('--extract', type=bool, default=True, help='whether to extract features or not')
+    parser.add_argument('--drop_layers', type=int, default=1, help='layers to drop for feature model')
+    parser.add_argument('--extract', type=bool, default=False, help='whether to extract features or not')
     parser.add_argument('--classify', type=bool, default=True, help='whether to classify or not')
-    parser.add_argument('--resize', type=int, default=224,
+    parser.add_argument('--resize', type=int, default=0,
                         help='0 --> no resize, otherwise resize to (resize, resize)')
     parser.add_argument('--separate_outputs', type=bool, default=False,
                         help='whether to store (or not) feature numpy separately')
