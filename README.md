@@ -106,6 +106,7 @@ python evaluate_rec.py \
 Results will be stored in ```./chr/<dataset_name>/``` and ```./ncdcg/<dataset_name>/``` in ```.tsv``` format. At this point, you can select from the extracted category-based metrics the origin-target pair of ids to execute the explored VAR attack scenario.
 
 ### 3. Visual attacks
+**IMPORTANT** Apparently, there is a recent issue about CleverHans not being compatible with Tensorflow Addons (see [here](https://stackoverflow.com/questions/63896793/cleverhans-is-incompatible-with-tensorflow-addons)). As there is one script within CleverHans (i.e., ```cleverhans/attacks/spsa.py``` which imports tensorflow addons, a very rough (but effective) way to make it run is to comment out that line of code. More sophisticated solutions will be proposed in the future. <br>
 Based upon the produced recommendation lists, choose an **origin** and a **target** class for each dataset. Then, run one of the available **targeted** attacks:
 ```
 python classify_extract_attack.py \
