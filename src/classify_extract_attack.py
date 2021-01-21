@@ -297,6 +297,9 @@ def classify_and_extract_attack():
                 #     out_class_reshaped = model.classification(list_classes=imgnet_classes,
                 #                                               sample=(reshaped_lossless_image, name))
 
+                # Resize image (if needed)
+                lossless_image = resize[0](lossless_image) if args.resize else lossless_image
+
                 # Transform to tensor and normalize
                 lossless_image = normalize(to_tensor(lossless_image))
 
@@ -323,8 +326,7 @@ def classify_and_extract_attack():
                 if not args.separate_outputs:
                     features[i] = model.feature_extraction(sample=(lossless_image, name))
                 else:
-                    image_for_feature = lossless_image if not args.resize else resize[0](lossless_image)
-                    cnn_features = model.feature_extraction(sample=(image_for_feature, name))
+                    cnn_features = model.feature_extraction(sample=(lossless_image, name))
                     cnn_features = cnn_features.reshape((1,
                                                          cnn_features.shape[1],
                                                          cnn_features.shape[2],
