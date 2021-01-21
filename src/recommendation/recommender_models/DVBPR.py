@@ -54,7 +54,19 @@ class DVBPR:
         images_list_all = os.listdir(images_DVBPR_path.format(self.dataset + '/original'))
         images_list_attacked = [images_DVBPR_path.format(self.experiment_name) + file for file in images_list_attacked]
         images_list_all = [images_DVBPR_path.format(self.dataset + '/original') + file for file in images_list_all]
-        images_list = list(set(images_list_attacked).union(set(images_list_all)))
+        images_list = []
+
+        # union over attacked and original (non-attacked) images
+        for image in images_list_all:
+            if images_DVBPR_path.format(self.experiment_name) + os.path.basename(image) in images_list_attacked:
+                images_list.append(
+                    images_DVBPR_path.format(self.experiment_name) + os.path.basename(image)
+                )
+            else:
+                images_list.append(
+                    images_DVBPR_path.format(self.dataset + '/original') + os.path.basename(image)
+                )
+
         # images_list.sort(key=lambda x: int(x.split(".")[0]))
         for index, item in enumerate(images_list):
             # im = Image.open(images_path.format(self.dataset) + item)
