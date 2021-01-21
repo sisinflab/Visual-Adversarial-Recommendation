@@ -323,7 +323,8 @@ def classify_and_extract_attack():
                 if not args.separate_outputs:
                     features[i] = model.feature_extraction(sample=(lossless_image, name))
                 else:
-                    cnn_features = model.feature_extraction(sample=(lossless_image, name))
+                    image_for_feature = lossless_image if not args.resize else resize[0](lossless_image)
+                    cnn_features = model.feature_extraction(sample=(image_for_feature, name))
                     cnn_features = cnn_features.reshape((1,
                                                          cnn_features.shape[1],
                                                          cnn_features.shape[2],
