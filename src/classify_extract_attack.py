@@ -176,6 +176,10 @@ def classify_and_extract_attack():
         path_features_attack=path_output_features_attack if not args.separate_outputs else path_output_features_attack_dir
     )
 
+    # if we're resizing input images (i.e., ACF), do not overwrite previous classes.csv, but create another file
+    if args.resize:
+        path_output_classes_attack = os.path.splitext(path_output_classes_attack)[0] + '_' + str(args.resize) + '.csv'
+
     if args.separate_outputs:
         path_output_features_attack_dir = path_output_features_attack
         if not os.path.exists(path_output_features_attack_dir):

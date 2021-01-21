@@ -22,6 +22,7 @@ def parse_args():
     parser.add_argument('--model_file', type=str, default='model_best.pth.tar')
     parser.add_argument('--drop_layers', type=int, default=2, help='layers to drop for feature model')
     parser.add_argument('--extract', type=bool, default=True, help='whether to extract features or not')
+    parser.add_argument('--classify', type=bool, default=True, help='whether to classify or not')
     parser.add_argument('--resize', type=int, default=224,
                         help='0 --> no resize, otherwise resize to (resize, resize)')
     parser.add_argument('--separate_outputs', type=bool, default=False,
@@ -101,11 +102,18 @@ def classify_and_extract():
 
     img_classes = read_imagenet_classes_txt(path_classes)
 
-    df = pd.DataFrame([], columns={'ImageID', 'ClassStr', 'ClassNum', 'Prob'})
+    if args.classify:
+        df = pd.DataFrame([], columns={'ImageID', 'ClassStr', 'ClassNum', 'Prob'})
+    else:
+        df = None
 
     if args.extract:
         if not args.separate_outputs:
             features = np.empty(shape=(data.num_samples, *model.output_shape))
+        else:
+            features = None
+    else:
+        features = None
     #########################################################################################################
 
     #########################################################################################################
@@ -115,7 +123,10 @@ def classify_and_extract():
     start = time.time()
 
     for i, d in enumerate(data):
-        out_class = model.classification(list_classes=img_classes, sample=d)
+        if args.classify:
+            out_class = model.classification(list_classes=img_classes, sample=d)
+        else:
+            out_class = None
 
         if args.extract:
             if not args.separate_outputs:
@@ -128,13 +139,16 @@ def classify_and_extract():
                                                      cnn_features.shape[0]))
                 save_np(npy=cnn_features,
                         filename=path_output_features_dir + str(i) + '.npy')
-        df = df.append(out_class, ignore_index=True)
+
+        if args.classify:
+            df = df.append(out_class, ignore_index=True)
 
         if (i + 1) % 100 == 0:
             sys.stdout.write('\r%d/%d samples completed' % (i + 1, data.num_samples))
             sys.stdout.flush()
 
-    write_csv(df=df, filename=path_output_classes)
+    if args.classify:
+        write_csv(df=df, filename=path_output_classes)
 
     if args.extract:
         if not args.separate_outputs:
@@ -149,7 +163,8 @@ def classify_and_extract():
             print('Saved features numpy in ==> %s' % path_output_features)
         else:
             print('Saved features numpy in ==> %s' % path_output_features_dir)
-    print('Saved classification file in ==> %s' % path_output_classes)
+    if args.classify:
+        print('Saved classification file in ==> %s' % path_output_classes)
     #########################################################################################################
 
 

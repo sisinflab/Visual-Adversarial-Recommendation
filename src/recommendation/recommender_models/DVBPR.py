@@ -50,22 +50,30 @@ class DVBPR:
         # load all images and calculate phi for each of them
         # assign phi to Phi to get the overall Phi vector
         # calculate the prediction for all users-items
-        images_list = os.listdir(images_DVBPR_path.format(self.experiment_name))
-        images_list.sort(key=lambda x: int(x.split(".")[0]))
+        images_list_attacked = os.listdir(images_DVBPR_path.format(self.experiment_name))
+        images_list_all = os.listdir(images_DVBPR_path.format(self.dataset + '/original'))
+        images_list_attacked = [images_DVBPR_path.format(self.experiment_name) + file for file in images_list_attacked]
+        images_list_all = [images_DVBPR_path.format(self.dataset + '/original') + file for file in images_list_all]
+        images_list = list(set(images_list_attacked).union(set(images_list_all)))
+        # images_list.sort(key=lambda x: int(x.split(".")[0]))
         for index, item in enumerate(images_list):
-            im = Image.open(images_path.format(self.dataset) + item)
+            # im = Image.open(images_path.format(self.dataset) + item)
+            im = Image.open(item)
 
             try:
                 im.load()
             except ValueError:
-                print(f'Image at path {images_path.format(self.dataset) + item} was not loaded correctly!')
+                # print(f'Image at path {images_path.format(self.dataset) + item} was not loaded correctly!')
+                print(f'Image at path {item} was not loaded correctly!')
 
             if im.mode != 'RGB':
                 im = im.convert(mode='RGB')
 
             im = np.reshape((np.array(im.resize((224, 224))) - np.float32(127.5)) / np.float32(127.5), (1, 224, 224, 3))
             phi = self._forward_cnn(im)
-            self.Phi[index, :] = phi
+            # self.Phi[index, :] = phi
+            base = os.path.basename(item)
+            self.Phi[int(base.split(".")[0]), :] = phi
         return tf.matmul(self.Tu, tf.Variable(self.Phi), transpose_b=True)
 
     def _loss(self, user, pos, neg):
