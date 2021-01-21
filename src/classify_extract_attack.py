@@ -59,12 +59,12 @@ def parse_args():
     parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
     parser.add_argument('--model_file', type=str, default='model_best.pth.tar')
-    parser.add_argument('--drop_layers', type=int, default=1, help='layers to drop for feature model')
-    parser.add_argument('--resize', type=int, default=0,
+    parser.add_argument('--drop_layers', type=int, default=2, help='layers to drop for feature model')
+    parser.add_argument('--resize', type=int, default=224,
                         help='0 --> no resize, otherwise resize to (resize, resize)')
-    parser.add_argument('--separate_outputs', type=bool, default=False,
+    parser.add_argument('--separate_outputs', type=bool, default=True,
                         help='whether to store (or not) feature numpy separately')
-    parser.add_argument('--run_attack', type=bool, default=True,
+    parser.add_argument('--run_attack', type=bool, default=False,
                         help='whether to run the attack, or recover the attacked image from the disk')
     parser.add_argument('--additional_features_args', type=str, default='',
                         help='additional arguments to add to features path (ACF for ACF features)')
@@ -242,8 +242,6 @@ def classify_and_extract_attack():
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
-        counter = 0
-
         for i, d in enumerate(data):
 
             if args.attack_type in ['zoo']:
@@ -277,7 +275,6 @@ def classify_and_extract_attack():
                     # Save image as tiff (lossless compression)
                     save_image(image=adv_perturbed_out,
                                filename=path_output_images_attack + os.path.splitext(name)[0] + '.tiff')
-                    counter += 1
 
                 # Read same image from memory
                 lossless_image = read_image(path_output_images_attack + os.path.splitext(name)[0] + '.tiff')
@@ -344,8 +341,6 @@ def classify_and_extract_attack():
         save_np(npy=features, filename=path_output_features_attack)
 
     end = time.time()
-
-    print(counter)
 
     print('\n\nAttack, classification and feature extraction completed in %f seconds.' % (end - start))
     print('Attack completed in %f seconds.' % total_attack_time)
