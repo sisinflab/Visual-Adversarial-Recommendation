@@ -242,6 +242,8 @@ def classify_and_extract_attack():
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
+        counter = 0
+
         for i, d in enumerate(data):
 
             if args.attack_type in ['zoo']:
@@ -275,6 +277,7 @@ def classify_and_extract_attack():
                     # Save image as tiff (lossless compression)
                     save_image(image=adv_perturbed_out,
                                filename=path_output_images_attack + os.path.splitext(name)[0] + '.tiff')
+                    counter += 1
 
                 # Read same image from memory
                 lossless_image = read_image(path_output_images_attack + os.path.splitext(name)[0] + '.tiff')
@@ -341,6 +344,8 @@ def classify_and_extract_attack():
         save_np(npy=features, filename=path_output_features_attack)
 
     end = time.time()
+
+    print(counter)
 
     print('\n\nAttack, classification and feature extraction completed in %f seconds.' % (end - start))
     print('Attack completed in %f seconds.' % total_attack_time)
