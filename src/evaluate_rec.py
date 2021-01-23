@@ -180,6 +180,8 @@ if __name__ == '__main__':
 
     prediction_files = os.listdir(prediction_files_path)
     prediction_files = [f for f in prediction_files if args.model in f]
+    print(prediction_files)
+    exit(0)
 
     for current_top_k in list(args.list_of_k):
         print('***************************************************')
