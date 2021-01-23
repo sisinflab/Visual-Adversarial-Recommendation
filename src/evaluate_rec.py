@@ -135,6 +135,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
     parser.add_argument('--dataset', nargs='?', default='tradesy', help='amazon_men, amazon_women, amazon_sport')
     parser.add_argument('--metric', nargs='?', default='ncdcg', help='chr, ncdcg')
+    parser.add_argument('--model', nargs='?', default='ACF', help='ACF, DVBPR')
     # parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--topk', type=int, default=150, help='top k predictions to store before the evaluation')
     parser.add_argument('--origin', type=int, default=834, help='Target Item id. Useful for ncdcg')
@@ -178,6 +179,7 @@ if __name__ == '__main__':
     assert args.analyzed_k < args.topk
 
     prediction_files = os.listdir(prediction_files_path)
+    prediction_files = [f for f in prediction_files if args.model in f]
 
     for current_top_k in list(args.list_of_k):
         print('***************************************************')
@@ -271,7 +273,11 @@ if __name__ == '__main__':
             df_ordered = df_ordered.append(temp_ordered[['experiment', 'classId', 'className', 'position', 'score']],
                                            ignore_index=True)
 
-        df_ordered.to_csv('{0}{1}/df_{2}_at_{3}.csv'.format(metric_dir, dataset_name, args.metric, current_top_k),
+        df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
+                                                                dataset_name,
+                                                                args.metric,
+                                                                current_top_k,
+                                                                args.model),
                           index=False)
 
         # sendmail('Finish {0} at Evaluation {1}@{2}'.format(dataset_name, args.metric, args.analyzed_k), 'Finished!')
