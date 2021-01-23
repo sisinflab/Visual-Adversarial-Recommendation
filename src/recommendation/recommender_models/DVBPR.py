@@ -81,7 +81,8 @@ class DVBPR:
             if im.mode != 'RGB':
                 im = im.convert(mode='RGB')
 
-            im = np.reshape((np.array(im.resize((224, 224))) - np.float32(127.5)) / np.float32(127.5), (1, 224, 224, 3))
+            # im = np.reshape((np.array(im.resize((224, 224))) - np.float32(127.5)) / np.float32(127.5), (1, 224, 224, 3))
+            im = np.reshape((np.array(im.resize((224, 224))) / np.float32(255)), (1, 224, 224, 3))
             phi = self._forward_cnn(im)
             # self.Phi[index, :] = phi
             base = os.path.basename(item)

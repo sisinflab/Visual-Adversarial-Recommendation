@@ -84,8 +84,10 @@ class Dataset:
         if im_neg.mode != 'RGB':
             im_neg = im_neg.convert(mode='RGB')
 
-        im_pos = (np.array(im_pos.resize((224, 224))) - np.float32(127.5)) / np.float32(127.5)
-        im_neg = (np.array(im_neg.resize((224, 224))) - np.float32(127.5)) / np.float32(127.5)
+        # im_pos = (np.array(im_pos.resize((224, 224))) - np.float32(127.5)) / np.float32(127.5)
+        im_pos = np.array(im_pos.resize((224, 224))) / np.float32(255)
+        # im_neg = (np.array(im_neg.resize((224, 224))) - np.float32(127.5)) / np.float32(127.5)
+        im_neg = np.array(im_neg.resize((224, 224))) / np.float32(255)
         return user.numpy(), pos.numpy(), im_pos, neg.numpy(), im_neg
 
     def all_triple_batches(self):
