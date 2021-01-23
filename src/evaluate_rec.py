@@ -141,6 +141,8 @@ def parse_args():
     parser.add_argument('--analyzed_k', type=int, default=20, help='K under analysis has to be lesser than stored topk')
     parser.add_argument('--num_pool', type=int, default=1,
                         help='Number of threads')
+    parser.add_argument('--list_of_k', nargs='+', type=int, default=[1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+                        help='list of top-k to evaluate on')
 
     return parser.parse_args()
 
@@ -177,95 +179,100 @@ if __name__ == '__main__':
 
     prediction_files = os.listdir(prediction_files_path)
 
-    df_ordered = pd.DataFrame(columns=['experiment', 'classId', 'className', 'position', 'score'])
+    for current_top_k in list(args.list_of_k):
+        print('***************************************************')
+        print('ANALYZING STATISTICS FOR TOP-{0}'.format(current_top_k))
+        print('***************************************************')
 
-    for prediction_file in prediction_files:
+        df_ordered = pd.DataFrame([], columns=['experiment', 'classId', 'className', 'position', 'score'])
 
-        counter = 0
-        start_counter = time.time()
-        start = time.time()
+        for prediction_file in prediction_files:
 
-        print('Analyzing {0} of {1}'.format(prediction_file, dataset_name))
+            counter = 0
+            start_counter = time.time()
+            start = time.time()
 
-        predictions = pd.read_csv('../rec_results/{0}/{1}'.format(dataset_name, prediction_file), sep='\t',
-                                  header=None)
+            print('Analyzing {0} of {1}'.format(prediction_file, dataset_name))
 
-        classes = pd.read_csv(
-            '../data/{0}/{1}/classes.csv'.format(dataset_name, get_classes_dir(prediction_file)))
-        users_size = predictions[0].nunique()
+            predictions = pd.read_csv('../rec_results/{0}/{1}'.format(dataset_name, prediction_file), sep='\t',
+                                      header=None)
 
-        if args.metric == 'chr':
+            classes = pd.read_csv(
+                '../data/{0}/{1}/classes.csv'.format(dataset_name, get_classes_dir(prediction_file)))
+            users_size = predictions[0].nunique()
 
-            manager = mp.Manager()
-            class_frequency = manager.dict()
-            for item_class in classes['ClassNum'].unique():
-                class_frequency[item_class] = 0
+            if args.metric == 'chr':
 
-            p = mp.Pool(args.num_pool)
+                manager = mp.Manager()
+                class_frequency = manager.dict()
+                for item_class in classes['ClassNum'].unique():
+                    class_frequency[item_class] = 0
 
-            for user_id in predictions[0].unique():
-                p.apply_async(elaborate_chr,
-                              args=(class_frequency, user_id,
-                                    predictions[predictions[0] == user_id][1].to_list()[:args.analyzed_k],),
-                              callback=count_elaborated)
-        else:
+                p = mp.Pool(args.num_pool)
 
-            train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
-            train.columns = ['userId', 'itemId']
+                for user_id in predictions[0].unique():
+                    p.apply_async(elaborate_chr,
+                                  args=(class_frequency, user_id,
+                                        predictions[predictions[0] == user_id][1].to_list()[:current_top_k],),
+                                  callback=count_elaborated)
+            else:
 
-            category_items = classes[classes['ClassNum'] == args.origin]['ImageID'].to_list()
+                train = pd.read_csv('../data/{0}/trainingset.tsv'.format(dataset_name), sep='\t', header=None)
+                train.columns = ['userId', 'itemId']
 
-            manager = mp.Manager()
-            class_frequency = manager.dict()
-            class_frequency[args.origin] = 0
+                category_items = classes[classes['ClassNum'] == args.origin]['ImageID'].to_list()
 
-            p = mp.Pool(args.num_pool)
+                manager = mp.Manager()
+                class_frequency = manager.dict()
+                class_frequency[args.origin] = 0
 
-            for user_id in predictions[0].unique():
-                p.apply_async(elaborate_ncdcg,
-                              args=(class_frequency, user_id,
-                                    predictions[predictions[0] == user_id][1].to_list()[:args.analyzed_k],
-                                    predictions[predictions[0] == user_id][2].to_list()[:args.analyzed_k],
-                                    train[train['userId'] == user_id]['itemId'].to_list(), category_items,
-                                    args.origin,),
-                              callback=count_elaborated)
+                p = mp.Pool(args.num_pool)
 
-        p.close()
-        p.join()
+                for user_id in predictions[0].unique():
+                    p.apply_async(elaborate_ncdcg,
+                                  args=(class_frequency, user_id,
+                                        predictions[predictions[0] == user_id][1].to_list()[:current_top_k],
+                                        predictions[predictions[0] == user_id][2].to_list()[:current_top_k],
+                                        train[train['userId'] == user_id]['itemId'].to_list(), category_items,
+                                        args.origin,),
+                                  callback=count_elaborated)
 
-        # We need this operation to use the results in the Manager
-        metric = dict()
-        for key in class_frequency.keys():
-            print('Val {0}'.format(class_frequency[key]))
-            metric[key] = class_frequency[key]
+            p.close()
+            p.join()
 
-        print('\tEvaluate {0}@{1}'.format(args.metric, args.analyzed_k))
-        N_USERS = predictions[0].nunique()
-        res = dict(sorted(metric.items(), key=itemgetter(1), reverse=True)[:N])
+            # We need this operation to use the results in the Manager
+            metric = dict()
+            for key in class_frequency.keys():
+                print('Val {0}'.format(class_frequency[key]))
+                metric[key] = class_frequency[key]
 
-        res = {str(k): v / N_USERS for k, v in res.items()}
-        print(res)
-        keys = res.keys()
-        values = res.values()
+            print('\tEvaluate {0}@{1}'.format(args.metric, current_top_k))
+            N_USERS = predictions[0].nunique()
+            res = dict(sorted(metric.items(), key=itemgetter(1), reverse=True)[:current_top_k])
 
-        temp_ordered = pd.DataFrame(list(zip(keys, values)), columns=['classId', 'score']).sort_values(by=['score'],
-                                                                                                       ascending=False)
-        print('\nExperiment Name: {0}'.format(prediction_file))
+            res = {str(k): v / N_USERS for k, v in res.items()}
+            print(res)
+            keys = res.keys()
+            values = res.values()
 
-        temp_ordered['experiment'] = prediction_file
-        temp_ordered['className'] = 0
-        temp_ordered['position'] = 0
+            temp_ordered = pd.DataFrame(list(zip(keys, values)), columns=['classId', 'score']).sort_values(by=['score'],
+                                                                                                           ascending=False)
+            print('\nExperiment Name: {0}'.format(prediction_file))
 
-        for index, row in temp_ordered.iterrows():
-            row['position'] = index + 1
-            row['className'] = classes[classes['ClassNum'] == int(row['classId'])].iloc[0]['ClassStr']
-            temp_ordered.loc[index] = row
+            temp_ordered['experiment'] = prediction_file
+            temp_ordered['className'] = 0
+            temp_ordered['position'] = 0
 
-        df_ordered = df_ordered.append(temp_ordered[['experiment', 'classId', 'className', 'position', 'score']],
-                                       ignore_index=True)
+            for index, row in temp_ordered.iterrows():
+                row['position'] = index + 1
+                row['className'] = classes[classes['ClassNum'] == int(row['classId'])].iloc[0]['ClassStr']
+                temp_ordered.loc[index] = row
 
-    df_ordered.to_csv('{0}{1}/df_{2}_at_{3}.csv'.format(metric_dir, dataset_name, args.metric, args.analyzed_k),
-                      index=False)
+            df_ordered = df_ordered.append(temp_ordered[['experiment', 'classId', 'className', 'position', 'score']],
+                                           ignore_index=True)
 
-    # sendmail('Finish {0} at Evaluation {1}@{2}'.format(dataset_name, args.metric, args.analyzed_k), 'Finished!')
+        df_ordered.to_csv('{0}{1}/df_{2}_at_{3}.csv'.format(metric_dir, dataset_name, args.metric, current_top_k),
+                          index=False)
+
+        # sendmail('Finish {0} at Evaluation {1}@{2}'.format(dataset_name, args.metric, args.analyzed_k), 'Finished!')
 
