@@ -127,7 +127,7 @@ def count_elaborated(r):
     """
     global counter, start_counter, users_size
     counter += 1
-    if (counter + 1) % 100 == 0:
+    if (counter + 1) % 1000 == 0:
         print('{0}/{1} in {2}'.format(counter + 1, users_size, time.time() - start_counter))
         start_counter = time.time()
 
