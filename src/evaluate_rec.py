@@ -173,8 +173,7 @@ if __name__ == '__main__':
     dataset_name = args.dataset
     # experiment_name = args.experiment_name
     prediction_files_path = result_dir + dataset_name
-    # N = 50  # Top-N classes
-    N = args.analyzed_k
+    N = 50  # Top-N classes
 
     assert args.analyzed_k < args.topk
 
@@ -250,7 +249,7 @@ if __name__ == '__main__':
 
             print('\tEvaluate {0}@{1}'.format(args.metric, current_top_k))
             N_USERS = predictions[0].nunique()
-            res = dict(sorted(metric.items(), key=itemgetter(1), reverse=True)[:current_top_k])
+            res = dict(sorted(metric.items(), key=itemgetter(1), reverse=True)[:N])
 
             res = {str(k): v / N_USERS for k, v in res.items()}
             print(res)
