@@ -305,7 +305,7 @@ if __name__ == '__main__':
                             if p <= 0.05:
                                 star = '*'
                             else:
-                                start = '#'
+                                star = '#'
 
                             line = '{0}\t{1}\t{2}\t{3}\t{4}\t{5}'.format(dataset_name, an_metric, analyzed_k,
                                                                          experiment_name,

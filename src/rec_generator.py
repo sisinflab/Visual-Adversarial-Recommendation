@@ -12,12 +12,12 @@ parser.add_argument('--dataset', nargs='?', default='tradesy',
 parser.add_argument('--experiment_name', nargs='?',
                     default='original',
                     help='original, fgsm_***, cw_***, pgd_***')
-parser.add_argument('--model', nargs='?', default='ACF',
+parser.add_argument('--model', nargs='?', default='DVBPR',
                     help='recommender models: VBPR, DVBPR')
 parser.add_argument('--emb1_K', type=int, default=64, help='size of embeddings')
 parser.add_argument('--layers_component', type=list, default=[64, 1], help='list component level layers for ACF')
 parser.add_argument('--layers_item', type=list, default=[64, 1], help='list item level layers for ACF')
-parser.add_argument('--batch_size', type=int, default=512, help='batch size')
+parser.add_argument('--batch_size', type=int, default=32, help='batch size')
 parser.add_argument('--lr', nargs='+', type=float, default=[1e-4], help='learning rate')
 parser.add_argument('--verbose', type=int, default=1, help='verbosity and Checkpoint epoch')
 parser.add_argument('--epoch', type=int, default=2, help='epochs')

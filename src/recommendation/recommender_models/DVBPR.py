@@ -42,7 +42,7 @@ class DVBPR:
         cnn_output = self.cnn(inputs=item, training=True)
         theta_u = tf.nn.embedding_lookup(self.Tu, user)
 
-        xui = tf.matmul(theta_u, cnn_output, transpose_b=True)
+        xui = tf.reduce_sum(theta_u * cnn_output, 1)
 
         return xui, theta_u, cnn_output
 
