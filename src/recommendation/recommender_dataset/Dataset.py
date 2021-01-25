@@ -4,6 +4,7 @@ import pandas as pd
 import tensorflow as tf
 from PIL import Image
 from config.configs import *
+import os
 
 
 class Dataset:
@@ -66,8 +67,15 @@ class Dataset:
         return u, i, i_neg
 
     def read_images_triple(self, user, pos, neg):
-        im_pos = Image.open(images_DVBPR_path.format(self.experiment_name) + str(pos.numpy()) + '.jpg')
-        im_neg = Image.open(images_DVBPR_path.format(self.experiment_name) + str(neg.numpy()) + '.jpg')
+        if os.path.exists(images_DVBPR_path.format(self.experiment_name) + str(pos.numpy()) + '.jpg'):
+            im_pos = Image.open(images_DVBPR_path.format(self.experiment_name) + str(pos.numpy()) + '.jpg')
+        else:
+            im_pos = Image.open(images_DVBPR_path.format(self.dataset + '/original') + str(pos.numpy()) + '.jpg')
+
+        if os.path.exists(images_DVBPR_path.format(self.experiment_name) + str(neg.numpy()) + '.jpg'):
+            im_neg = Image.open(images_DVBPR_path.format(self.experiment_name) + str(neg.numpy()) + '.jpg')
+        else:
+            im_neg = Image.open(images_DVBPR_path.format(self.dataset + '/original') + str(neg.numpy()) + '.jpg')
 
         try:
             im_pos.load()
