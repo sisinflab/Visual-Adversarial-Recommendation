@@ -141,7 +141,6 @@ def parse_args():
     parser.add_argument('--topk', type=int, default=150, help='top k predictions to store before the evaluation')
     parser.add_argument('--epochs', type=int, default=20, help='number of epochs')
     parser.add_argument('--origin', type=int, default=834, help='Target Item id. Useful for cndcg')
-    parser.add_argument('--analyzed_k', type=int, default=20, help='K under analysis has to be lesser than stored topk')
     parser.add_argument('--num_pool', type=int, default=1,
                         help='Number of threads')
     parser.add_argument('--list_of_k', nargs='+', type=int, default=[1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
@@ -176,8 +175,6 @@ if __name__ == '__main__':
     # experiment_name = args.experiment_name
     prediction_files_path = result_dir + dataset_name
     N = 50  # Top-N classes
-
-    assert args.analyzed_k < args.topk
 
     prediction_files = os.listdir(prediction_files_path)
     prediction_files = [f for f in prediction_files if args.model in f]
