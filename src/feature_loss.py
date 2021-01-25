@@ -10,15 +10,15 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run feature loss evaluation.")
     parser.add_argument('--num_classes', type=int, default=1000)
     parser.add_argument('--attack_type', nargs='?', type=str, default='fgsm')
-    parser.add_argument('--origin_class', type=int, default=774)
-    parser.add_argument('--target_class', type=int, default=770)
-    parser.add_argument('--dataset', nargs='?', default='amazon_men',
+    parser.add_argument('--origin_class', type=int, default=834)
+    parser.add_argument('--target_class', type=int, default=869)
+    parser.add_argument('--dataset', nargs='?', default='tradesy_original',
                         help='dataset path: amazon_men, amazon_women, tradesy')
     parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
-    parser.add_argument('--separate_outputs', type=bool, default=False,
+    parser.add_argument('--separate_outputs', type=bool, default=True,
                         help='whether to store (or not) feature numpy separately')
-    parser.add_argument('--additional_features_args', nargs='?', type=str, default='DVBPR',
+    parser.add_argument('--additional_features_args', nargs='?', type=str, default='',
                         help='additional args to append to features filename')
 
     ## attacks specific parameters
@@ -91,6 +91,12 @@ def evaluate_feature_loss():
             else:
                 original_feature = read_np(path_input_features + str(row["ImageID"]) + '.npy')
                 attacked_feature = read_np(path_input_features_attack + str(row["ImageID"]) + '.npy')
+                attacked_feature = attacked_feature.reshape(
+                    (attacked_feature.shape[0],
+                     attacked_feature.shape[1],
+                     attacked_feature.shape[3],
+                     attacked_feature.shape[2])
+                )
                 current_mse_features_loss = mse(im1=original_feature,
                                                 im2=attacked_feature)
                 current_rmse_features_loss = rmse(im1=original_feature,

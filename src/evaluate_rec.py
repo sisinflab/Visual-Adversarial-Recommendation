@@ -1,4 +1,5 @@
 from operator import itemgetter
+from scipy import stats
 import argparse
 import pandas as pd
 import time
@@ -133,12 +134,13 @@ def count_elaborated(r):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run Recommender Model.")
-    parser.add_argument('--dataset', nargs='?', default='tradesy', help='amazon_men, amazon_women, amazon_sport')
-    parser.add_argument('--metric', nargs='?', default='ncdcg', help='chr, ncdcg')
+    parser.add_argument('--dataset', nargs='?', default='tradesy_original', help='amazon_men, amazon_women, amazon_sport')
+    parser.add_argument('--metric', nargs='?', default='chr', help='chr, cndcg')
     parser.add_argument('--model', nargs='?', default='ACF', help='ACF, DVBPR')
     # parser.add_argument('--experiment_name', nargs='?', default='original', help='original, fgsm_***, cw_***, pgd_***')
     parser.add_argument('--topk', type=int, default=150, help='top k predictions to store before the evaluation')
-    parser.add_argument('--origin', type=int, default=834, help='Target Item id. Useful for ncdcg')
+    parser.add_argument('--epochs', type=int, default=20, help='number of epochs')
+    parser.add_argument('--origin', type=int, default=834, help='Target Item id. Useful for cndcg')
     parser.add_argument('--analyzed_k', type=int, default=20, help='K under analysis has to be lesser than stored topk')
     parser.add_argument('--num_pool', type=int, default=1,
                         help='Number of threads')
@@ -190,6 +192,7 @@ if __name__ == '__main__':
         # se row contiene original (anche difese), allora è baseline e non prendiamo p-value
         # se non è baseline, allora si trova baseline associata
 
+        ttest_map = {}
         for prediction_file in prediction_files:
 
             counter = 0
@@ -250,6 +253,8 @@ if __name__ == '__main__':
                 print('Val {0}'.format(class_frequency[key]))
                 metric[key] = class_frequency[key]
 
+            ttest_map[prediction_file] = metric
+
             print('\tEvaluate {0}@{1}'.format(args.metric, current_top_k))
             N_USERS = predictions[0].nunique()
             res = dict(sorted(metric.items(), key=itemgetter(1), reverse=True)[:N])
@@ -266,14 +271,41 @@ if __name__ == '__main__':
             temp_ordered['experiment'] = prediction_file
             temp_ordered['className'] = 0
             temp_ordered['position'] = 0
+            temp_ordered['p-value'] = ''
 
             for index, row in temp_ordered.iterrows():
                 row['position'] = index + 1
                 row['className'] = classes[classes['ClassNum'] == int(row['classId'])].iloc[0]['ClassStr']
                 temp_ordered.loc[index] = row
 
-            df_ordered = df_ordered.append(temp_ordered[['experiment', 'classId', 'className', 'position', 'score']],
+            df_ordered = df_ordered.append(temp_ordered[
+                                               ['experiment', 'classId', 'className', 'position', 'score', 'p-value']
+                                           ],
                                            ignore_index=True)
+
+        # When the metric has been calculated for all rows, get the p-value
+        # Take the baseline and compare with the model
+        experiments_no_baselines = [f for f in prediction_files if 'original' not in f]
+        for enb in experiments_no_baselines:
+            if 'madry' not in enb and 'free_adv' not in enb:
+                correspondent_baseline = 'original_top' + str(args.topk) + '_ep' + str(args.epochs) + str(args.model)
+            else:
+                correspondent_baseline = 'madry_' if 'madry' in enb else 'free_adv_' + \
+                                                                         'original_top' + str(args.topk) + '_ep' +  \
+                                                                         str(args.epochs) + str(args.model)
+            baseline = ttest_map[correspondent_baseline]
+            actual_experiment = ttest_map[enb]
+
+            base = []
+            test = []
+
+            for user_id in actual_experiment.keys():
+                base.append(baseline[user_id])
+                test.append(actual_experiment[user_id])
+
+            p = stats.ttest_rel(base, test).pvalue
+            if p <= 0.05:
+                df_ordered[df_ordered['experiment'] == actual_experiment]['p-value'] = '*'
 
         df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
                                                                 dataset_name,
