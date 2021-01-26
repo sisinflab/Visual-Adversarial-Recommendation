@@ -290,7 +290,6 @@ if __name__ == '__main__':
         # When the metric has been calculated for all rows, get the p-value
         # Take the baseline and compare with the model
         experiments_no_baselines = [f for f in prediction_files if 'original' not in f]
-        print(experiments_no_baselines)
         for enb in experiments_no_baselines:
             if 'madry' not in enb and 'free_adv' not in enb:
                 correspondent_baseline = 'original_top' + str(args.topk) + '_ep' + str(args.epochs) + '_' + str(args.model) + '.tsv'
@@ -308,7 +307,9 @@ if __name__ == '__main__':
                 base.append(baseline[user_id])
                 test.append(actual_experiment[user_id])
 
+            print('before p-value')
             p = stats.ttest_rel(base, test).pvalue
+            print(p)
             if p <= 0.05:
                 index = df_ordered.index[df_ordered['experiment'] == enb]
                 df_ordered.loc[index, 'p-value'] = '*'
