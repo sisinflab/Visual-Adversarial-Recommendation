@@ -183,7 +183,7 @@ if __name__ == '__main__':
     N = 50  # Top-N classes
 
     prediction_files = os.listdir(prediction_files_path)
-    prediction_files = [f for f in prediction_files if args.model in f]
+    prediction_files = [f for f in prediction_files if args.model in f and 'spsa' not in f and 'zoo' not in f and 'eps8' not in f]
 
     for current_top_k in list(args.list_of_k):
         print('***************************************************')
