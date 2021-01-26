@@ -73,8 +73,15 @@ def evaluate_feature_loss():
 
     num_attacked = len(df_attacked_classification)
 
-    output_txt = os.path.dirname(path_input_classes_attack) + '/features_dist_avg_all_attack.txt'
-    output_csv = os.path.dirname(path_input_classes_attack) + '/features_dist_all_attack.csv'
+    if args.separate_outputs:
+        output_txt = os.path.dirname(path_input_classes_attack) + '/features_dist_avg_all_attack_ACF.txt'
+        output_csv = os.path.dirname(path_input_classes_attack) + '/features_dist_all_attack_ACF.csv'
+    elif args.additional_features_args:
+        output_txt = os.path.dirname(path_input_classes_attack) + '/features_dist_avg_all_attack_{0}.txt'.format(args.additional_features_args)
+        output_csv = os.path.dirname(path_input_classes_attack) + '/features_dist_all_attack_{0}.csv'.format(args.additional_features_args)
+    else:
+        output_txt = os.path.dirname(path_input_classes_attack) + '/features_dist_avg_all_attack.txt'
+        output_csv = os.path.dirname(path_input_classes_attack) + '/features_dist_all_attack.csv'
 
     with open(output_csv, 'w') as f:
         fieldnames = ['ImageID', 'MSE', 'RMSE']
