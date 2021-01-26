@@ -190,7 +190,7 @@ if __name__ == '__main__':
         print('ANALYZING STATISTICS FOR TOP-{0}'.format(current_top_k))
         print('***************************************************')
 
-        df_ordered = pd.DataFrame([], columns=['experiment', 'classId', 'className', 'position', 'score', 'p-value'])
+        df_ordered = pd.DataFrame([], columns=['top-k', 'experiment', 'classId', 'className', 'position', 'score', 'p-value'])
 
         ttest_map = {}
         for prediction_file in prediction_files:
@@ -275,6 +275,7 @@ if __name__ == '__main__':
                                                                                                            ascending=False)
             print('\nExperiment Name: {0}'.format(prediction_file))
 
+            temp_ordered['top-k'] = current_top_k
             temp_ordered['experiment'] = prediction_file
             temp_ordered['className'] = 0
             temp_ordered['position'] = 0
@@ -286,14 +287,13 @@ if __name__ == '__main__':
                 temp_ordered.loc[index] = row
 
             df_ordered = df_ordered.append(temp_ordered[
-                                               ['experiment', 'classId', 'className', 'position', 'score', 'p-value']
+                                               ['top-k', 'experiment', 'classId', 'className', 'position', 'score', 'p-value']
                                            ],
                                            ignore_index=True)
 
-        df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
+        df_ordered.to_csv('{0}{1}/df_{2}_at_{3}.csv'.format(metric_dir,
                                                                 dataset_name,
                                                                 args.metric,
-                                                                current_top_k,
                                                                 args.model),
                           index=False)
 
@@ -322,16 +322,14 @@ if __name__ == '__main__':
                 index = df_ordered.index[df_ordered['experiment'] == enb]
                 df_ordered.loc[index, 'p-value'] = '*'
 
-            df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
+            df_ordered.to_csv('{0}{1}/df_{2}_at_{3}.csv'.format(metric_dir,
                                                                     dataset_name,
                                                                     args.metric,
-                                                                    current_top_k,
                                                                     args.model),
                               index=False)
-        df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
+        df_ordered.to_csv('{0}{1}/df_{2}_at_{3}.csv'.format(metric_dir,
                                                                 dataset_name,
                                                                 args.metric,
-                                                                current_top_k,
                                                                 args.model),
                           index=False)
 
