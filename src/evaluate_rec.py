@@ -14,7 +14,7 @@ classes = pd.DataFrame()
 import typing
 
 
-def elaborate_chr(class_frequency, user_id, sorted_item_predictions):
+def elaborate_chr(class_frequency, metric_per_user, origin, user_id, sorted_item_predictions):
     """
     Methos to elaborate the prediction (CHR@K) for each user
     CHR@N(I_c, U) = \frac{1}{N \cdot |U|} \sum_{u \in U} \sum_{i \in I_c \setminus I^{+}_u} hit(i, u)
@@ -23,10 +23,13 @@ def elaborate_chr(class_frequency, user_id, sorted_item_predictions):
     :param sorted_item_predictions:
     :return: user id sent to the count-elaborated
     """
+    metric_per_user[user_id] = 0
     # Count the class occurrences for the user: user_id
     for item_index in sorted_item_predictions:
         item_original_class = classes[classes['ImageID'] == item_index]['ClassNum'].values[0]
         class_frequency[item_original_class] += 1
+        if item_original_class == origin:
+            metric_per_user[user_id] = 1
 
     return user_id
 
@@ -94,7 +97,7 @@ def compute_dicount(k: int) -> float:
     return 1 / math.log(k + 2) * math.log(2)
 
 
-def elaborate_ncdcg(class_frequency, user_id, sorted_item_predictions, sorted_item_scores, positive_items,
+def elaborate_ncdcg(class_frequency, metric_per_user, origin, user_id, sorted_item_predictions, sorted_item_scores, positive_items,
                     category_items, item_original_class):
     """
     Method to elaborate the prediction (ncdcg@K) for each user
@@ -111,10 +114,13 @@ def elaborate_ncdcg(class_frequency, user_id, sorted_item_predictions, sorted_it
     # ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
 
     ## nDCG computed on training set considering a relevance based on categories
+    metric_per_user[user_id] = 0
     gain_map: typing.Dict = compute_category_user_gain_map(category_items, 0)
     ndcg: float = compute_ndcg(sorted_item_predictions, gain_map, len(sorted_item_predictions))
 
     class_frequency[item_original_class] += ndcg
+    if item_original_class == origin:
+        metric_per_user[user_id] = ndcg
 
     return user_id
 
@@ -209,6 +215,7 @@ if __name__ == '__main__':
 
                 manager = mp.Manager()
                 class_frequency = manager.dict()
+                metric_per_user = manager.dict()
                 for item_class in classes['ClassNum'].unique():
                     class_frequency[item_class] = 0
 
@@ -216,7 +223,7 @@ if __name__ == '__main__':
 
                 for user_id in predictions[0].unique():
                     p.apply_async(elaborate_chr,
-                                  args=(class_frequency, user_id,
+                                  args=(class_frequency, metric_per_user, args.origin, user_id,
                                         predictions[predictions[0] == user_id][1].to_list()[:current_top_k],),
                                   callback=count_elaborated)
             else:
@@ -227,6 +234,7 @@ if __name__ == '__main__':
                 category_items = classes[classes['ClassNum'] == args.origin]['ImageID'].to_list()
 
                 manager = mp.Manager()
+                metric_per_user = manager.dict()
                 class_frequency = manager.dict()
                 class_frequency[args.origin] = 0
 
@@ -234,7 +242,7 @@ if __name__ == '__main__':
 
                 for user_id in predictions[0].unique():
                     p.apply_async(elaborate_ncdcg,
-                                  args=(class_frequency, user_id,
+                                  args=(class_frequency, metric_per_user, args.origin, user_id,
                                         predictions[predictions[0] == user_id][1].to_list()[:current_top_k],
                                         predictions[predictions[0] == user_id][2].to_list()[:current_top_k],
                                         train[train['userId'] == user_id]['itemId'].to_list(), category_items,
@@ -246,11 +254,16 @@ if __name__ == '__main__':
 
             # We need this operation to use the results in the Manager
             metric = dict()
+            metric_per_user_final = dict()
+
+            for key in metric_per_user.keys():
+                metric_per_user_final[key] = metric_per_user[key]
+
             for key in class_frequency.keys():
                 print('Val {0}'.format(class_frequency[key]))
                 metric[key] = class_frequency[key]
 
-            ttest_map[prediction_file] = metric
+            ttest_map[prediction_file] = metric_per_user_final
 
             print('\tEvaluate {0}@{1}'.format(args.metric, current_top_k))
             N_USERS = predictions[0].nunique()
