@@ -307,9 +307,9 @@ if __name__ == '__main__':
                 base.append(baseline[user_id])
                 test.append(actual_experiment[user_id])
 
-            print('before p-value')
+            print(base)
+            print(test)
             p = stats.ttest_rel(base, test).pvalue
-            print(p)
             if p <= 0.05:
                 index = df_ordered.index[df_ordered['experiment'] == enb]
                 df_ordered.loc[index, 'p-value'] = '*'
