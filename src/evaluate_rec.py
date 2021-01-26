@@ -290,44 +290,35 @@ if __name__ == '__main__':
         # When the metric has been calculated for all rows, get the p-value
         # Take the baseline and compare with the model
         experiments_no_baselines = [f for f in prediction_files if 'original' not in f]
+        print(experiments_no_baselines)
         for enb in experiments_no_baselines:
-            try:
-                if 'madry' not in enb and 'free_adv' not in enb:
-                    correspondent_baseline = 'original_top' + str(args.topk) + '_ep' + str(args.epochs) + str(args.model)
-                else:
-                    correspondent_baseline = ('madry_' if 'madry' in enb else 'free_adv_') + \
-                                                                              'original_top' + str(args.topk) + '_ep' + \
-                                                                              str(args.epochs) + str(args.model)
-                baseline = ttest_map[correspondent_baseline]
-                actual_experiment = ttest_map[enb]
+            if 'madry' not in enb and 'free_adv' not in enb:
+                correspondent_baseline = 'original_top' + str(args.topk) + '_ep' + str(args.epochs) + str(args.model)
+            else:
+                correspondent_baseline = ('madry_' if 'madry' in enb else 'free_adv_') + \
+                                         'original_top' + str(args.topk) + '_ep' + \
+                                         str(args.epochs) + str(args.model)
+            baseline = ttest_map[correspondent_baseline]
+            actual_experiment = ttest_map[enb]
 
-                base = []
-                test = []
+            base = []
+            test = []
 
-                for user_id in actual_experiment.keys():
-                    base.append(baseline[user_id])
-                    test.append(actual_experiment[user_id])
+            for user_id in actual_experiment.keys():
+                base.append(baseline[user_id])
+                test.append(actual_experiment[user_id])
 
-                p = stats.ttest_rel(base, test).pvalue
-                if p <= 0.05:
-                    index = df_ordered.index[df_ordered['experiment'] == enb]
-                    df_ordered.loc[index, 'p-value'] = '*'
-
-                df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
-                                                                        dataset_name,
-                                                                        args.metric,
-                                                                        current_top_k,
-                                                                        args.model),
-                                  index=False)
-            except Exception:
+            p = stats.ttest_rel(base, test).pvalue
+            if p <= 0.05:
                 index = df_ordered.index[df_ordered['experiment'] == enb]
-                df_ordered.loc[index, 'p-value'] = 'ERROR'
-                df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
-                                                                        dataset_name,
-                                                                        args.metric,
-                                                                        current_top_k,
-                                                                        args.model),
-                                  index=False)
+                df_ordered.loc[index, 'p-value'] = '*'
+
+            df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
+                                                                    dataset_name,
+                                                                    args.metric,
+                                                                    current_top_k,
+                                                                    args.model),
+                              index=False)
         df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
                                                                 dataset_name,
                                                                 args.metric,
