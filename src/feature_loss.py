@@ -66,6 +66,10 @@ def evaluate_feature_loss():
         original_features = read_np(filename=path_input_features)
         attacked_features = read_np(filename=path_input_features_attack)
 
+        if args.additional_features_args:
+            original_features /= np.max(np.abs(original_features))
+            attacked_features /= np.max(np.abs(attacked_features))
+
     avg_mse_features_loss = 0.0
     avg_rmse_features_loss = 0.0
 
