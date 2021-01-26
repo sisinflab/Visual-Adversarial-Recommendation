@@ -191,9 +191,6 @@ if __name__ == '__main__':
         print('***************************************************')
 
         df_ordered = pd.DataFrame([], columns=['experiment', 'classId', 'className', 'position', 'score', 'p-value'])
-        # per ogni row calcoliamo il p-value
-        # se row contiene original (anche difese), allora è baseline e non prendiamo p-value
-        # se non è baseline, allora si trova baseline associata
 
         ttest_map = {}
         for prediction_file in prediction_files:
