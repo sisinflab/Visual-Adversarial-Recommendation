@@ -16,7 +16,7 @@ def parse_args():
                         help='dataset path: amazon_men, amazon_women, tradesy')
     parser.add_argument('--defense', type=int, default=0)  # 0 --> no defense mode, 1 --> defense mode
     parser.add_argument('--model_dir', type=str, default='free_adv')
-    parser.add_argument('--separate_outputs', type=bool, default=True,
+    parser.add_argument('--separate_outputs', type=bool, default=False,
                         help='whether to store (or not) feature numpy separately')
     parser.add_argument('--additional_features_args', nargs='?', type=str, default='',
                         help='additional args to append to features filename')
