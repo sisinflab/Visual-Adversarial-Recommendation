@@ -295,9 +295,9 @@ if __name__ == '__main__':
                 if 'madry' not in enb and 'free_adv' not in enb:
                     correspondent_baseline = 'original_top' + str(args.topk) + '_ep' + str(args.epochs) + str(args.model)
                 else:
-                    correspondent_baseline = 'madry_' if 'madry' in enb else 'free_adv_' + \
-                                                                             'original_top' + str(args.topk) + '_ep' +  \
-                                                                             str(args.epochs) + str(args.model)
+                    correspondent_baseline = ('madry_' if 'madry' in enb else 'free_adv_') + \
+                                                                              'original_top' + str(args.topk) + '_ep' + \
+                                                                              str(args.epochs) + str(args.model)
                 baseline = ttest_map[correspondent_baseline]
                 actual_experiment = ttest_map[enb]
 
