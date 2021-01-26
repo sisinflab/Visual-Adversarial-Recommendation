@@ -320,8 +320,6 @@ if __name__ == '__main__':
                 base.append(baseline[user_id])
                 test.append(actual_experiment[user_id])
 
-            print(base)
-            print(test)
             p = stats.ttest_rel(base, test).pvalue
             if p <= 0.05:
                 index = df_ordered.index[df_ordered['experiment'] == enb]
