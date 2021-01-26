@@ -310,7 +310,8 @@ if __name__ == '__main__':
 
                 p = stats.ttest_rel(base, test).pvalue
                 if p <= 0.05:
-                    df_ordered[df_ordered['experiment'] == enb]['p-value'] = '*'
+                    index = df_ordered.index[df_ordered['experiment'] == enb]
+                    df_ordered.loc[index, 'p-value'] = '*'
 
                 df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
                                                                         dataset_name,
@@ -319,7 +320,8 @@ if __name__ == '__main__':
                                                                         args.model),
                                   index=False)
             except Exception:
-                df_ordered[df_ordered['experiment'] == enb]['p-value'] = 'ERROR'
+                index = df_ordered.index[df_ordered['experiment'] == enb]
+                df_ordered.loc[index, 'p-value'] = 'ERROR'
                 df_ordered.to_csv('{0}{1}/df_{2}_at_{3}_{4}.csv'.format(metric_dir,
                                                                         dataset_name,
                                                                         args.metric,
