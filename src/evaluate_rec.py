@@ -296,7 +296,7 @@ if __name__ == '__main__':
                                            ],
                                            ignore_index=True)
 
-        df_ordered.to_csv('{0}{1}/df_{2}_{3}_all.csv'.format(metric_dir,
+        df_ordered.to_csv('{0}{1}/df_{2}_{3}.csv'.format(metric_dir,
                                                              dataset_name,
                                                              args.metric,
                                                              args.model),
@@ -327,12 +327,12 @@ if __name__ == '__main__':
                 index = df_ordered.index[(df_ordered['experiment'] == enb) & (df_ordered['top-k'] == current_top_k)]
                 df_ordered.loc[index, 'p-value'] = '*'
 
-            df_ordered.to_csv('{0}{1}/df_{2}_{3}_all.csv'.format(metric_dir,
+            df_ordered.to_csv('{0}{1}/df_{2}_{3}.csv'.format(metric_dir,
                                                                  dataset_name,
                                                                  args.metric,
                                                                  args.model),
                               index=False)
-        df_ordered.to_csv('{0}{1}/df_{2}_{3}_all.csv'.format(metric_dir,
+        df_ordered.to_csv('{0}{1}/df_{2}_{3}.csv'.format(metric_dir,
                                                              dataset_name,
                                                              args.metric,
                                                              args.model),
