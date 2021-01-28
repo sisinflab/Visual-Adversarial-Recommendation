@@ -291,10 +291,10 @@ if __name__ == '__main__':
                                            ],
                                            ignore_index=True)
 
-        df_ordered.to_csv('{0}{1}/df_{2}_{3}.csv'.format(metric_dir,
-                                                                dataset_name,
-                                                                args.metric,
-                                                                args.model),
+        df_ordered.to_csv('{0}{1}/df_{2}_{3}_all.csv'.format(metric_dir,
+                                                             dataset_name,
+                                                             args.metric,
+                                                             args.model),
                           index=False)
 
         # When the metric has been calculated for all rows, get the p-value
@@ -322,15 +322,15 @@ if __name__ == '__main__':
                 index = df_ordered.index[df_ordered['experiment'] == enb]
                 df_ordered.loc[index, 'p-value'] = '*'
 
-            df_ordered.to_csv('{0}{1}/df_{2}_{3}.csv'.format(metric_dir,
-                                                                    dataset_name,
-                                                                    args.metric,
-                                                                    args.model),
+            df_ordered.to_csv('{0}{1}/df_{2}_{3}_all.csv'.format(metric_dir,
+                                                                 dataset_name,
+                                                                 args.metric,
+                                                                 args.model),
                               index=False)
-        df_ordered.to_csv('{0}{1}/df_{2}_{3}.csv'.format(metric_dir,
-                                                                dataset_name,
-                                                                args.metric,
-                                                                args.model),
+        df_ordered.to_csv('{0}{1}/df_{2}_{3}_all.csv'.format(metric_dir,
+                                                             dataset_name,
+                                                             args.metric,
+                                                             args.model),
                           index=False)
 
         # sendmail('Finish {0} at Evaluation {1}@{2}'.format(dataset_name, args.metric, args.analyzed_k), 'Finished!')
