@@ -185,12 +185,12 @@ if __name__ == '__main__':
     prediction_files = os.listdir(prediction_files_path)
     prediction_files = [f for f in prediction_files if args.model in f and 'spsa' not in f and 'zoo' not in f and 'eps8' not in f]
 
+    df_ordered = pd.DataFrame([], columns=['top-k', 'experiment', 'classId', 'className', 'position', 'score', 'p-value'])
+
     for current_top_k in list(args.list_of_k):
         print('***************************************************')
         print('ANALYZING STATISTICS FOR TOP-{0}'.format(current_top_k))
         print('***************************************************')
-
-        df_ordered = pd.DataFrame([], columns=['top-k', 'experiment', 'classId', 'className', 'position', 'score', 'p-value'])
 
         ttest_map = {}
         for prediction_file in prediction_files:
@@ -319,7 +319,7 @@ if __name__ == '__main__':
 
             p = stats.ttest_rel(base, test).pvalue
             if p <= 0.05:
-                index = df_ordered.index[df_ordered['experiment'] == enb]
+                index = df_ordered.index[(df_ordered['experiment'] == enb) & (df_ordered['top-k'] == current_top_k)]
                 df_ordered.loc[index, 'p-value'] = '*'
 
             df_ordered.to_csv('{0}{1}/df_{2}_{3}_all.csv'.format(metric_dir,
