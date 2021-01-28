@@ -183,7 +183,12 @@ if __name__ == '__main__':
     N = 50  # Top-N classes
 
     prediction_files = os.listdir(prediction_files_path)
-    prediction_files = [f for f in prediction_files if args.model in f and 'spsa' not in f and 'zoo' not in f and 'eps8' not in f]
+
+    if args.model == 'VBPR':
+        prediction_files = [f for f in prediction_files if args.model in f and 'DVBPR' not in f
+                            and 'spsa' not in f and 'zoo' not in f and 'eps8' not in f]
+    else:
+        prediction_files = [f for f in prediction_files if args.model in f and 'spsa' not in f and 'zoo' not in f and 'eps8' not in f]
 
     df_ordered = pd.DataFrame([], columns=['top-k', 'experiment', 'classId', 'className', 'position', 'score', 'p-value'])
 
