@@ -1,4 +1,4 @@
-# Assessing DNNs Robustification Inefficacy in Protecting Visual Recommenders
+# A Study of Defensive Methods to Protect Visual Recommendation Against Adversarial Manipulation of Images
 Here is the architectural scheme of our proposed framework:
 
 ![VAR](./overview.png)
