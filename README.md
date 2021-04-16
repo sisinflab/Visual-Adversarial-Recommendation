@@ -2,9 +2,9 @@
 
 This is our official implementation for the paper:
 
-Vito Walter Anelli, Yashar Deldjoo, Tommaso Di Noia, Daniele Malitesta, **Felice Antonio Merra**, [A Study of Defensive Methods to Protect Visual Recommendation Against Adversarial Manipulation of Images](https://www.researchgate.net/publication/350871619_A_Study_of_Defensive_Methods_to_Protect_Visual_Recommendation_Against_Adversarial_Manipulation_of_Images),The 44th International ACM SIGIR Conference on Research and Development in Information Retrieval
+Vito Walter Anelli, Yashar Deldjoo, Tommaso Di Noia, Daniele Malitesta, Felice Antonio Merra, [A Study of Defensive Methods to Protect Visual Recommendation Against Adversarial Manipulation of Images](https://www.researchgate.net/publication/350871619_A_Study_of_Defensive_Methods_to_Protect_Visual_Recommendation_Against_Adversarial_Manipulation_of_Images),The 44th International ACM SIGIR Conference on Research and Development in Information Retrieval
 
-(Corresponding Author: Felice Antonio Merra [felice.merra@poliba.it](mailto:felice.merra@poliba.it), Daniele Malitesta [daniele.malitesta@poliba.it](mailto:daniele.malitesta@poliba.it))
+(**Corresponding Authors**: Felice Antonio Merra [felice.merra@poliba.it](mailto:felice.merra@poliba.it), Daniele Malitesta [daniele.malitesta@poliba.it](mailto:daniele.malitesta@poliba.it))
 
 If you use the codes, please cite our paper . Thanks!
 
