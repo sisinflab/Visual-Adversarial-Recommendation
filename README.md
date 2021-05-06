@@ -8,6 +8,20 @@ Vito Walter Anelli, Yashar Deldjoo, Tommaso Di Noia, Daniele Malitesta, Felice A
 
 If you use the codes, please cite our paper . Thanks!
 
+```
+@InProceedings{VisualDefense-SIGIR21,
+  author = {Vito Walter Anelli and Yashar Deldjoo and Tommaso {Di Noia} and Daniele Malitesta and Felice Antonio Merra},
+  title = "A Study of Defensive Methods to Protect Visual Recommendation Against Adversarial Manipulation ofImages",
+  booktitle = "The 44th International ACM SIGIR Conference on Research and Development in Information Retrieval",
+  pages = "10",
+  year = "2021",
+  publisher = "ACM",
+  doi = "https://doi.org/10.1145/3404835.3462848",
+  keywords = "Adversarial Machine Learning; Recommender System; Multimedia Recommendation",
+  url = "http://sisinflab.poliba.it/publications/2021/ADDMM21"
+}
+```
+
 ----------------------------------------------------------------------------------
 
 Here is the architectural scheme of our proposed framework:
