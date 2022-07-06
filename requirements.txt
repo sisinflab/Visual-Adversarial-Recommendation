@@ -16,7 +16,7 @@ google-pasta==0.1.8
 GPUtil==1.4.0
 grpcio==1.27.2
 h5py==2.10.0
-html5lib==0.9999999
+html5lib==0.999999999
 idna==2.9
 imageio==2.8.0
 JIT==0.0.1
